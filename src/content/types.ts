@@ -16,6 +16,13 @@ export type ProjectStatus =
 
 export type ProjectTier = "flagship" | "featured" | "compact";
 
+/**
+ * These are also static route segments at /work/3d, /work/video, /work/developers
+ * (src/app/[locale]/work/{3d,video,developers}/page.tsx), which sit next to the
+ * dynamic /work/[slug] case-study route. A project slugged exactly "3d", "video",
+ * or "developers" would be permanently shadowed by its world's gallery page —
+ * treat these three strings as reserved and never use them as a project slug.
+ */
 export const worlds = ["3d", "video", "developers"] as const;
 export type ProjectWorld = (typeof worlds)[number];
 

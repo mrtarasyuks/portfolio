@@ -46,8 +46,13 @@ Tracks what is code/repo-verified vs. user-asserted (from `CLAUDE_PREMIUM_PORTFO
 2. `3D-Shop` is **not featured** — it's becoming a separate website, unrelated to this portfolio's "3D Lab" (personal Blender/Cinema 4D/3ds Max/FDM practice).
 3. Pace: build autonomously through all remaining phases, review together at the end.
 
+## Resolved (2026-07-10, later same day)
+1. Real 3D avatar supplied at `public/model/model-tarasiuk.glb` (Tripo3D-generated) — compressed 16.8MB → 807KB, integrated as the hero's central figure replacing the wireframe placeholder. See `docs/design-decisions.md`'s "real avatar + three-world atmosphere" section.
+2. Video hosting decided: self-hosted via Coolify (Caddy + volume) on the user's existing Hetzner server — see `docs/media-hosting.md` for exact setup steps the user needs to run (no access to their infra from this session).
+3. "More pages" resolved as both: world-specific gallery pages (`/work/3d`, `/work/video`, `/work/developers`) now exist, and the flat case-study system (`/work/[slug]`) remains open for new projects.
+
 ## Still open
 1. Foody screenshots exist (confirmed by user) but haven't been supplied yet — `/work/foody` currently ships with the diagram-only cover. Swap in real screenshots when available.
-2. 3D-printing videos exist (confirmed by user) but haven't been supplied — `ProjectMedia` supports a `video` kind for `3d-lab` once footage lands; currently ships with the process-loop diagram only.
+2. 3D-printing videos exist (confirmed by user) but haven't been supplied — `ProjectMedia` supports a `video` kind (rendered via `ProjectVideo`) for `3d-lab` once footage lands and `NEXT_PUBLIC_MEDIA_BASE_URL` is configured per `docs/media-hosting.md`.
 3. Availability status line stays hidden (`profile.availabilityConfirmed = false`) until the user confirms current availability.
-4. User is developing further websites/apps/games — add them to `projects.ts` as they ship.
+4. User is developing further websites/apps/games — add them to `projects.ts` as they ship (see reserved-slug note next to the `worlds` export in `src/content/types.ts` — never slug a project `3d`, `video`, or `developers`).

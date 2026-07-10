@@ -5,6 +5,7 @@ import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
 import { FoodyFlowDiagram } from "@/components/graphics/FoodyFlowDiagram";
 import { PipelineDiagram } from "@/components/graphics/PipelineDiagram";
 import { ProcessLoop } from "@/components/graphics/ProcessLoop";
+import { ProjectVideo } from "@/components/work/ProjectVideo";
 import { projects, getProject } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
@@ -107,6 +108,14 @@ export default async function CaseStudyPage({ params }: PageProps) {
             <Diagram />
           </div>
         )}
+
+        {project.media
+          ?.filter((m) => m.kind === "video" && m.src)
+          .map((m) => (
+            <div key={m.src} className="mt-14 max-w-2xl">
+              <ProjectVideo src={m.src!} label={m.label} />
+            </div>
+          ))}
 
         {project.approach && (
           <div className="mt-14 max-w-2xl">

@@ -35,3 +35,13 @@ test.describe("case studies", () => {
     });
   }
 });
+
+test.describe("world galleries", () => {
+  for (const world of ["3d", "video", "developers"]) {
+    test(`/work/${world} renders its gallery`, async ({ page }) => {
+      const response = await page.goto(`/en/work/${world}`);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator("h1")).toBeVisible();
+    });
+  }
+});

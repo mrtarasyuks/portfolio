@@ -85,6 +85,49 @@ body {
   animation: float-name 4s ease-in-out infinite;
 }
 
+/* Per-world hero theming — vars set inline on .world-scope by HeroOrbitScene */
+.world-scope {
+  background-color: var(--w-bg, var(--bg));
+  transition: background-color 700ms ease;
+}
+
+.world-role {
+  color: var(--w-signal, var(--signal));
+  transition: color 700ms ease;
+}
+
+.world-tagline {
+  color: var(--w-text-dim, var(--text-dim));
+  transition: color 700ms ease;
+}
+
+.world-tab {
+  transition:
+    color 700ms ease,
+    border-color 700ms ease;
+}
+
+.world-tab[aria-selected="true"] {
+  color: var(--w-signal, var(--signal));
+  border-color: var(--w-signal, var(--signal));
+}
+
+.world-nav-btn {
+  transition:
+    color 700ms ease,
+    border-color 700ms ease,
+    background-color 700ms ease;
+}
+
+.world-nav-btn:hover {
+  color: var(--w-signal, var(--signal));
+  border-color: var(--w-signal, var(--signal));
+}
+
+.world-cta:hover {
+  color: var(--w-signal, var(--signal));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
-import { locales } from "@/content/types";
+import { locales, worlds } from "@/content/types";
 import { projects } from "@/content/projects";
 import { siteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = ["", "/work", "/about"];
+  const staticPaths = ["", "/work", "/about", ...worlds.map((w) => `/work/${w}`)];
 
   const entries: MetadataRoute.Sitemap = [];
 
