@@ -1,47 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { VideoCard } from "@/components/ui/VideoCard";
 import { VideoLightbox } from "@/components/ui/VideoLightbox";
-import { videos, type VideoItem } from "@/content/videos";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+import { videos, type VideoItem, type VideoCategory } from "@/content/videos";
 import type { CopyDict } from "@/content/copy";
 
 /** Most populated categories first. */
-const CATEGORY_ORDER = ["viralVideo", "promo", "events", "interview", "realisticCinematic"] as const;
+const CATEGORY_ORDER: VideoCategory[] = ["viralVideo", "promo", "events", "interview", "realisticCinematic"];
+const PICK_COUNT = 3;
 
-/** Groups the portfolio reel (`src/content/videos.ts`) by genre — every card is the same uniform,
- * cropped-thumbnail size regardless of the source clip's own orientation, and opens the shared
- * `VideoLightbox` fullscreen player on click instead of playing inline. */
+function pickRandom(list: VideoItem[], count: number): VideoItem[] {
+  // Fisher-Yates on a copy — never mutates the shared `videos` array.
+  const pool = [...list];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+}
+
+/**
+ * Each genre is its own glass block — not a stacked list — showing 3 random clips from that
+ * category (re-picked per page load). The random pick happens in a `useEffect` after mount, not
+ * render body or a `useRef` initializer: this project's own established rule, since the React
+ * Compiler's purity lint forbids `Math.random()` during render.
+ */
 export function VideosByCategory({ t }: { t: CopyDict }) {
   const [open, setOpen] = useState<VideoItem | null>(null);
+  const [picked, setPicked] = useState<Partial<Record<VideoCategory, VideoItem[]>>>({});
 
-  const byCategory = new Map<string, VideoItem[]>();
-  for (const video of videos) {
-    const list = byCategory.get(video.category) ?? [];
-    list.push(video);
-    byCategory.set(video.category, list);
+  useEffect(() => {
+    // Deferred via rAF, not called synchronously in the effect body — same pattern this project
+    // already uses (StaggerFadeIn, AnimatedName) to avoid the cascading-render lint rule.
+    const id = requestAnimationFrame(() => {
+      const byCategory = new Map<VideoCategory, VideoItem[]>();
+      for (const video of videos) {
+        const list = byCategory.get(video.category) ?? [];
+        list.push(video);
+        byCategory.set(video.category, list);
+      }
+      const next: Partial<Record<VideoCategory, VideoItem[]>> = {};
+      for (const [category, list] of byCategory) {
+        next[category] = pickRandom(list, PICK_COUNT);
+      }
+      setPicked(next);
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const orderedCategories = CATEGORY_ORDER.filter((category) => (picked[category]?.length ?? 0) > 0);
+
+  if (orderedCategories.length === 0) {
+    return <p className="text-sm text-text-muted">{t.videoWorld.videosComingSoon}</p>;
   }
-  const orderedCategories = CATEGORY_ORDER.filter((category) => byCategory.has(category));
 
   return (
-    <div>
-      <h2 className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.videoWorld.videosTitle}</h2>
-      {orderedCategories.length > 0 ? (
-        <div className="mt-4 space-y-10">
-          {orderedCategories.map((category) => (
-            <div key={category}>
-              <h3 className="text-sm font-medium text-text">{t.videoWorld.categories[category]}</h3>
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {byCategory.get(category)!.map((video) => (
-                  <VideoCard key={video.src} src={video.src} label={video.label} onOpen={() => setOpen(video)} />
-                ))}
-              </div>
+    <div className="grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-2">
+      {orderedCategories.map((category) => (
+        <div key={category} className="relative pt-5">
+          {/* Notch-style title, straddling the card's top edge like an iPhone dynamic island —
+              this outer wrapper (not GlassPanel, which clips via overflow-hidden) is what the
+              notch is positioned against, so it isn't clipped by the card's own rounded corners. */}
+          <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-[#0a0a0c] px-7 py-2.5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]">
+            <h3 className="font-display text-sm font-black uppercase tracking-wide text-white">
+              {t.videoWorld.categories[category]}
+            </h3>
+          </div>
+
+          <GlassPanel className="p-5 pt-9">
+            <div className="grid grid-cols-3 gap-2">
+              {(picked[category] ?? []).map((video) => (
+                <VideoCard key={video.src} src={video.src} label={video.label} onOpen={() => setOpen(video)} />
+              ))}
             </div>
-          ))}
+          </GlassPanel>
         </div>
-      ) : (
-        <p className="mt-4 text-sm text-text-muted">{t.videoWorld.videosComingSoon}</p>
-      )}
+      ))}
 
       {open && <VideoLightbox src={open.src} label={open.label} onClose={() => setOpen(null)} t={t} />}
     </div>

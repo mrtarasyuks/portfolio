@@ -22,7 +22,17 @@ const MAX_TILT_DEG = 10;
 const TILT_RESET = "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)";
 
 /** The three world blocks fade/rise in on mount; clicking one flies it forward toward the viewer while the other two fade away, then the screen darkens to black right as the real navigation happens. */
-export function WorldChooserBlocks({ locale, t }: { locale: Locale; t: CopyDict }) {
+export function WorldChooserBlocks({
+  locale,
+  t,
+  extraBlocks,
+}: {
+  locale: Locale;
+  t: CopyDict;
+  /** Static, non-`ProjectWorld` blocks (Games, AI Creator) rendered in the same grid so it wraps
+   * naturally to 3+2 rows, instead of a second disconnected grid. */
+  extraBlocks?: React.ReactNode;
+}) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [zoomingInto, setZoomingInto] = useState<ProjectWorld | null>(null);
@@ -146,6 +156,7 @@ export function WorldChooserBlocks({ locale, t }: { locale: Locale; t: CopyDict 
             </button>
           );
         })}
+        {extraBlocks}
       </div>
 
       <div

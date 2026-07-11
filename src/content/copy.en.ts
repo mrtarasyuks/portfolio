@@ -13,6 +13,9 @@ export const en = {
     ctaSecondary: "Copy email",
     emailCopied: "Copied",
   },
+  toolsMarquee: {
+    eyebrow: "Tools I work with",
+  },
   orbit: {
     worlds: {
       "3d": "3D",
@@ -31,6 +34,16 @@ export const en = {
     comingSoon: "More work landing here soon",
     switchWorld: "Switch world",
     blockLabel: "Block",
+  },
+  extraWork: {
+    games: {
+      label: "Game Dev",
+      tagline: "Interactive builds and playable experiments — landing here as they ship.",
+    },
+    aiCreator: {
+      label: "AI Creator",
+      tagline: "Clips made entirely with generative AI — no camera, no crew.",
+    },
   },
   bioCard: {
     age: "31",
@@ -74,9 +87,6 @@ export const en = {
     games: "Games",
   },
   videoWorld: {
-    toolsTitle: "Tools I use",
-    toolsComingSoon: "Tool list landing here soon.",
-    videosTitle: "Videos by category",
     videosComingSoon: "Categorized videos landing here soon.",
     uncategorized: "Other",
     categories: {
@@ -115,12 +125,6 @@ export const en = {
     view: "View",
     roleLabel: "Role",
     stackLabel: "Stack",
-  },
-  acrossLayers: {
-    eyebrow: "ACROSS LAYERS",
-    title: "Across layers",
-    body: "My advantage is not one tool. It is the ability to connect product logic, UX, AI, code, media, infrastructure, and physical making into one execution loop.",
-    layers: ["IDEA", "PRODUCT LOGIC", "UX / UI", "AI WORKFLOW", "CODE", "MEDIA", "INFRASTRUCTURE", "DEPLOYMENT", "ITERATION"],
   },
   capabilities: {
     eyebrow: "CAPABILITIES",

@@ -12,7 +12,7 @@ export function AgentNative({ locale }: { locale: Locale }) {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
             <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.agentNative.eyebrow}</p>
-            <h2 className="mt-3 text-3xl font-medium tracking-tight text-text md:text-4xl">{t.agentNative.title}</h2>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-text md:text-5xl">{t.agentNative.title}</h2>
             <p className="mt-6 max-w-md text-text-muted">{t.agentNative.body}</p>
           </div>
 

@@ -16,7 +16,9 @@ test.describe("accessibility", () => {
 
   test("keyboard can reach and activate the primary CTA", async ({ page }) => {
     await page.goto("/en");
-    const link = page.getByRole("link", { name: "Selected work" });
+    // The hero's own "Selected work" CTA row was removed (18th pivot) — the header's "Work" pill
+    // is now the site's primary navigational CTA, present on every page.
+    const link = page.getByRole("link", { name: "Work", exact: true }).first();
     await link.focus();
     await expect(link).toBeFocused();
   });

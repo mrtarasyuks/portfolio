@@ -1,11 +1,12 @@
 import { Container } from "@/components/ui/Container";
 import { SelectedWorkList } from "@/components/work/SelectedWorkList";
 import { WorldChooserBlocks } from "@/components/work/WorldChooserBlocks";
+import { ExtraWorkBlockLink } from "@/components/work/ExtraWorkBlockLink";
 import { WorldTitleCube } from "@/components/work/WorldTitleCube";
 import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { getCopy } from "@/content/copy";
 import { locales, type Locale } from "@/content/types";
-import { worldThemes } from "@/content/worldTheme";
+import { worldThemes, extraWorkAccents } from "@/content/worldTheme";
 import { buildMetadata } from "@/lib/seo";
 
 const ACCENT = worldThemes.developers.signal;
@@ -34,7 +35,28 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ loca
         </div>
 
         <div className="mt-12">
-          <WorldChooserBlocks locale={l} t={t} />
+          <WorldChooserBlocks
+            locale={l}
+            t={t}
+            extraBlocks={
+              <>
+                <ExtraWorkBlockLink
+                  href={`/${l}/work/games`}
+                  label={t.extraWork.games.label}
+                  tagline={t.extraWork.games.tagline}
+                  glyph="▣"
+                  color={extraWorkAccents.games}
+                />
+                <ExtraWorkBlockLink
+                  href={`/${l}/work/ai-creator`}
+                  label={t.extraWork.aiCreator.label}
+                  tagline={t.extraWork.aiCreator.tagline}
+                  glyph="✦"
+                  color={extraWorkAccents.aiCreator}
+                />
+              </>
+            }
+          />
         </div>
       </Container>
 

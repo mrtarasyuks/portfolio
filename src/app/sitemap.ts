@@ -4,7 +4,15 @@ import { projects } from "@/content/projects";
 import { siteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = ["", "/work", "/about", "/contact", ...worlds.map((w) => `/work/${w}`)];
+  const staticPaths = [
+    "",
+    "/work",
+    "/about",
+    "/contact",
+    ...worlds.map((w) => `/work/${w}`),
+    "/work/games",
+    "/work/ai-creator",
+  ];
 
   const entries: MetadataRoute.Sitemap = [];
 

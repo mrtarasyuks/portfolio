@@ -15,6 +15,9 @@ export const uk: typeof en = {
     ctaSecondary: "Скопіювати email",
     emailCopied: "Скопійовано",
   },
+  toolsMarquee: {
+    eyebrow: "Інструменти, з якими працюю",
+  },
   orbit: {
     worlds: {
       "3d": "3D",
@@ -33,6 +36,16 @@ export const uk: typeof en = {
     comingSoon: "Тут скоро з'явиться більше робіт",
     switchWorld: "Перемкнути світ",
     blockLabel: "Блок",
+  },
+  extraWork: {
+    games: {
+      label: "Game Dev",
+      tagline: "Інтерактивні білди та ігрові експерименти — з'являться тут у міру релізів.",
+    },
+    aiCreator: {
+      label: "AI Creator",
+      tagline: "Ролики, зроблені повністю за допомогою генеративного ШІ — без камери й знімальної групи.",
+    },
   },
   bioCard: {
     age: "31",
@@ -76,9 +89,6 @@ export const uk: typeof en = {
     games: "Ігри",
   },
   videoWorld: {
-    toolsTitle: "Програми, якими користуюсь",
-    toolsComingSoon: "Список програм з'явиться тут незабаром.",
-    videosTitle: "Відео за категоріями",
     videosComingSoon: "Відео за категоріями з'являться тут незабаром.",
     uncategorized: "Інше",
     categories: {
@@ -117,12 +127,6 @@ export const uk: typeof en = {
     view: "Дивитись",
     roleLabel: "Роль",
     stackLabel: "Стек",
-  },
-  acrossLayers: {
-    eyebrow: "МІЖ РІВНЯМИ",
-    title: "Між рівнями",
-    body: "Моя перевага — не один інструмент. Я вмію з'єднувати продуктову логіку, UX, ШІ, код, медіа, інфраструктуру та фізичне прототипування в один цикл виконання.",
-    layers: ["ІДЕЯ", "ПРОДУКТОВА ЛОГІКА", "UX / UI", "AI WORKFLOW", "КОД", "МЕДІА", "ІНФРАСТРУКТУРА", "ДЕПЛОЙ", "ІТЕРАЦІЯ"],
   },
   capabilities: {
     eyebrow: "МОЖЛИВОСТІ",

@@ -1,10 +1,9 @@
 import { HeroSceneGate } from "@/components/hero/HeroSceneGate";
-import { AcrossLayers } from "@/components/sections/AcrossLayers";
+import { ToolLogosMarquee } from "@/components/sections/ToolLogosMarquee";
 import { Capabilities } from "@/components/sections/Capabilities";
 import { Workflow } from "@/components/sections/Workflow";
 import { AgentNative } from "@/components/sections/AgentNative";
-import { AboutSection } from "@/components/sections/AboutSection";
-import { ContactSection } from "@/components/sections/ContactSection";
+import { getCopy } from "@/content/copy";
 import { locales, type Locale } from "@/content/types";
 import { publicAssetExists } from "@/lib/publicAsset";
 import {
@@ -21,6 +20,7 @@ export function generateStaticParams() {
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
+  const t = getCopy(l);
   const hasPortrait = publicAssetExists(BIO_CARD_PORTRAIT_SRC);
   const hasPhotoRight = publicAssetExists(BIO_CARD_PHOTO_RIGHT_SRC);
   const hasPhotoBack = publicAssetExists(BIO_CARD_PHOTO_BACK_SRC);
@@ -35,12 +35,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         hasPhotoBack={hasPhotoBack}
         hasPhotoLeft={hasPhotoLeft}
       />
-      <AcrossLayers locale={l} />
+      <ToolLogosMarquee t={t} />
       <Capabilities locale={l} />
       <Workflow locale={l} />
       <AgentNative locale={l} />
-      <AboutSection locale={l} />
-      <ContactSection locale={l} />
     </>
   );
 }

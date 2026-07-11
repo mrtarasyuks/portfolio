@@ -1,14 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useMemo } from "react";
-import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { WorldBackdrop } from "@/components/scene/WorldBackdrop";
 import { Avatar } from "@/components/scene/Avatar";
 import { CameraRig } from "@/components/scene/CameraRig";
 import { BioCard } from "@/components/scene/BioCard";
-import { CopyEmailButton } from "@/components/ui/CopyEmailButton";
-import { TypewriterText } from "@/components/ui/TypewriterText";
 import { ProjectSliderPanel } from "@/components/hero/ProjectSliderPanel";
 import { useWorldNav } from "@/context/WorldNavContext";
 import { useGridScroll } from "@/context/GridScrollContext";
@@ -102,23 +99,6 @@ export function HeroOrbitScene({
             <ProjectSliderPanel projects={worldProjects} world={world} locale={locale} t={t} />
           </div>
         )}
-      </div>
-
-      <div className="flex flex-col items-center gap-2 border-t border-line py-6">
-        <p className="world-tagline max-w-sm text-center text-xs">
-          <TypewriterText text={t.orbit.worldTagline[world]} speedMs={10} />
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-center gap-8 border-t border-line py-6">
-        <Link
-          href={`/${locale}/work`}
-          className="world-cta group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text"
-        >
-          <span aria-hidden className="inline-block h-px w-4 bg-current transition-all group-hover:w-6" />
-          {t.hero.ctaPrimary}
-        </Link>
-        <CopyEmailButton label={t.hero.ctaSecondary} copiedLabel={t.hero.emailCopied} />
       </div>
     </section>
   );

@@ -183,6 +183,82 @@ body {
   animation-iteration-count: infinite;
 }
 
+/* A bright highlight sweeping edge-to-edge across a thin line every 2s — "an impulse passing
+   through." Applied to a plain colored divider div (not a border utility) since the sweep needs
+   an ::after overlay to paint on top of. Reused for the Agent-Native pipeline's "current step". */
+@keyframes pulse-sweep {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 250% 0;
+  }
+}
+
+.pulse-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.pulse-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* --pulse-color lets a caller tint the sweep (e.g. a world gallery page's own signal color)
+     without touching the fixed-purpose --signal token itself; falls back to it when unset. */
+  background-image: linear-gradient(90deg, transparent, var(--pulse-color, var(--signal)), transparent);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  animation: pulse-sweep 2s linear infinite;
+}
+
+/* Two-row logo marquee, opposite directions — same duplicated-list idiom as .animate-slide-up,
+   just horizontal. */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 32s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 32s linear infinite;
+}
+
+/* A brief glow visits each step of the Agent-Native pipeline in sequence, then loops — "the agent
+   is here now," moving step to step. Same total-duration-with-staggered-delay technique as the
+   pulse-sweep divider, just per-block instead of one continuous line. */
+@keyframes agent-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0px 0px transparent;
+    border-color: var(--line-strong);
+  }
+  4% {
+    box-shadow: 0 0 30px 2px var(--signal);
+    border-color: var(--signal);
+  }
+  9% {
+    box-shadow: 0 0 0px 0px transparent;
+    border-color: var(--line-strong);
+  }
+}
+
 /*
  * Per-world hero theming — vars set inline on .world-scope by HeroOrbitScene/WorldGallery.
  * `margin-top`/`padding-top` pull the element's own background up to paint behind the

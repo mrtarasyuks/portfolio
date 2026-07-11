@@ -16,20 +16,19 @@ const HOVER_TRANSITION = "transform 90ms ease-out";
  * already proven on `WorldChooserBlocks` (ref-mutated `style.transform`, no React state) — the
  * cube tilts away from the cursor's position within it while staying pinned at its own center
  * (rotation only, never a translate), then eases back to the resting `-12deg` pose on pointer
- * leave. `glyph` is optional so this same component works for section titles that don't have a
- * per-world symbol (the `/work` index "Work" title, the "My work" list heading).
+ * leave. Fully generic on `label`/`color` — no world-specific logic — so it's reused verbatim for
+ * the `/work` index "Work" title, the "My work" list heading, the Capabilities section title, and
+ * (rendered twice side by side) a world gallery page's glyph + name.
  */
 export function WorldTitleCube({
   label,
   color,
-  glyph,
   headingTag = "h1",
 }: {
   label: string;
   color: string;
-  glyph?: string;
-  /** Defaults to h1 (the primary per-page title, e.g. a world gallery page or /work's own title) — pass "h2" when this cube is reused for a secondary heading on a page that already has its own h1, so a page never ends up with two. */
-  headingTag?: "h1" | "h2";
+  /** Defaults to h1 (the primary per-page title, e.g. a world gallery page or /work's own title) — pass "h2" when this cube is reused for a secondary heading on a page that already has its own h1 (so a page never ends up with two), or "div" for a purely decorative instance (e.g. a glyph cube) that shouldn't be a heading at all. */
+  headingTag?: "h1" | "h2" | "div";
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const Heading = headingTag;
@@ -92,12 +91,7 @@ export function WorldTitleCube({
           transform: "translateZ(7px)",
         }}
       >
-        {glyph && (
-          <span className="block font-mono text-xs uppercase tracking-wide" style={{ color }} aria-hidden>
-            {glyph}
-          </span>
-        )}
-        <Heading className="mt-1 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">{label}</Heading>
+        <Heading className="text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">{label}</Heading>
       </div>
     </div>
   );

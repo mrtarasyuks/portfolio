@@ -4,6 +4,10 @@ export type VideoItem = {
   label: string;
   src: string;
   category: VideoCategory;
+  /** Confirmed by the user: Viral Video (Messi/Ronaldo-style face-swap edits) and Realistic
+   * Cinematic are made entirely with generative AI, powering the /work/ai-creator filtered view.
+   * Promo/Events/Interview are left untagged — real client/personal shoots, not AI-made. */
+  aiMade?: boolean;
 };
 
 /**
@@ -15,31 +19,53 @@ export type VideoItem = {
  * via `mediaUrl()` against `NEXT_PUBLIC_MEDIA_BASE_URL` (falls back to /public locally).
  */
 export const videos: VideoItem[] = [
-  // Viral Video
-  { label: "Funny Kids: Messi, Ronaldo, Mbappe", src: "video-creator/viral-video/Funny-Kids-Messi-Ronaldo-Mbappe.mp4", category: "viralVideo" },
-  { label: "Funny: Messi & Ronaldo — Big Builders", src: "video-creator/viral-video/Funny-Messi&Ronaldo-Big-Builders.mp4", category: "viralVideo" },
-  { label: "Mbappe & Neymar — Story 03", src: "video-creator/viral-video/Mbappe&Neymar-story03.mov", category: "viralVideo" },
-  { label: "Messi & Ronaldo — Crazy Frog", src: "video-creator/viral-video/Messi&Ronaldo-Crazy-Frog.mp4", category: "viralVideo" },
-  { label: "Messi & Ronaldo — Gladiators, Story 06", src: "video-creator/viral-video/Messi&Ronaldo-gladiators-story06.mp4", category: "viralVideo" },
-  { label: "Messi & Ronaldo — Matrix Scene", src: "video-creator/viral-video/Messi&Ronaldo-matrix-scene.mp4", category: "viralVideo" },
-  { label: "Messi & Ronaldo — Story 01", src: "video-creator/viral-video/Messi&Ronaldo-story01.mp4", category: "viralVideo" },
-  { label: "Messi & Ronaldo — Story 02", src: "video-creator/viral-video/Messi&Ronaldo-story02.mp4", category: "viralVideo" },
+  // Viral Video — tagged aiMade: true (see VideoItem.aiMade doc comment)
+  { label: "Funny Kids: Messi, Ronaldo, Mbappe", src: "video-creator/viral-video/Funny-Kids-Messi-Ronaldo-Mbappe.mp4", category: "viralVideo", aiMade: true },
+  { label: "Funny: Messi & Ronaldo — Big Builders", src: "video-creator/viral-video/Funny-Messi&Ronaldo-Big-Builders.mp4", category: "viralVideo", aiMade: true },
+  { label: "Mbappe & Neymar — Story 03", src: "video-creator/viral-video/Mbappe&Neymar-story03.mov", category: "viralVideo", aiMade: true },
+  { label: "Messi & Ronaldo — Crazy Frog", src: "video-creator/viral-video/Messi&Ronaldo-Crazy-Frog.mp4", category: "viralVideo", aiMade: true },
+  {
+    label: "Messi & Ronaldo — Gladiators, Story 06",
+    src: "video-creator/viral-video/Messi&Ronaldo-gladiators-story06.mp4",
+    category: "viralVideo",
+    aiMade: true,
+  },
+  { label: "Messi & Ronaldo — Matrix Scene", src: "video-creator/viral-video/Messi&Ronaldo-matrix-scene.mp4", category: "viralVideo", aiMade: true },
+  { label: "Messi & Ronaldo — Story 01", src: "video-creator/viral-video/Messi&Ronaldo-story01.mp4", category: "viralVideo", aiMade: true },
+  { label: "Messi & Ronaldo — Story 02", src: "video-creator/viral-video/Messi&Ronaldo-story02.mp4", category: "viralVideo", aiMade: true },
   {
     label: "Messi & Ronaldo vs Mbappe & Neymar — Story 04",
     src: "video-creator/viral-video/Messi&Ronaldo-vs-Mbappe&Neymar-story04.mp4",
     category: "viralVideo",
+    aiMade: true,
   },
-  { label: "Ronaldo Arrest: Messi Superman", src: "video-creator/viral-video/Ronaldo-Arrest-Messi-Superman.mp4", category: "viralVideo" },
-  { label: "Ronaldo Pirate — Thriller, Where's Messi", src: "video-creator/viral-video/RonaldoPirat-triller-where-Messi.mp4", category: "viralVideo" },
-  { label: "Scared Prank: Ronaldo", src: "video-creator/viral-video/Scared-Prank-Ronaldo.mp4", category: "viralVideo" },
+  {
+    label: "Ronaldo Arrest: Messi Superman",
+    src: "video-creator/viral-video/Ronaldo-Arrest-Messi-Superman.mp4",
+    category: "viralVideo",
+    aiMade: true,
+  },
+  {
+    label: "Ronaldo Pirate — Thriller, Where's Messi",
+    src: "video-creator/viral-video/RonaldoPirat-triller-where-Messi.mp4",
+    category: "viralVideo",
+    aiMade: true,
+  },
+  { label: "Scared Prank: Ronaldo", src: "video-creator/viral-video/Scared-Prank-Ronaldo.mp4", category: "viralVideo", aiMade: true },
   {
     label: "Kids: Messi & Ronaldo vs Mbappe & Neymar — Story 05",
     src: "video-creator/viral-video/child-Messi&Ronaldo-vs-Mbappe&Neymar-story05.mp4",
     category: "viralVideo",
+    aiMade: true,
   },
-  { label: "Football Legends: Last Dance", src: "video-creator/viral-video/football_legends_last_dance.mp4", category: "viralVideo" },
-  { label: "Promo: Lego Figure", src: "video-creator/viral-video/like_promo_Lego-figure.mp4", category: "viralVideo" },
-  { label: "Prank: Messi vs Ronaldo", src: "video-creator/viral-video/prank-MessivsRonaldo.mp4", category: "viralVideo" },
+  {
+    label: "Football Legends: Last Dance",
+    src: "video-creator/viral-video/football_legends_last_dance.mp4",
+    category: "viralVideo",
+    aiMade: true,
+  },
+  { label: "Promo: Lego Figure", src: "video-creator/viral-video/like_promo_Lego-figure.mp4", category: "viralVideo", aiMade: true },
+  { label: "Prank: Messi vs Ronaldo", src: "video-creator/viral-video/prank-MessivsRonaldo.mp4", category: "viralVideo", aiMade: true },
 
   // Promo
   { label: "AI Assistant", src: "video-creator/promo/AI_Assistant.mp4", category: "promo" },
@@ -65,6 +91,6 @@ export const videos: VideoItem[] = [
   { label: "Mario — Canada Engineer", src: "video-creator/interview/Mario-canada-engeneer.mp4", category: "interview" },
   { label: "Spotlight: Students", src: "video-creator/interview/Spotlight-Students.mp4", category: "interview" },
 
-  // Realistic Cinematic
-  { label: "Elvis & Ann", src: "video-creator/realistic-cinematic/elvis_and_ann.mp4", category: "realisticCinematic" },
+  // Realistic Cinematic — tagged aiMade: true (see VideoItem.aiMade doc comment)
+  { label: "Elvis & Ann", src: "video-creator/realistic-cinematic/elvis_and_ann.mp4", category: "realisticCinematic", aiMade: true },
 ];
