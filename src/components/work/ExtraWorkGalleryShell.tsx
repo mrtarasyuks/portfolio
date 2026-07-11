@@ -19,6 +19,7 @@ export function ExtraWorkGalleryShell({
   tagline,
   glyph,
   color,
+  backHref,
   children,
 }: {
   locale: Locale;
@@ -27,6 +28,8 @@ export function ExtraWorkGalleryShell({
   tagline: string;
   glyph: string;
   color: string;
+  /** Defaults to `/work`; pass for a page nested one level deeper (e.g. a video category page). */
+  backHref?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -35,7 +38,7 @@ export function ExtraWorkGalleryShell({
 
       <Container className="relative flex flex-col items-center pb-20 pt-14 text-center md:pb-28 md:pt-20">
         <div className="flex items-center justify-center gap-4 sm:gap-6">
-          <BackToWorkButton locale={locale} t={t} />
+          <BackToWorkButton locale={locale} t={t} backHref={backHref} />
           <div aria-hidden="true">
             <WorldTitleCube label={glyph} color={color} headingTag="div" />
           </div>

@@ -1,5 +1,9 @@
 export type VideoCategory = "events" | "interview" | "promo" | "realisticCinematic" | "viralVideo";
 
+/** Most populated categories first — single source of truth shared by `VideosByCategory`, the
+ * `/work/video/[category]` route's `generateStaticParams`, and `sitemap.ts`. */
+export const VIDEO_CATEGORIES: VideoCategory[] = ["viralVideo", "promo", "events", "interview", "realisticCinematic"];
+
 export type VideoItem = {
   label: string;
   src: string;

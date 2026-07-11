@@ -13,7 +13,7 @@ import { cn } from "@/lib/cn";
 
 const diagrams: Record<string, React.ComponentType> = {
   foody: FoodyFlowDiagram,
-  "ai-video-production": PipelineDiagram,
+  frameforg: PipelineDiagram,
 };
 
 /**

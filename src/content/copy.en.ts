@@ -45,6 +45,13 @@ export const en = {
       tagline: "Clips made entirely with generative AI — no camera, no crew.",
     },
   },
+  figurines: {
+    sectionTitle: "Prints",
+    filament: "Filament",
+    printTime: "Print time",
+    material: "Material",
+    printer: "Printer",
+  },
   bioCard: {
     age: "31",
     experiences: [
@@ -96,6 +103,8 @@ export const en = {
       realisticCinematic: "Realistic Cinematic",
       viralVideo: "Viral Video",
     },
+    viewAll: "View all clips →",
+    allClips: "The full reel for this category.",
   },
   videoPlayer: {
     play: "Play",

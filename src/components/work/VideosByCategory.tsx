@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { VideoCard } from "@/components/ui/VideoCard";
-import { VideoLightbox } from "@/components/ui/VideoLightbox";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { videos, type VideoItem, type VideoCategory } from "@/content/videos";
+import { videos, VIDEO_CATEGORIES, type VideoItem, type VideoCategory } from "@/content/videos";
+import type { Locale } from "@/content/types";
 import type { CopyDict } from "@/content/copy";
 
-/** Most populated categories first. */
-const CATEGORY_ORDER: VideoCategory[] = ["viralVideo", "promo", "events", "interview", "realisticCinematic"];
 const PICK_COUNT = 3;
 
 function pickRandom(list: VideoItem[], count: number): VideoItem[] {
@@ -26,9 +25,13 @@ function pickRandom(list: VideoItem[], count: number): VideoItem[] {
  * category (re-picked per page load). The random pick happens in a `useEffect` after mount, not
  * render body or a `useRef` initializer: this project's own established rule, since the React
  * Compiler's purity lint forbids `Math.random()` during render.
+ *
+ * The whole block is a `<Link>` into that category's own full-list page (`/work/video/[category]`)
+ * — clips here autoplay muted on load as a preview and are NOT individually clickable/openable;
+ * only the category page opens the fullscreen lightbox per clip. Each block glows constantly in the
+ * world's signal `color`, the same always-on treatment `WorldTitleCube` uses for the page title.
  */
-export function VideosByCategory({ t }: { t: CopyDict }) {
-  const [open, setOpen] = useState<VideoItem | null>(null);
+export function VideosByCategory({ t, locale, color }: { t: CopyDict; locale: Locale; color: string }) {
   const [picked, setPicked] = useState<Partial<Record<VideoCategory, VideoItem[]>>>({});
 
   useEffect(() => {
@@ -50,7 +53,7 @@ export function VideosByCategory({ t }: { t: CopyDict }) {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const orderedCategories = CATEGORY_ORDER.filter((category) => (picked[category]?.length ?? 0) > 0);
+  const orderedCategories = VIDEO_CATEGORIES.filter((category) => (picked[category]?.length ?? 0) > 0);
 
   if (orderedCategories.length === 0) {
     return <p className="text-sm text-text-muted">{t.videoWorld.videosComingSoon}</p>;
@@ -59,7 +62,7 @@ export function VideosByCategory({ t }: { t: CopyDict }) {
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-2">
       {orderedCategories.map((category) => (
-        <div key={category} className="relative pt-5">
+        <Link key={category} href={`/${locale}/work/video/${category}`} className="group relative block pt-5">
           {/* Notch-style title, straddling the card's top edge like an iPhone dynamic island —
               this outer wrapper (not GlassPanel, which clips via overflow-hidden) is what the
               notch is positioned against, so it isn't clipped by the card's own rounded corners. */}
@@ -69,17 +72,27 @@ export function VideosByCategory({ t }: { t: CopyDict }) {
             </h3>
           </div>
 
-          <GlassPanel className="p-5 pt-9">
-            <div className="grid grid-cols-3 gap-2">
+          <GlassPanel
+            className="min-h-[220px] p-6 pt-11 transition-transform duration-300 group-hover:-translate-y-1"
+            style={{
+              borderColor: `${color}55`,
+              boxShadow: `0 30px 80px -20px ${color}66, inset 0 0 40px -10px ${color}40`,
+            }}
+          >
+            <div className="grid grid-cols-3 gap-3">
               {(picked[category] ?? []).map((video) => (
-                <VideoCard key={video.src} src={video.src} label={video.label} onOpen={() => setOpen(video)} />
+                <VideoCard key={video.src} src={video.src} label={video.label} autoPlay />
               ))}
             </div>
+            <span
+              className="mt-5 flex items-center justify-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wide"
+              style={{ color }}
+            >
+              {t.videoWorld.viewAll}
+            </span>
           </GlassPanel>
-        </div>
+        </Link>
       ))}
-
-      {open && <VideoLightbox src={open.src} label={open.label} onClose={() => setOpen(null)} t={t} />}
     </div>
   );
 }

@@ -9,12 +9,13 @@ Tracks what is code/repo-verified vs. user-asserted (from `CLAUDE_PREMIUM_PORTFO
 - Claims not verified: public store launch, user counts, revenue, nutrition accuracy — **excluded**.
 - Assets needed from user: app screenshots (fridge view, camera capture, AI chef chat, receipt import) for the case-study media mosaic. Until supplied, use a designed typographic cover + architecture diagram (no fabricated screenshots).
 
-## AI Video Production System
-- Status: `system-design` / `prototype`
+## AI Video Production System (now: FrameForg)
+- Status: `shipped` (was `system-design` / `prototype`)
 - Evidence: `../promo-video-platform` (aka FrameForg) — real repo: Next.js 16, Supabase, `Dockerfile` + `Dockerfile.worker` (background worker architecture), deployed via Coolify on Hetzner (per project memory), yellow/black rebrand, OAuth, Portfolio feature shipped.
-- Claims allowed: pipeline architecture (brief → storyboard → generation → Remotion motion → audio → QA → delivery) as a designed system; Next.js/Supabase/Docker/worker stack.
-- Claims not verified: full autonomous platform in production for paying customers — **do not claim production-live** without user confirmation.
-- Assets needed: product screenshots or the pipeline diagram only (diagram can be built without screenshots).
+- **2026-07-12 update**: verified live and public by directly fetching https://frameforg.online — real tagline ("AI Promo Videos Delivered in 1 Hour"), automated storyboard generation via an AI creative-director agent, 12+ AI engines, Remotion motion graphics, 9:16/16:9/1:1 output formats, QA pipeline, revision requests, and real paid pricing tiers with a working checkout. This resolves the prior "do not claim production-live without user confirmation" caveat with direct evidence rather than a user assertion. `projects.ts` slug renamed `ai-video-production` → `frameforg`, `status` → `shipped`, real `links: [{ label: "frameforg.online", href: "..." }]` added.
+- Claims allowed: everything above, plus the live pipeline architecture (brief → AI creative-director → storyboard → multi-engine generation → Remotion → QA → delivery) as a shipped, public product.
+- Claims not verified: specific user counts or revenue — **still excluded**, not claimed anywhere in copy.
+- Assets needed: product screenshots or the pipeline diagram only (diagram can be built without screenshots) — the diagram continues to ship as the case-study cover.
 
 ## Coffydoor / Cruise Brothers / Cinematic Continuity Experiment (Elvis scene) — DROPPED
 - 2026-07-10 decision (user, directly): these video ad projects are **not to be featured**. Removed from `content/projects.ts` entirely. Do not resurrect unless the user asks again.

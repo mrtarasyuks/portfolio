@@ -7,9 +7,10 @@ test.describe("orbit worlds", () => {
 
     // The right-side panel is a looping marquee (the project list is duplicated for a seamless
     // loop), so each title can legitimately appear twice at once — assert on the first match.
-    // Developer world now carries both Foody and the AI Video Production System.
+    // Developer world now carries both Foody and FrameForg (renamed from "AI Video System" in
+    // the 19th pivot, once the product went live and public at frameforg.online).
     await expect(page.getByText("Foody", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("AI Video System", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("FrameForg", { exact: true }).first()).toBeVisible();
 
     await page.getByRole("tab", { name: "3D" }).click();
     await page.waitForTimeout(1200);
@@ -57,7 +58,7 @@ test.describe("orbit worlds", () => {
 });
 
 test.describe("case studies", () => {
-  for (const slug of ["foody", "ai-video-production", "3d-lab"]) {
+  for (const slug of ["foody", "frameforg", "3d-lab"]) {
     test(`/work/${slug} renders without error`, async ({ page }) => {
       const response = await page.goto(`/en/work/${slug}`);
       expect(response?.status()).toBe(200);

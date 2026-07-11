@@ -17,7 +17,7 @@ import { buildMetadata } from "@/lib/seo";
 
 const diagrams: Record<string, React.ComponentType> = {
   foody: FoodyFlowDiagram,
-  "ai-video-production": PipelineDiagram,
+  frameforg: PipelineDiagram,
   "3d-lab": () => <ProcessLoop steps={["Idea", "Model", "Check", "Slice", "Print", "Adjust"]} label="Physical iteration loop" />,
 };
 
@@ -67,6 +67,22 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </h1>
 
         <p className="mt-6 max-w-xl text-lg text-text-muted">{project.oneLine[l]}</p>
+
+        {project.links && project.links.length > 0 && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {project.links.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-line-strong px-6 py-3 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        )}
 
         <div className="mt-10 grid grid-cols-2 gap-6 border-y border-line py-6 font-mono text-[11px] uppercase tracking-wide md:grid-cols-4">
           <div>

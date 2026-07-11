@@ -47,6 +47,13 @@ export const uk: typeof en = {
       tagline: "Ролики, зроблені повністю за допомогою генеративного ШІ — без камери й знімальної групи.",
     },
   },
+  figurines: {
+    sectionTitle: "Друки",
+    filament: "Філамент",
+    printTime: "Час друку",
+    material: "Матеріал",
+    printer: "Принтер",
+  },
   bioCard: {
     age: "31",
     experiences: [
@@ -98,6 +105,8 @@ export const uk: typeof en = {
       realisticCinematic: "Реалістичне кіно",
       viralVideo: "Вірусні відео",
     },
+    viewAll: "Усі кліпи →",
+    allClips: "Повна добірка цієї категорії.",
   },
   videoPlayer: {
     play: "Відтворити",

@@ -3,6 +3,7 @@ import { GlassProjectBlock } from "@/components/work/GlassProjectBlock";
 import { StaggerFadeIn } from "@/components/ui/StaggerFadeIn";
 import { DevelopersFilter } from "@/components/work/DevelopersFilter";
 import { VideosByCategory } from "@/components/work/VideosByCategory";
+import { FigurineGallery } from "@/components/work/FigurineGallery";
 import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { WorldTitleCube } from "@/components/work/WorldTitleCube";
@@ -59,7 +60,7 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
         {world === "developers" ? (
           <DevelopersFilter projects={worldProjects} locale={locale} t={t} />
         ) : world === "video" ? (
-          <VideosByCategory t={t} />
+          <VideosByCategory t={t} locale={locale} color={theme.signal} />
         ) : worldProjects.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {worldProjects.map((project, i) => (
@@ -73,6 +74,8 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
             {t.orbit.comingSoon}
           </p>
         )}
+
+        {world === "3d" && <FigurineGallery locale={locale} t={t} />}
       </Container>
     </div>
   );
