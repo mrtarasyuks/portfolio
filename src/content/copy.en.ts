@@ -33,12 +33,25 @@ export const en = {
     blockLabel: "Block",
   },
   bioCard: {
-    role: "AI Creator & Product Builder",
-    ageLabel: "Age",
     age: "31",
-    countryLabel: "Base",
-    hobbiesLabel: "Hobbies",
-    hobbies: ["AI video", "App development", "3D printing", "Design", "Football"],
+    experiences: [
+      {
+        title: "Project Manager",
+        description: "Scoping fuzzy ideas into shippable plans — one clear outcome, a path to release, and a scope kept honest.",
+      },
+      {
+        title: "Middle AI Developer",
+        description: "Building mobile & web products with AI at the core — Gemini/Claude integrations, prompt systems, server-side proxies.",
+      },
+      {
+        title: "Video Creator",
+        description: "Structured AI video pipelines — brief to storyboard to Remotion render, with a real delivery pass.",
+      },
+      {
+        title: "3D Modelling + Print",
+        description: "Blender to Cinema 4D to a sliced, printed object — ideas that leave the screen.",
+      },
+    ],
   },
   connect: {
     cta: "Let's connect",
@@ -80,11 +93,13 @@ export const en = {
     ],
   },
   selectedWork: {
-    eyebrow: "SELECTED WORK",
-    title: "Selected work",
+    eyebrow: "MY WORK",
+    title: "My work",
     intro: "Different mediums. One instinct: find the hard part, build the system, iterate until it holds together.",
     openCaseStudy: "Open case study",
     view: "View",
+    roleLabel: "Role",
+    stackLabel: "Stack",
   },
   acrossLayers: {
     eyebrow: "ACROSS LAYERS",

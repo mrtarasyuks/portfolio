@@ -1,11 +1,64 @@
+"use client";
+
+import { useRef } from "react";
+
+const MAX_TILT_DEG = 9;
+const BASE_TRANSFORM = "perspective(1000px) rotateY(-12deg)";
+const RESET_TRANSITION = "transform 550ms cubic-bezier(0.22, 1, 0.36, 1)";
+const HOVER_TRANSITION = "transform 90ms ease-out";
+
 /**
  * The gallery page's title, styled as a small volumetric glass cube — a folded right spine +
  * bottom edge (the same fake-3D "preserve-3d + folded face" trick BioCard uses) plus an inset
  * box-shadow glow reading as a light lit from inside the glass, rather than a flat text heading.
+ *
+ * Magnetic tilt-on-hover: the same pointer-relative `perspective()/rotateX()/rotateY()` idiom
+ * already proven on `WorldChooserBlocks` (ref-mutated `style.transform`, no React state) — the
+ * cube tilts away from the cursor's position within it while staying pinned at its own center
+ * (rotation only, never a translate), then eases back to the resting `-12deg` pose on pointer
+ * leave. `glyph` is optional so this same component works for section titles that don't have a
+ * per-world symbol (the `/work` index "Work" title, the "My work" list heading).
  */
-export function WorldTitleCube({ label, glyph, color }: { label: string; glyph: string; color: string }) {
+export function WorldTitleCube({
+  label,
+  color,
+  glyph,
+  headingTag = "h1",
+}: {
+  label: string;
+  color: string;
+  glyph?: string;
+  /** Defaults to h1 (the primary per-page title, e.g. a world gallery page or /work's own title) — pass "h2" when this cube is reused for a secondary heading on a page that already has its own h1, so a page never ends up with two. */
+  headingTag?: "h1" | "h2";
+}) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const Heading = headingTag;
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const el = wrapRef.current;
+    if (!el) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transition = HOVER_TRANSITION;
+    el.style.transform = `perspective(1000px) rotateY(${(-12 - px * MAX_TILT_DEG).toFixed(2)}deg) rotateX(${(py * MAX_TILT_DEG).toFixed(2)}deg)`;
+  }
+
+  function handlePointerLeave() {
+    const el = wrapRef.current;
+    if (!el) return;
+    el.style.transition = RESET_TRANSITION;
+    el.style.transform = BASE_TRANSFORM;
+  }
+
   return (
-    <div className="relative" style={{ transformStyle: "preserve-3d", transform: "perspective(1000px) rotateY(-12deg)" }}>
+    <div
+      ref={wrapRef}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="relative cursor-default"
+      style={{ transformStyle: "preserve-3d", transform: BASE_TRANSFORM }}
+    >
       <div
         className="absolute inset-0 -z-10 blur-2xl"
         style={{ background: `radial-gradient(circle, ${color}55, transparent 70%)` }}
@@ -39,10 +92,12 @@ export function WorldTitleCube({ label, glyph, color }: { label: string; glyph: 
           transform: "translateZ(7px)",
         }}
       >
-        <span className="block font-mono text-xs uppercase tracking-wide" style={{ color }} aria-hidden>
-          {glyph}
-        </span>
-        <h1 className="mt-1 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">{label}</h1>
+        {glyph && (
+          <span className="block font-mono text-xs uppercase tracking-wide" style={{ color }} aria-hidden>
+            {glyph}
+          </span>
+        )}
+        <Heading className="mt-1 text-4xl font-bold uppercase tracking-tight text-white md:text-6xl">{label}</Heading>
       </div>
     </div>
   );

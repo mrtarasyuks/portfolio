@@ -23,6 +23,9 @@
   --glass-tint: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.15);
   --glass-specular: rgba(255, 255, 255, 0.4);
+  /* Less-transparent variant for glass surfaces that need to read as a solid-ish pane (homepage
+     drum carousel) rather than the airier default glass used for large panels. */
+  --glass-tint-strong: rgba(255, 255, 255, 0.14);
 
   --grid-margin: 1.25rem;
   --grid-max: 1440px;
@@ -51,6 +54,7 @@
   --glass-tint: rgba(10, 10, 11, 0.04);
   --glass-border: rgba(10, 10, 11, 0.12);
   --glass-specular: rgba(10, 10, 11, 0.22);
+  --glass-tint-strong: rgba(10, 10, 11, 0.09);
 }
 
 @media (min-width: 768px) {

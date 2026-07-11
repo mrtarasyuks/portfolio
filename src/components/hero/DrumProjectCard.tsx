@@ -22,7 +22,11 @@ export function DrumProjectCard({ project, locale, t }: { project: PortfolioProj
           transformOrigin: "left center",
         }}
       />
-      <GlassPanel className="relative p-5" style={{ transform: "translateZ(4px)" }}>
+      <GlassPanel
+        edgeDistortion
+        className="relative p-5"
+        style={{ transform: "translateZ(4px)", backgroundColor: "var(--glass-tint-strong)" }}
+      >
         <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-text-dim">
           <span>{worldBarLabel[project.world]}</span>
           <span>{project.year}</span>
@@ -44,9 +48,13 @@ export function DrumProjectCard({ project, locale, t }: { project: PortfolioProj
 
 export function DrumComingSoonCard({ label, world }: { label: string; world: ProjectWorld }) {
   return (
-    <div className="pointer-events-auto flex w-[250px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-line px-4 py-10 text-center select-none sm:w-[290px]">
+    <GlassPanel
+      edgeDistortion
+      className="pointer-events-auto flex w-[250px] flex-col items-center justify-center gap-2 border-dashed px-4 py-10 text-center select-none sm:w-[290px]"
+      style={{ backgroundColor: "var(--glass-tint-strong)" }}
+    >
       <span className="font-mono text-[10px] uppercase tracking-wide text-text-dim">{worldBarLabel[world]}</span>
       <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{label}</p>
-    </div>
+    </GlassPanel>
   );
 }

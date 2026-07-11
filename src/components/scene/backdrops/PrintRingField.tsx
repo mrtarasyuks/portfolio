@@ -132,7 +132,7 @@ export function PrintRingField({
 
   return (
     <group>
-      <FloorGrid color={color} opacity={opacity * 0.16} position={[0, -1.85, -5]} size={22} divisions={22} scrollSpeed={scrollSpeed} theme={theme} />
+      <FloorGrid color={color} opacity={opacity * 0.24} position={[0, -1.85, -5]} size={22} divisions={22} scrollSpeed={scrollSpeed} theme={theme} />
 
       <EqualizerBars anchorX={PRINT_X} anchorZ={PRINT_Z} opacity={opacity} scrollSpeed={scrollSpeed} />
       <EqualizerBars anchorX={RIGHT_VASE_A.x} anchorZ={RIGHT_VASE_A.z} opacity={opacity} scrollSpeed={scrollSpeed} />

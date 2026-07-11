@@ -35,12 +35,25 @@ export const uk: typeof en = {
     blockLabel: "Блок",
   },
   bioCard: {
-    role: "AI-креатор і розробник цифрових продуктів",
-    ageLabel: "Вік",
     age: "31",
-    countryLabel: "Локація",
-    hobbiesLabel: "Хобі",
-    hobbies: ["ШІ-відео", "Створення застосунків", "3D-друк", "Дизайн", "Футбол"],
+    experiences: [
+      {
+        title: "Проджект-менеджер",
+        description: "Перетворюю розмиті ідеї на чіткі плани — один зрозумілий результат, шлях до релізу й чесний скоуп.",
+      },
+      {
+        title: "Middle AI Developer",
+        description: "Будую мобільні й веб-продукти на основі AI — інтеграції Gemini/Claude, prompt-системи, серверні проксі.",
+      },
+      {
+        title: "Video Creator",
+        description: "Структуровані AI-пайплайни відео — від брифу до сторіборду й рендеру в Remotion, з реальною доставкою.",
+      },
+      {
+        title: "3D-моделювання + друк",
+        description: "Від Blender і Cinema 4D до нарізаного, надрукованого об'єкта — ідеї, що залишають екран.",
+      },
+    ],
   },
   connect: {
     cta: "Зв'язатись",
@@ -82,11 +95,13 @@ export const uk: typeof en = {
     ],
   },
   selectedWork: {
-    eyebrow: "ОБРАНІ РОБОТИ",
-    title: "Обрані роботи",
+    eyebrow: "МОЇ РОБОТИ",
+    title: "Мої роботи",
     intro: "Різні формати. Один підхід: знайти найскладнішу частину, побудувати систему й довести її ітераціями до робочого стану.",
     openCaseStudy: "Відкрити кейс",
     view: "Дивитись",
+    roleLabel: "Роль",
+    stackLabel: "Стек",
   },
   acrossLayers: {
     eyebrow: "МІЖ РІВНЯМИ",

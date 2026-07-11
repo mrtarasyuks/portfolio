@@ -2,6 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
+import { AdditiveBlending } from "three";
 import type { GridHelper, LineBasicMaterial } from "three";
 import type { ThemeMode } from "@/content/types";
 
@@ -9,6 +10,19 @@ import type { ThemeMode } from "@/content/types";
  * recolored," not a separate flat overlay, so this recolors the real scrolling GridHelper mesh
  * itself rather than drawing a second, static grid pattern behind the canvas. */
 const LIGHT_THEME_LINE_COLOR = "#0a0a0b";
+
+/**
+ * Two faint duplicate grids, offset by a fraction of a cell and additively blended, fake a
+ * thicker/brighter line. A real fatter `GridHelper` line isn't reliably possible — native WebGL
+ * `linewidth` is ignored by ANGLE/most GPUs, and pulling in Line2/fat-lines machinery was already
+ * rejected for the spotlight beam in an earlier pivot as too heavy for a decorative effect.
+ */
+const THICKNESS_JITTER = 0.035;
+const THICKNESS_OPACITY_RATIO = 0.45;
+const GLOW_OFFSETS: [number, number][] = [
+  [THICKNESS_JITTER, THICKNESS_JITTER],
+  [-THICKNESS_JITTER, -THICKNESS_JITTER],
+];
 
 /**
  * A faint grounding plane shared by all three worlds — gives their backdrops a floor instead of
@@ -38,34 +52,63 @@ export function FloorGrid({
   scrollSpeed?: number;
   theme?: ThemeMode;
 }) {
-  const ref = useRef<GridHelper>(null);
+  const mainRef = useRef<GridHelper>(null);
+  const glowRefs = useRef<(GridHelper | null)[]>([]);
   const offset = useRef(0);
   const cellSize = size / divisions;
   const lineColor = theme === "light" ? LIGHT_THEME_LINE_COLOR : color;
   // R3F recreates a `gridHelper` (disposing the old THREE.GridHelper and constructing a fresh one)
   // whenever its `args` array changes by value — the standard way to react to a toggle here, since
   // GridHelper bakes its line colors into a vertex-color buffer at construction time and can't have
-  // them patched after the fact the way a material's `color` property can.
+  // them patched after the fact the way a material's `color` property can. All three grids below
+  // share this same `args` reference so they recreate in sync.
   const args = useMemo<[number, number, string, string]>(
     () => [size, divisions, lineColor, lineColor],
     [size, divisions, lineColor]
   );
 
   useLayoutEffect(() => {
-    const grid = ref.current;
-    if (!grid) return;
-    const material = (Array.isArray(grid.material) ? grid.material[0] : grid.material) as LineBasicMaterial;
-    material.transparent = true;
-    material.toneMapped = false;
-    material.opacity = opacity;
+    const grid = mainRef.current;
+    if (grid) {
+      const material = (Array.isArray(grid.material) ? grid.material[0] : grid.material) as LineBasicMaterial;
+      material.transparent = true;
+      material.toneMapped = false;
+      material.opacity = opacity;
+    }
+    glowRefs.current.forEach((glow) => {
+      if (!glow) return;
+      const material = (Array.isArray(glow.material) ? glow.material[0] : glow.material) as LineBasicMaterial;
+      material.transparent = true;
+      material.toneMapped = false;
+      material.depthWrite = false;
+      material.blending = AdditiveBlending;
+      material.opacity = opacity * THICKNESS_OPACITY_RATIO;
+    });
   }, [opacity, lineColor]);
 
   useFrame((_, delta) => {
-    const grid = ref.current;
-    if (!grid || !scrollSpeed) return;
+    if (!scrollSpeed) return;
     offset.current = (offset.current + delta * scrollSpeed * 2) % cellSize;
-    grid.position.z = position[2] + offset.current;
+    if (mainRef.current) mainRef.current.position.z = position[2] + offset.current;
+    glowRefs.current.forEach((glow, i) => {
+      if (!glow) return;
+      glow.position.z = position[2] + offset.current + GLOW_OFFSETS[i][1];
+    });
   });
 
-  return <gridHelper ref={ref} args={args} position={position} />;
+  return (
+    <>
+      <gridHelper ref={mainRef} args={args} position={position} />
+      {GLOW_OFFSETS.map(([dx, dz], i) => (
+        <gridHelper
+          key={i}
+          ref={(el) => {
+            glowRefs.current[i] = el;
+          }}
+          args={args}
+          position={[position[0] + dx, position[1], position[2] + dz]}
+        />
+      ))}
+    </>
+  );
 }

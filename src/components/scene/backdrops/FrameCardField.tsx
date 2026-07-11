@@ -56,7 +56,7 @@ export function FrameCardField({
 
   return (
     <group>
-      <FloorGrid color={color} opacity={opacity * 0.14} position={[0, -1.85, -4]} size={24} divisions={24} scrollSpeed={scrollSpeed} theme={theme} />
+      <FloorGrid color={color} opacity={opacity * 0.22} position={[0, -1.85, -4]} size={24} divisions={24} scrollSpeed={scrollSpeed} theme={theme} />
 
       {FRAMES.map((f, i) => (
         <Float

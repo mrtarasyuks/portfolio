@@ -88,7 +88,7 @@ export function ServerColumnField({
 
   return (
     <group>
-      <FloorGrid color={color} opacity={opacity * 0.14} position={[0, -1.85, -5]} size={28} divisions={28} scrollSpeed={scrollSpeed} theme={theme} />
+      <FloorGrid color={color} opacity={opacity * 0.22} position={[0, -1.85, -5]} size={28} divisions={28} scrollSpeed={scrollSpeed} theme={theme} />
       {POSITIONS.map((pos, i) => (
         <mesh
           key={i}
@@ -97,7 +97,7 @@ export function ServerColumnField({
           }}
           position={[pos.x, pos.y, pos.z]}
         >
-          <cylinderGeometry args={[0.02, 0.02, pos.h, 6]} />
+          <cylinderGeometry args={[0.05, 0.05, pos.h, 8]} />
           <meshBasicMaterial color={color} transparent opacity={opacity * 0.35} />
         </mesh>
       ))}

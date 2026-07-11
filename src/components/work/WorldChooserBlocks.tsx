@@ -116,17 +116,30 @@ export function WorldChooserBlocks({ locale, t }: { locale: Locale; t: CopyDict 
                 style={{ transformStyle: "preserve-3d", transform: TILT_RESET }}
               >
                 <GlassPanel
-                  className="flex h-56 flex-col justify-between p-6 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-64"
+                  className="flex h-72 flex-col justify-between p-7 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-80 sm:p-8"
                   style={{ boxShadow: isTarget ? `0 0 90px -10px ${theme.signal}` : undefined }}
                 >
-                  <span className="font-mono text-2xl" style={{ color: theme.signal }} aria-hidden>
+                  {/* Large embossed/hollow watermark of the world's own name, tucked in the back corner — same technique as PageTitleWatermark, scoped to this one block so each of the three reads as a distinct large "signature" rather than three identically-sized generic rectangles. */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-4 -right-2 select-none whitespace-nowrap font-display text-7xl font-bold uppercase leading-none tracking-tight sm:text-8xl"
+                    style={{
+                      color: "transparent",
+                      WebkitTextStroke: `1px ${theme.signal}33`,
+                      textShadow: `0 0 40px ${theme.signal}1f`,
+                    }}
+                  >
+                    {t.orbit.worlds[w]}
+                  </span>
+
+                  <span className="relative font-mono text-4xl" style={{ color: theme.signal }} aria-hidden>
                     {GLYPH_BY_WORLD[w]}
                   </span>
-                  <div>
-                    <h2 className="text-xl font-medium text-text transition-colors group-hover:text-[var(--world-glow)]">
+                  <div className="relative">
+                    <h2 className="text-2xl font-medium text-text transition-colors group-hover:text-[var(--world-glow)]">
                       {t.orbit.worlds[w]}
                     </h2>
-                    <p className="mt-2 text-sm text-text-muted">{t.orbit.worldTagline[w]}</p>
+                    <p className="mt-2 text-sm text-text">{t.orbit.worldTagline[w]}</p>
                   </div>
                 </GlassPanel>
               </div>

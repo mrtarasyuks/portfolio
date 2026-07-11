@@ -13,3 +13,9 @@ export const BIO_CARD_PHOTO_BACK_SRC = "/img/cube-img-card02.jpg";
 export const BIO_CARD_PHOTO_LEFT_SRC = "/img/cube-img-card03.jpg";
 export const ABOUT_VIDEO_SRC_DARK = "/video/intro-dark.mp4";
 export const ABOUT_VIDEO_SRC_LIGHT = "/video/intro-white.mp4";
+
+/** Per-project logo, checked server-side the same way as the bio cube's photo slots — drop a file
+ * at this path and the project card's logo badge activates with zero further code changes. */
+export function projectLogoSrc(slug: string): string {
+  return `/img/logos/${slug}.png`;
+}

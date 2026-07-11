@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { SelectedWorkList } from "@/components/work/SelectedWorkList";
 import { WorldChooserBlocks } from "@/components/work/WorldChooserBlocks";
+import { WorldTitleCube } from "@/components/work/WorldTitleCube";
 import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { getCopy } from "@/content/copy";
 import { locales, type Locale } from "@/content/types";
@@ -28,16 +29,20 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ loca
       <PageTitleWatermark title={t.nav.work} accent={ACCENT} />
 
       <Container className="relative pt-20 md:pt-28">
-        <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.orbit.switchWorld}</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight text-text md:text-4xl">{t.nav.work}</h1>
+        <div className="flex flex-col items-center text-center">
+          <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.orbit.switchWorld}</p>
+          <div className="mt-6">
+            <WorldTitleCube label={t.nav.work} color={ACCENT} />
+          </div>
+        </div>
 
-        <div className="mt-10">
+        <div className="mt-12">
           <WorldChooserBlocks locale={l} t={t} />
         </div>
       </Container>
 
-      <div className="mt-20 md:mt-28">
-        <SelectedWorkList locale={l} headingTag="h2" />
+      <div className="mt-12 md:mt-16">
+        <SelectedWorkList locale={l} headingTag="h2" accent={ACCENT} />
       </div>
     </div>
   );
