@@ -81,6 +81,22 @@ export const uk: typeof en = {
     videosTitle: "Відео за категоріями",
     videosComingSoon: "Відео за категоріями з'являться тут незабаром.",
     uncategorized: "Інше",
+    categories: {
+      events: "Івенти",
+      interview: "Інтерв'ю",
+      promo: "Промо",
+      realisticCinematic: "Реалістичне кіно",
+      viralVideo: "Вірусні відео",
+    },
+  },
+  videoPlayer: {
+    play: "Відтворити",
+    pause: "Пауза",
+    mute: "Вимкнути звук",
+    unmute: "Увімкнути звук",
+    volume: "Гучність",
+    fullscreen: "Повний екран",
+    close: "Закрити",
   },
   rail: {
     label: "Між рівнями",

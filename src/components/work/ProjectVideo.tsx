@@ -1,21 +1,19 @@
-import { mediaUrl } from "@/lib/media";
+"use client";
 
-export function ProjectVideo({ src, poster, label }: { src: string; poster?: string; label?: string }) {
-  const resolved = mediaUrl(src);
-  if (!resolved) return null;
+import { useState } from "react";
+import { VideoCard } from "@/components/ui/VideoCard";
+import { VideoLightbox } from "@/components/ui/VideoLightbox";
+import type { CopyDict } from "@/content/copy";
+
+/** Case-study inline video — same uniform thumbnail + fullscreen custom player as the Video
+ * Creator gallery, so every video on the site opens the same way. */
+export function ProjectVideo({ src, label, t }: { src: string; label?: string; t: CopyDict }) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="border border-line bg-surface p-2">
-      {label && <p className="mb-2 px-2 pt-1 font-mono text-[11px] uppercase tracking-wide text-text-dim">{label}</p>}
-      <video
-        controls
-        preload="metadata"
-        poster={poster ? mediaUrl(poster) : undefined}
-        className="w-full"
-        src={resolved}
-      >
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    <>
+      <VideoCard src={src} label={label ?? ""} onOpen={() => setOpen(true)} />
+      {open && <VideoLightbox src={src} label={label} onClose={() => setOpen(false)} t={t} />}
+    </>
   );
 }

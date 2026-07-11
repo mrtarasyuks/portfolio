@@ -121,7 +121,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
           ?.filter((m) => m.kind === "video" && m.src)
           .map((m) => (
             <div key={m.src} className="mt-14 max-w-2xl">
-              <ProjectVideo src={m.src!} label={m.label} />
+              <ProjectVideo src={m.src!} label={m.label} t={t} />
             </div>
           ))}
 

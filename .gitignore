@@ -30,6 +30,11 @@
 # original, unoptimized source assets — keep locally, ship only the optimized version in public/
 /assets-source
 
+# Video Creator portfolio reel (3.5GB+, several files over GitHub's 100MB hard limit) — lives
+# locally for dev preview only (mediaUrl() falls back to /public when NEXT_PUBLIC_MEDIA_BASE_URL
+# is unset), real hosting is the separate Hetzner media server per docs/media-hosting.md.
+/public/video-creator
+
 # debug
 npm-debug.log*
 yarn-debug.log*

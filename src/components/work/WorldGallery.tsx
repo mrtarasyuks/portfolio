@@ -70,7 +70,7 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
         ) : world === "video" ? (
           <div className="space-y-16">
             <ToolsUsed t={t} />
-            <VideosByCategory projects={worldProjects} t={t} />
+            <VideosByCategory t={t} />
           </div>
         ) : worldProjects.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

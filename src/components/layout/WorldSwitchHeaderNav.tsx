@@ -30,7 +30,7 @@ export function WorldSwitchHeaderNav({ locale }: { locale: Locale }) {
     >
       <HeaderArrow direction="prev" label={t.orbit.prevLabel} onClick={prev} />
 
-      <span className="world-role whitespace-nowrap px-1 font-mono text-xs uppercase tracking-wide lg:hidden">
+      <span className="world-role whitespace-nowrap px-1.5 font-mono text-sm font-bold uppercase tracking-wide lg:hidden">
         {t.orbit.worlds[world]}{" "}
         <span className="text-text-dim">
           {activeIndex + 1}/{worlds.length}
@@ -46,7 +46,7 @@ export function WorldSwitchHeaderNav({ locale }: { locale: Locale }) {
             aria-selected={w === world}
             onClick={() => setWorld(w)}
             className={cn(
-              "world-tab cursor-pointer rounded-full border px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-wide shadow-sm transition-transform active:scale-95",
+              "world-tab cursor-pointer rounded-full border px-2.5 py-1.5 font-mono text-xs font-bold uppercase tracking-wide shadow-sm transition-transform active:scale-95",
               w === world
                 ? "bg-gradient-to-b from-[var(--glass-tint)] to-transparent"
                 : "border-line-strong bg-transparent text-text-muted hover:border-text-muted hover:text-text"

@@ -4,19 +4,33 @@ import { cn } from "@/lib/cn";
 import { useGridScroll } from "@/context/GridScrollContext";
 import type { CopyDict } from "@/content/copy";
 
+const PANEL_WIDTH = 150;
+
+function PowerGlyph() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+      <path d="M12 3v8" />
+      <path d="M6.3 6.3a8 8 0 1 0 11.4 0" />
+    </svg>
+  );
+}
+
 /**
- * A compact on/off toggle button (matching the header's other circular icon buttons) — toggling
- * it scrolls the floor grid under the avatar's platform, Tron-style, and drives each world's own
- * signature motion (Developers lamp fade, 3D equalizer vases, Video falling donuts). The speed
- * slider used to sit inline as a permanent full-width bar; it's now a small dropdown panel that
- * unrolls top-down from the button, visible only while the effect is on — the always-visible bar
- * was part of why the mobile header grew tall enough to visually overlap the avatar beneath it.
+ * A real on/off power button — gray when off, filled and glowing in the current world's signal
+ * color when on (matches a reference screenshot the user supplied). The speed slider used to pop
+ * out as an absolutely-positioned dropdown below the button — on short mobile viewports, where the
+ * header sits close above the avatar, that floating panel could reach down far enough to overlap
+ * it (and, being `position: absolute`, it also visually escaped over the world-switch nav's arrow
+ * button next to it, since absolute positioning ignores the flex-col stacking that keeps normal-
+ * flow siblings out of each other's way). It now expands in normal document flow instead — a
+ * width transition on an `overflow-hidden` wrapper, the classic CSS-only accordion technique —
+ * so opening it can only ever widen its own row, never float over anything else.
  */
 export function GridScrollControl({ color, t }: { color: string; t: CopyDict }) {
   const { on, speed, toggle, setSpeed } = useGridScroll();
 
   return (
-    <div className="relative">
+    <div className="flex items-center gap-2">
       <button
         type="button"
         role="switch"
@@ -24,30 +38,19 @@ export function GridScrollControl({ color, t }: { color: string; t: CopyDict }) 
         aria-label={t.gridScroll.toggle}
         onClick={toggle}
         className={cn(
-          "flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-all duration-150 active:scale-90",
-          on ? "border-transparent" : "border-line-strong bg-gradient-to-b from-surface-soft to-surface"
+          "flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-all duration-200 active:scale-90",
+          on ? "border-transparent text-white" : "border-line-strong bg-gradient-to-b from-surface-soft to-surface text-text-dim"
         )}
-        style={
-          on
-            ? { backgroundColor: color, boxShadow: `inset 0 2px 4px rgba(0,0,0,0.45), 0 0 10px ${color}99` }
-            : { boxShadow: "0 2px 0 rgba(0,0,0,0.5), 0 3px 5px rgba(0,0,0,0.3)" }
-        }
+        style={on ? { background: `linear-gradient(160deg, ${color}, ${color}bb)`, boxShadow: `0 0 22px -2px ${color}` } : undefined}
       >
-        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: on ? "#151300" : "var(--text-dim)" }} />
+        <PowerGlyph />
       </button>
 
-      <div
-        aria-hidden={!on}
-        className="pointer-events-none absolute right-0 top-full z-10 mt-2 overflow-hidden rounded-2xl border border-line-strong bg-gradient-to-b from-surface-soft to-surface shadow-[0_20px_40px_-15px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out"
-        style={{
-          transformOrigin: "top",
-          maxHeight: on ? 56 : 0,
-          opacity: on ? 1 : 0,
-          transform: on ? "scaleY(1)" : "scaleY(0.6)",
-        }}
-      >
-        <div className={cn("flex items-center gap-2 px-3 py-2.5", on && "pointer-events-auto")}>
-          <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-wide text-text-dim">{t.gridScroll.speed}</span>
+      <div className="overflow-hidden transition-all duration-300 ease-out" style={{ width: on ? PANEL_WIDTH : 0, opacity: on ? 1 : 0 }}>
+        <div
+          className="flex items-center whitespace-nowrap rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-3 py-2.5"
+          style={{ width: PANEL_WIDTH }}
+        >
           <input
             type="range"
             min={0.15}
@@ -58,7 +61,7 @@ export function GridScrollControl({ color, t }: { color: string; t: CopyDict }) 
             onChange={(e) => setSpeed(Number(e.target.value))}
             aria-label={t.gridScroll.speed}
             tabIndex={on ? 0 : -1}
-            className="h-1 w-24 cursor-pointer accent-current disabled:cursor-not-allowed"
+            className="h-1 w-full cursor-pointer accent-current disabled:cursor-not-allowed"
             style={{ color }}
           />
         </div>

@@ -79,6 +79,22 @@ export const en = {
     videosTitle: "Videos by category",
     videosComingSoon: "Categorized videos landing here soon.",
     uncategorized: "Other",
+    categories: {
+      events: "Events",
+      interview: "Interview",
+      promo: "Promo",
+      realisticCinematic: "Realistic Cinematic",
+      viralVideo: "Viral Video",
+    },
+  },
+  videoPlayer: {
+    play: "Play",
+    pause: "Pause",
+    mute: "Mute",
+    unmute: "Unmute",
+    volume: "Volume",
+    fullscreen: "Fullscreen",
+    close: "Close",
   },
   rail: {
     label: "Across layers",
