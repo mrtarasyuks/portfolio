@@ -30,10 +30,7 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ loca
 
       <Container className="relative pt-20 md:pt-28">
         <div className="flex flex-col items-center text-center">
-          <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.orbit.switchWorld}</p>
-          <div className="mt-6">
-            <WorldTitleCube label={t.nav.work} color={ACCENT} />
-          </div>
+          <WorldTitleCube label={t.nav.work} color={ACCENT} />
         </div>
 
         <div className="mt-12">

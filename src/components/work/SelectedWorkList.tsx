@@ -29,10 +29,7 @@ export function SelectedWorkList({
     <section id="work" className="relative">
       {showIntro && (
         <Container className="flex flex-col items-center pt-20 text-center md:pt-28">
-          <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.selectedWork.eyebrow}</p>
-          <div className="mt-6">
-            <WorldTitleCube label={t.selectedWork.title} color={accent} headingTag={headingTag} />
-          </div>
+          <WorldTitleCube label={t.selectedWork.title} color={accent} headingTag={headingTag} />
           <p className="mt-6 max-w-xl text-text-muted">
             <TypewriterText text={t.selectedWork.intro} startDelayMs={300} speedMs={12} />
           </p>

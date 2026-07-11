@@ -111,18 +111,25 @@ body {
     color 400ms ease;
 }
 
-@keyframes float-name {
+/** Subtle idle shake+bounce inviting a click — used by the "Let's connect" CTA while its burst menu is closed. */
+@keyframes cta-bounce {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-2px) rotate(-0.6deg);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-6px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(0.6deg);
   }
 }
 
-.animate-float-name {
-  animation: float-name 4s ease-in-out infinite;
+.animate-cta-bounce {
+  animation: cta-bounce 2s ease-in-out infinite;
 }
 
 @keyframes slide-up {
@@ -176,10 +183,22 @@ body {
   animation-iteration-count: infinite;
 }
 
-/* Per-world hero theming — vars set inline on .world-scope by HeroOrbitScene */
+/*
+ * Per-world hero theming — vars set inline on .world-scope by HeroOrbitScene/WorldGallery.
+ * `margin-top`/`padding-top` pull the element's own background up to paint behind the
+ * (transparent) fixed header instead of stopping at the header's bottom edge, then push the
+ * content back down by the same amount so nothing visually moves — otherwise the header's own
+ * padding area shows the plain `--bg` body color while this section paints a different `--w-bg`
+ * pale tint right below it, a seam that's invisible in dark theme (both are near-black) but
+ * visible as a light-colored strip in light theme. `--header-h` is published globally on
+ * `document.documentElement` by `HeaderHeightVar` (mounted once in the root layout), the same
+ * variable the hero canvas already uses for its own full-bleed-behind-header trick.
+ */
 .world-scope {
   background-color: var(--w-bg, var(--bg));
   transition: background-color 700ms ease;
+  margin-top: calc(-1 * var(--header-h, 0px));
+  padding-top: var(--header-h, 0px);
 }
 
 .world-role {

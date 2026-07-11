@@ -93,7 +93,6 @@ export const en = {
     ],
   },
   selectedWork: {
-    eyebrow: "MY WORK",
     title: "My work",
     intro: "Different mediums. One instinct: find the hard part, build the system, iterate until it holds together.",
     openCaseStudy: "Open case study",

@@ -1,6 +1,6 @@
 export const profile = {
   name: "Serhii Tarasiuk",
-  handle: "@mrtarasyuks",
+  handle: "@mrtarasyuk",
   email: "mrtarasyuks@gmail.com",
   location: "Kyiv, Ukraine",
   telegram: "https://t.me/mrtarasyuk",

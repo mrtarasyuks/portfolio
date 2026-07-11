@@ -6,7 +6,7 @@ import { MobileMenu } from "@/components/layout/MobileMenu";
 import { WorldSwitchHeaderNav } from "@/components/layout/WorldSwitchHeaderNav";
 import { HeroGridScrollBar } from "@/components/layout/HeroGridScrollBar";
 import { HeaderConnectButton } from "@/components/layout/HeaderConnectButton";
-import { profile } from "@/content/profile";
+import { HeaderLogoButton } from "@/components/layout/HeaderLogoButton";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 import { cn } from "@/lib/cn";
@@ -18,9 +18,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     <header className="relative z-50">
       <Container className="grid grid-cols-1 items-center gap-y-3 py-4 md:grid-cols-[1fr_auto_1fr] md:gap-x-4 md:py-3">
         <div className="flex items-center justify-between md:justify-self-start">
-          <HeaderPillLink href={`/${locale}`} variant="logo">
-            {profile.handle.replace(/^@/, "")}
-          </HeaderPillLink>
+          <HeaderLogoButton locale={locale} />
 
           <div className="flex items-center gap-3 md:hidden">
             <ThemeToggle t={t} />
@@ -46,23 +44,13 @@ export function SiteHeader({ locale }: { locale: Locale }) {
   );
 }
 
-function HeaderPillLink({
-  href,
-  children,
-  variant = "nav",
-}: {
-  href: string;
-  children: React.ReactNode;
-  variant?: "nav" | "logo";
-}) {
+function HeaderPillLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
       className={cn(
         "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface font-mono text-xs uppercase tracking-wide shadow-sm transition-all active:scale-95",
-        variant === "logo"
-          ? "px-4 py-1.5 text-sm normal-case tracking-wide text-text hover:border-signal hover:text-signal"
-          : "px-3 py-1.5 text-text-muted hover:border-text-muted hover:text-text"
+        "px-3 py-1.5 text-text-muted hover:border-text-muted hover:text-text"
       )}
     >
       {children}

@@ -7,7 +7,6 @@ import { WorldBackdrop } from "@/components/scene/WorldBackdrop";
 import { Avatar } from "@/components/scene/Avatar";
 import { CameraRig } from "@/components/scene/CameraRig";
 import { BioCard } from "@/components/scene/BioCard";
-import { HeaderHeightVar } from "@/components/layout/HeaderHeightVar";
 import { CopyEmailButton } from "@/components/ui/CopyEmailButton";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { ProjectSliderPanel } from "@/components/hero/ProjectSliderPanel";
@@ -71,7 +70,6 @@ export function HeroOrbitScene({
         {profile.name} — {t.hero.role}
       </h1>
 
-      <HeaderHeightVar />
       <div
         className="relative min-h-[560px] w-full overflow-hidden"
         style={{ marginTop: "calc(-1 * var(--header-h, 6rem))", height: "calc(86vh + var(--header-h, 6rem))" }}

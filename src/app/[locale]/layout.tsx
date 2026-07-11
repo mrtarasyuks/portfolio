@@ -5,6 +5,7 @@ import { locales, type Locale, type ThemeMode } from "@/content/types";
 import { buildMetadata } from "@/lib/seo";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { HeaderHeightVar } from "@/components/layout/HeaderHeightVar";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { WorldNavProvider } from "@/context/WorldNavContext";
 import { GridScrollProvider } from "@/context/GridScrollContext";
@@ -71,6 +72,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <WorldNavProvider>
             <GridScrollProvider>
               <SiteHeader locale={locale as Locale} />
+              <HeaderHeightVar />
               <main id="main" className="flex-1">
                 {children}
               </main>

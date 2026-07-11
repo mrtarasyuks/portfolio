@@ -28,7 +28,7 @@ export const BIO_CARD_ANCHOR: [number, number, number] = [-3.6, 0.15, 0.3];
  */
 const CARD_WIDTH = 540;
 const HALF_DEPTH = CARD_WIDTH / 2;
-const FACE_HEIGHT = 640;
+const FACE_HEIGHT = 720;
 const START_ANGLE_DEG = 26;
 const DRAG_SENSITIVITY_DEG = 0.3;
 const VELOCITY_DECAY = 3.2;
@@ -50,13 +50,13 @@ function CubeFace({ rotateDeg, children }: { rotateDeg: number; children: React.
 }
 
 /**
- * One uniform face for all four sides of the cube — a top "signage" plaque (age + country, styled
- * to look like a lit sign mounted on the block, per the ask), a photo half ("adapted", cropped to
- * fill rather than the old single-portrait's uncropped `bg-contain` — this intentionally supersedes
- * that earlier rule now that every face is a generic experience card, not one special headshot),
- * and a bold text half with the experience's title/description. Fixed `h-full`/`h-1/2` throughout
- * (not content-driven flow) so all four faces resolve to the exact same height regardless of each
- * description's length — the parent cube wrapper carries the one explicit `FACE_HEIGHT`.
+ * One uniform face for all four sides of the cube — a "signage" plaque (age + country, styled
+ * to look like a lit sign mounted on the block) standing fully above the face's top edge, a
+ * full-height "adapted" (cropped-to-fill) photo, and a text section overlaid near the bottom with
+ * a barely-transparent scrim so it reads as its own distinct panel over the photo rather than a
+ * half-height crop. `h-full` throughout (not content-driven flow) so all four faces resolve to the
+ * exact same height regardless of each description's length — the parent cube wrapper carries the
+ * one explicit `FACE_HEIGHT`.
  */
 function ExperienceFace({
   experience,
@@ -71,46 +71,46 @@ function ExperienceFace({
 }) {
   return (
     <div
-      className="relative flex h-full w-full flex-col bg-gradient-to-b from-[#18181c] to-[#0c0c0e] shadow-[0_60px_140px_-25px_rgba(0,0,0,0.85)]"
+      className="relative h-full w-full bg-gradient-to-b from-[#18181c] to-[#0c0c0e] shadow-[0_60px_140px_-25px_rgba(0,0,0,0.85)]"
       style={{ filter: `drop-shadow(0 0 26px ${color}45)` }}
     >
-      {/* Signage — straddles the top edge like a mounted sign, pushed proud of the face via translateZ. */}
+      {/* Signage — stands fully above the face's top edge, like a sign mounted on top of the block, pushed proud via translateZ. */}
       <div
-        className="absolute left-1/2 top-0 z-10 flex items-center gap-2 whitespace-nowrap rounded-full px-6 py-2.5"
+        className="absolute bottom-full left-1/2 z-10 mb-4 flex items-center gap-3 whitespace-nowrap rounded-full px-10 py-4"
         style={{
-          transform: "translate(-50%, -50%) translateZ(26px)",
+          transform: "translateX(-50%) translateZ(30px)",
           background: `linear-gradient(160deg, ${color}33, rgba(8,8,10,0.94))`,
           border: `1px solid ${color}70`,
-          boxShadow: `0 14px 32px -10px rgba(0,0,0,0.75), 0 0 26px -4px ${color}90, inset 0 1px 0 rgba(255,255,255,0.16)`,
+          boxShadow: `0 18px 40px -10px rgba(0,0,0,0.75), 0 0 36px -4px ${color}90, inset 0 1px 0 rgba(255,255,255,0.16)`,
         }}
       >
         <span
-          className="font-display text-2xl font-black leading-none text-white"
-          style={{ textShadow: "0 2px 0 rgba(0,0,0,0.55), 0 6px 14px rgba(0,0,0,0.65)" }}
+          className="font-display text-4xl font-black leading-none text-white"
+          style={{ textShadow: "0 3px 0 rgba(0,0,0,0.55), 0 8px 18px rgba(0,0,0,0.65)" }}
         >
           {age}
         </span>
-        <span className="font-mono text-[11px] font-semibold uppercase leading-none tracking-wide" style={{ color }}>
+        <span className="font-mono text-base font-semibold uppercase leading-none tracking-wide" style={{ color }}>
           {country}
         </span>
       </div>
 
-      {/* Top half — adapted (cropped-to-fill) photo. */}
+      {/* Full-height adapted (cropped-to-fill) photo. */}
       <div
-        className="h-1/2 w-full bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundColor: OPAQUE_FACE_BG,
           ...(experience.hasPhoto ? { backgroundImage: `url(${experience.photoSrc})` } : undefined),
         }}
       />
 
-      {/* Bottom half — big, bold role + short description. */}
+      {/* Text section overlaid near the bottom — barely-transparent scrim, not a half-height split. */}
       <div
-        className="flex h-1/2 flex-col justify-center gap-3 border-t px-8"
-        style={{ borderColor: `${color}40` }}
+        className="absolute inset-x-0 bottom-0 flex flex-col gap-2 px-8 py-6"
+        style={{ background: "rgba(8,8,10,0.82)", backdropFilter: "blur(10px)", borderTop: `1px solid ${color}40` }}
       >
         <h3 className="font-display text-[34px] font-black leading-[1.05] text-white">{experience.title}</h3>
-        <p className="text-lg font-semibold leading-snug text-white/80">{experience.description}</p>
+        <p className="text-lg font-semibold leading-snug text-white/85">{experience.description}</p>
       </div>
     </div>
   );
