@@ -84,6 +84,15 @@ npm run lint     # ESLint
 npm test         # Playwright suite (tests/*.spec.ts)
 ```
 
+## Деплой
+Продакшн: **https://serhiitarasiuk.space** (живий, задеплоєний з 2026-07-11).
+
+- **Хостинг**: той самий Hetzner-сервер, що вже несе `FrameForg`/`PromoVideo` користувача, через Coolify (v4.1.2). Окремий Coolify-проєкт `portfolio` → environment `production` → один Application-ресурс, збирається з кореневого `Dockerfile` (Build Pack: **Dockerfile**, не Nixpacks — репо вже має власний, під нього написаний multi-stage Dockerfile з Next.js standalone-виводом, порт 3000).
+- **Git**: GitHub `mrtarasyuks/portfolio`, гілка `main`. Coolify підключений напряму до цього репо (без окремого GitHub App — через простіший метод, деталі не критичні).
+- **DNS**: домен куплений на Namecheap, нейм-сервери лишені стандартними (**Namecheap BasicDNS**, не Custom/Cloudflare). У Namecheap Advanced DNS — два A-записи: `@` і `www`, обидва на IP Hetzner-сервера (`95.217.159.18`). Стандартний "Redirect Domain" forwarding, який Namecheap ставить за замовчуванням при реєстрації, був видалений — він конфліктував з A-записами.
+- **Workflow деплою** (усталений, повторюваний): зробити правки → `git commit` → `git push origin main` → користувач сам тисне **Redeploy** в Coolify UI (автодеплою по webhook немає, тож пуш сам по собі нічого не деплоїть). Claude комітить і пушить лише коли користувач явно про це просить (як завжди), але сам процес "коміт → пуш → користувач тисне Redeploy" — це вже нормальний, очікуваний фінальний крок кожної сесії правок, не разова дія.
+- **Відео-хостинг** (`NEXT_PUBLIC_MEDIA_BASE_URL`, `docs/media-hosting.md`) — ще НЕ налаштований окремий Coolify-ресурс з Caddy для відео; поточний деплой працює без нього (фолбек на `/public`). Наступний крок, коли дійдуть реальні відео-файли для кейс-стаді.
+
 ## Правила розробки
 - Компоненти — функціональні, TypeScript strict, без `any`
 - Кольори — Obsidian Signal token-система (не хардкодити hex), per-world акцент через `theme.signal` (`worldTheme.ts`); для light/dark chrome-теми — `--bg`/`--text`/`--surface`-і-т.д. CSS-змінні, не хардкодити hex
