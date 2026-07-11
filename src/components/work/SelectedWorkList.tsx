@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/Container";
 import { ProjectCardFlagship } from "@/components/work/ProjectCardFlagship";
 import { ProjectCardCompact } from "@/components/work/ProjectCardCompact";
+import { TypewriterText } from "@/components/ui/TypewriterText";
 import { projects } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
@@ -26,7 +27,9 @@ export function SelectedWorkList({
           <Heading className="mt-3 text-3xl font-medium tracking-tight text-text md:text-4xl">
             {t.selectedWork.title}
           </Heading>
-          <p className="mt-4 max-w-xl text-text-muted">{t.selectedWork.intro}</p>
+          <p className="mt-4 max-w-xl text-text-muted">
+            <TypewriterText text={t.selectedWork.intro} startDelayMs={300} speedMs={12} />
+          </p>
         </Container>
       )}
 

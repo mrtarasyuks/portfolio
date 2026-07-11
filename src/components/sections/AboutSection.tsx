@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { TypewriterText } from "@/components/ui/TypewriterText";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 
@@ -16,7 +17,7 @@ export function AboutSection({ locale }: { locale: Locale }) {
               key={i}
               className={i === 0 ? "font-serif-accent text-2xl leading-snug md:text-3xl" : "text-base leading-relaxed text-signal-ink/80 md:text-lg"}
             >
-              {paragraph}
+              <TypewriterText text={paragraph} startDelayMs={i * 900} speedMs={12} />
             </p>
           ))}
         </div>

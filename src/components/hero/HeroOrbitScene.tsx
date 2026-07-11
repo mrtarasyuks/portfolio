@@ -1,59 +1,62 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { WorldBackdrop } from "@/components/scene/WorldBackdrop";
 import { Avatar } from "@/components/scene/Avatar";
-import { AbstractFigure } from "@/components/scene/AbstractFigure";
-import { OrbitRing, type OrbitItem } from "@/components/scene/OrbitRing";
-import { OrbitProjectCard, OrbitComingSoonCard } from "@/components/scene/OrbitProjectCard";
+import { CameraRig } from "@/components/scene/CameraRig";
+import { BioCard } from "@/components/scene/BioCard";
+import { HeaderHeightVar } from "@/components/layout/HeaderHeightVar";
 import { CopyEmailButton } from "@/components/ui/CopyEmailButton";
+import { TypewriterText } from "@/components/ui/TypewriterText";
+import { ProjectSliderPanel } from "@/components/hero/ProjectSliderPanel";
+import { useWorldNav } from "@/context/WorldNavContext";
+import { useGridScroll } from "@/context/GridScrollContext";
+import { useTheme } from "@/context/ThemeContext";
+import { useMinWidth } from "@/hooks/useMinWidth";
 import { profile } from "@/content/profile";
 import { projects } from "@/content/projects";
-import { worlds, type Locale, type ProjectWorld } from "@/content/types";
+import { type Locale } from "@/content/types";
 import { getWorldTheme } from "@/content/worldTheme";
 import type { CopyDict } from "@/content/copy";
-import { cn } from "@/lib/cn";
 
 export function HeroOrbitScene({
   locale,
   t,
   reducedMotion = false,
+  hasPortrait,
+  hasPhotoRight,
+  hasPhotoBack,
+  hasPhotoLeft,
 }: {
   locale: Locale;
   t: CopyDict;
   reducedMotion?: boolean;
+  hasPortrait: boolean;
+  hasPhotoRight: boolean;
+  hasPhotoBack: boolean;
+  hasPhotoLeft: boolean;
 }) {
-  const [world, setWorld] = useState<ProjectWorld>("developers");
-  const [activeIndex, setActiveIndex] = useState(0);
-  const controlsRef = useRef<{ next: () => void; prev: () => void } | null>(null);
+  const { world, next, prev } = useWorldNav();
+  const { on: gridScrollOn, speed: gridScrollSpeed } = useGridScroll();
+  const { theme: siteTheme } = useTheme();
   const theme = getWorldTheme(world);
+  // The bio card and project panel are fixed-size Html/DOM-overlay elements — they can't respond
+  // to Tailwind breakpoints on their own 3D-anchored positioning, so they're skipped below md:
+  // rather than rendering clipped/cramped.
+  const showSidePanels = useMinWidth(768);
 
-  const items: OrbitItem[] = useMemo(() => {
-    const worldProjects = projects.filter((p) => p.world === world);
-    const cards: OrbitItem[] = worldProjects.map((project) => ({
-      key: project.slug,
-      render: () => <OrbitProjectCard project={project} locale={locale} t={t} />,
-    }));
-    const ghostSlots = Math.max(0, 3 - cards.length);
-    for (let i = 0; i < ghostSlots; i++) {
-      cards.push({
-        key: `${world}-ghost-${i}`,
-        render: () => <OrbitComingSoonCard label={t.orbit.comingSoon} world={world} />,
-      });
+  const worldProjects = useMemo(() => projects.filter((p) => p.world === world), [world]);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") prev();
+      else if (e.key === "ArrowRight") next();
     }
-    return cards;
-  }, [world, locale, t]);
-
-  function selectWorld(next: ProjectWorld) {
-    setWorld(next);
-    setActiveIndex(0);
-  }
-
-  const handleRegisterControls = useCallback((c: { next: () => void; prev: () => void }) => {
-    controlsRef.current = c;
-  }, []);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [next, prev]);
 
   const worldVars = {
     "--w-bg": theme.bg,
@@ -62,76 +65,51 @@ export function HeroOrbitScene({
   } as React.CSSProperties;
 
   return (
-    <section className="world-scope relative border-b border-line" style={worldVars}>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-[var(--grid-margin)] pt-8 font-mono text-xs uppercase tracking-wide text-text-dim">
-        <span>{t.hero.eyebrow}</span>
-        <span>{profile.location}</span>
-      </div>
+    <section className="world-scope world-light-surface relative border-b border-line" data-world={world} style={worldVars}>
+      {/* Name/role are visible on the bio card now — this stays for a11y/SEO (one real h1 per page) without duplicating them on screen. */}
+      <h1 className="sr-only">
+        {profile.name} — {t.hero.role}
+      </h1>
 
-      <div className="relative h-[86vh] min-h-[560px] w-full overflow-hidden">
-        <Canvas
-          camera={{ position: [0, 0.2, 9.5], fov: 42 }}
-          dpr={[1, 1.75]}
-          gl={{ antialias: true, alpha: true }}
-        >
+      <HeaderHeightVar />
+      <div
+        className="relative min-h-[560px] w-full overflow-hidden"
+        style={{ marginTop: "calc(-1 * var(--header-h, 6rem))", height: "calc(86vh + var(--header-h, 6rem))" }}
+      >
+        <div className="letterbox-bar letterbox-bar-top pointer-events-none absolute inset-x-0 top-0 z-20" aria-hidden />
+        <div className="letterbox-bar letterbox-bar-bottom pointer-events-none absolute inset-x-0 bottom-0 z-20" aria-hidden />
+        <Canvas camera={{ position: [0, 0.2, 9.5], fov: 42 }} dpr={[1, 1.75]} gl={{ antialias: true, alpha: true }}>
           <ambientLight intensity={0.35} />
           <directionalLight position={[6, 4, 6]} intensity={1.1} color="#f5f3ed" />
-          <WorldBackdrop world={world} paused={reducedMotion} />
-          <Suspense fallback={<AbstractFigure paused={reducedMotion} />}>
-            <Avatar paused={reducedMotion} signalColor={theme.signal} />
+          <CameraRig world={world} instant={reducedMotion} />
+          <WorldBackdrop world={world} paused={reducedMotion} scrollSpeed={gridScrollOn ? gridScrollSpeed : 0} theme={siteTheme} />
+          <Suspense fallback={null}>
+            <Avatar paused={reducedMotion} signalColor={theme.signal} world={world} />
           </Suspense>
-          <OrbitRing
-            items={items}
-            paused={reducedMotion}
-            radius={3.3}
-            centerY={-1.35}
-            onActiveChange={setActiveIndex}
-            registerControls={handleRegisterControls}
-          />
+          {showSidePanels && (
+            <BioCard
+              t={t}
+              color={theme.signal}
+              hasPortrait={hasPortrait}
+              hasPhotoRight={hasPhotoRight}
+              hasPhotoBack={hasPhotoBack}
+              hasPhotoLeft={hasPhotoLeft}
+              reducedMotion={reducedMotion}
+            />
+          )}
         </Canvas>
 
-        <div className="pointer-events-none absolute inset-x-0 top-[6%] z-10 flex flex-col items-center gap-3 px-4">
-          <div className="pointer-events-auto flex items-center gap-4 sm:gap-8">
-            <NavButton direction="prev" label={t.orbit.prevLabel} onClick={() => controlsRef.current?.prev()} />
-            <h1
-              className={cn(
-                "animate-float-name font-mono text-lg font-medium uppercase tracking-[0.2em] text-text drop-shadow-[0_0_20px_rgba(0,0,0,0.6)]",
-                "sm:text-xl md:text-2xl"
-              )}
-            >
-              {profile.name}
-            </h1>
-            <NavButton direction="next" label={t.orbit.nextLabel} onClick={() => controlsRef.current?.next()} />
+        {showSidePanels && (
+          <div className="pointer-events-none absolute inset-y-0 left-[74%] z-10 flex -translate-x-1/2 items-center">
+            <ProjectSliderPanel projects={worldProjects} world={world} locale={locale} t={t} />
           </div>
-
-          <div className="text-center">
-            <p className="world-role font-mono text-sm uppercase tracking-wide">{t.hero.role}</p>
-            <p className="mt-1 font-mono text-[11px] text-text-dim">
-              {String(activeIndex + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 border-t border-line py-8">
-        <div className="flex flex-wrap items-center justify-center gap-2" role="tablist" aria-label={t.orbit.switchWorld}>
-          {worlds.map((w) => (
-            <button
-              key={w}
-              type="button"
-              role="tab"
-              aria-selected={w === world}
-              onClick={() => selectWorld(w)}
-              className={cn(
-                "world-tab border px-4 py-2 font-mono text-xs uppercase tracking-wide",
-                w !== world && "border-line-strong text-text-muted hover:border-text-muted hover:text-text"
-              )}
-            >
-              {t.orbit.worlds[w]}
-            </button>
-          ))}
-        </div>
-        <p className="world-tagline max-w-sm text-center text-xs">{t.orbit.worldTagline[world]}</p>
+      <div className="flex flex-col items-center gap-2 border-t border-line py-6">
+        <p className="world-tagline max-w-sm text-center text-xs">
+          <TypewriterText text={t.orbit.worldTagline[world]} speedMs={10} />
+        </p>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-8 border-t border-line py-6">
@@ -145,32 +123,5 @@ export function HeroOrbitScene({
         <CopyEmailButton label={t.hero.ctaSecondary} copiedLabel={t.hero.emailCopied} />
       </div>
     </section>
-  );
-}
-
-function NavButton({
-  direction,
-  label,
-  onClick,
-}: {
-  direction: "prev" | "next";
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="world-nav-btn flex h-14 w-14 items-center justify-center rounded-full border border-line-strong bg-bg/60 text-text backdrop-blur-sm sm:h-16 sm:w-16"
-    >
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-        {direction === "prev" ? (
-          <path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="1.5" />
-        ) : (
-          <path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="1.5" />
-        )}
-      </svg>
-    </button>
   );
 }

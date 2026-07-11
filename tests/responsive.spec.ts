@@ -43,10 +43,10 @@ test("hero canvas mounts and reports no console errors", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("reduced motion disables auto-advance", async ({ page }) => {
+test("reduced motion still allows world switching", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/en");
   await page.waitForTimeout(500);
-  const first = await page.locator('[aria-label="Previous project"]').isVisible();
+  const first = await page.locator('[aria-label="Previous world"]').isVisible();
   expect(first).toBe(true);
 });

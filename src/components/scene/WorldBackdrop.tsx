@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import type { FogExp2 } from "three";
-import type { ProjectWorld } from "@/content/types";
+import type { FogExp2, Group } from "three";
+import type { ProjectWorld, ThemeMode } from "@/content/types";
 import { getWorldTheme } from "@/content/worldTheme";
 import { useLerpedColor } from "@/hooks/useLerpedColor";
 import { ServerColumnField } from "@/components/scene/backdrops/ServerColumnField";
@@ -17,10 +17,22 @@ const FIELD_BY_WORLD = {
 } as const;
 
 export const FADE_SECONDS = 0.6;
+/** How far the outgoing/incoming backdrop swirls during the crossfade — a shared rotation sweep sells "the world turning past you" instead of a flat dissolve. */
+const SWIRL_ANGLE = 0.5;
 
 type Layer = { world: ProjectWorld; id: number; born: number; direction: "in" | "out" };
 
-export function WorldBackdrop({ world, paused }: { world: ProjectWorld; paused: boolean }) {
+export function WorldBackdrop({
+  world,
+  paused,
+  scrollSpeed = 0,
+  theme: siteTheme = "dark",
+}: {
+  world: ProjectWorld;
+  paused: boolean;
+  scrollSpeed?: number;
+  theme?: ThemeMode;
+}) {
   const theme = getWorldTheme(world);
   const fogColor = useLerpedColor(theme.fog, 1.6);
   const fogRef = useRef<FogExp2>(null);
@@ -56,7 +68,7 @@ export function WorldBackdrop({ world, paused }: { world: ProjectWorld; paused: 
             direction={layer.direction}
             onFadeOutComplete={layer.direction === "out" ? () => handleFadeOutComplete(layer.id) : undefined}
           >
-            {(opacity) => <Field color={layerTheme.signal} opacity={opacity} paused={paused} />}
+            {(opacity) => <Field color={layerTheme.signal} opacity={opacity} paused={paused} scrollSpeed={scrollSpeed} theme={siteTheme} />}
           </FadingField>
         );
       })}
@@ -77,17 +89,28 @@ function FadingField({
   const opacityRef = useRef(initial);
   const [renderOpacity, setRenderOpacity] = useState(initial);
   const doneRef = useRef(false);
+  const groupRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
     const target = direction === "in" ? 1 : 0;
     opacityRef.current += (target - opacityRef.current) * Math.min(1, delta * (1 / FADE_SECONDS) * 3);
     if (Math.abs(opacityRef.current - target) < 0.01) opacityRef.current = target;
     setRenderOpacity(opacityRef.current);
+
+    // "in" arrives pre-rotated and un-rotates into place; "out" continues rotating the same
+    // way as it fades — together they read as one continuous swirl passing through, not a dissolve.
+    const progress = 1 - opacityRef.current;
+    if (groupRef.current) {
+      const sign = direction === "in" ? 1 : -1;
+      groupRef.current.rotation.y = sign * progress * SWIRL_ANGLE;
+      groupRef.current.scale.setScalar(direction === "in" ? 1 - progress * 0.12 : 1 + progress * 0.12);
+    }
+
     if (direction === "out" && opacityRef.current === 0 && !doneRef.current) {
       doneRef.current = true;
       onFadeOutComplete?.();
     }
   });
 
-  return <>{children(renderOpacity)}</>;
+  return <group ref={groupRef}>{children(renderOpacity)}</group>;
 }

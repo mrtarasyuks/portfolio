@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
+import { TypewriterText } from "@/components/ui/TypewriterText";
+import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { FoodyFlowDiagram } from "@/components/graphics/FoodyFlowDiagram";
 import { PipelineDiagram } from "@/components/graphics/PipelineDiagram";
 import { ProcessLoop } from "@/components/graphics/ProcessLoop";
@@ -10,6 +12,7 @@ import { projects, getProject } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 import { locales } from "@/content/types";
+import { getWorldTheme } from "@/content/worldTheme";
 import { buildMetadata } from "@/lib/seo";
 
 const diagrams: Record<string, React.ComponentType> = {
@@ -40,10 +43,13 @@ export default async function CaseStudyPage({ params }: PageProps) {
   const l = locale as Locale;
   const t = getCopy(l);
   const Diagram = diagrams[project.slug];
+  const accent = getWorldTheme(project.world).signal;
 
   return (
-    <article className="pb-24 pt-14 md:pb-32 md:pt-20">
-      <Container>
+    <article className="relative pb-24 pt-14 md:pb-32 md:pt-20">
+      <PageTitleWatermark title={project.shortTitle} accent={accent} />
+
+      <Container className="relative">
         <Link
           href={`/${l}/work`}
           className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-text-dim transition-colors hover:text-text"
@@ -92,7 +98,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </div>
 
         <div className="mt-14 max-w-2xl space-y-6 text-text-muted">
-          <p className="text-base leading-relaxed md:text-lg">{project.summary[l]}</p>
+          <p className="text-base leading-relaxed md:text-lg">
+            <TypewriterText text={project.summary[l]} startDelayMs={200} speedMs={10} />
+          </p>
         </div>
 
         {project.challenge && (

@@ -6,7 +6,19 @@ import { useMotionCapability } from "@/hooks/useWebglSupport";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 
-export function HeroSceneGate({ locale }: { locale: Locale }) {
+export function HeroSceneGate({
+  locale,
+  hasPortrait,
+  hasPhotoRight,
+  hasPhotoBack,
+  hasPhotoLeft,
+}: {
+  locale: Locale;
+  hasPortrait: boolean;
+  hasPhotoRight: boolean;
+  hasPhotoBack: boolean;
+  hasPhotoLeft: boolean;
+}) {
   const { ready, webglSupported, reducedMotion } = useMotionCapability();
   const t = getCopy(locale);
 
@@ -14,5 +26,15 @@ export function HeroSceneGate({ locale }: { locale: Locale }) {
     return <HeroIdentity locale={locale} />;
   }
 
-  return <HeroOrbitScene locale={locale} t={t} reducedMotion={reducedMotion} />;
+  return (
+    <HeroOrbitScene
+      locale={locale}
+      t={t}
+      reducedMotion={reducedMotion}
+      hasPortrait={hasPortrait}
+      hasPhotoRight={hasPhotoRight}
+      hasPhotoBack={hasPhotoBack}
+      hasPhotoLeft={hasPhotoLeft}
+    />
+  );
 }

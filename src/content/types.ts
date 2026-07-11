@@ -2,6 +2,8 @@ export const locales = ["en", "uk"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
+export type ThemeMode = "dark" | "light";
+
 export type LocalizedString = Record<Locale, string>;
 export type LocalizedList = Record<Locale, string[]>;
 
@@ -31,6 +33,8 @@ export type ProjectMedia = {
   label: string;
   /** Only for kind: "video" — set once the user supplies footage. */
   src?: string;
+  /** Only for kind: "video" — groups the Video-world gallery's "videos by category" section. */
+  category?: string;
 };
 
 export type ProjectLink = {
@@ -46,6 +50,8 @@ export type PortfolioProject = {
   status: ProjectStatus;
   tier: ProjectTier;
   world: ProjectWorld;
+  /** Only meaningful for world: "developers" — powers the Apps/Websites/Games filter tabs on /work/developers. */
+  developerCategory?: "app" | "website" | "game";
   role: string[];
   stack?: string[];
   capabilities?: string[];

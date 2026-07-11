@@ -1,38 +1,71 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { WorldSwitchHeaderNav } from "@/components/layout/WorldSwitchHeaderNav";
+import { HeroGridScrollBar } from "@/components/layout/HeroGridScrollBar";
+import { HeaderConnectButton } from "@/components/layout/HeaderConnectButton";
 import { profile } from "@/content/profile";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
+import { cn } from "@/lib/cn";
 
 export function SiteHeader({ locale }: { locale: Locale }) {
   const t = getCopy(locale);
 
   return (
-    <header className="relative z-50 border-b border-line">
-      <Container className="flex h-16 items-center justify-between">
-        <Link href={`/${locale}`} className="font-mono text-sm tracking-wide text-text hover:text-signal">
-          {profile.handle}
-        </Link>
+    <header className="relative z-50">
+      <Container className="grid grid-cols-1 items-center gap-y-3 py-4 md:grid-cols-[1fr_auto_1fr] md:gap-x-4 md:py-3">
+        <div className="flex items-center justify-between md:justify-self-start">
+          <HeaderPillLink href={`/${locale}`} variant="logo">
+            {profile.handle.replace(/^@/, "")}
+          </HeaderPillLink>
 
-        <nav className="hidden items-center gap-8 font-mono text-xs uppercase tracking-wide md:flex">
-          <Link href={`/${locale}/work`} className="text-text-muted transition-colors hover:text-text">
-            {t.nav.work}
-          </Link>
-          <Link href={`/${locale}/about`} className="text-text-muted transition-colors hover:text-text">
-            {t.nav.about}
-          </Link>
-          <Link href={`/${locale}#contact`} className="text-text-muted transition-colors hover:text-text">
-            {t.nav.contact}
-          </Link>
-        </nav>
+          <div className="flex items-center gap-3 md:hidden">
+            <ThemeToggle t={t} />
+            <LanguageSwitch locale={locale} />
+            <MobileMenu locale={locale} />
+          </div>
+        </div>
 
-        <div className="flex items-center gap-6">
+        <div className="order-last flex flex-col items-stretch gap-1.5 md:order-none md:flex-row md:items-center md:justify-self-center md:gap-3">
+          <HeroGridScrollBar locale={locale} />
+          <WorldSwitchHeaderNav locale={locale} />
+        </div>
+
+        <div className="hidden min-w-0 items-center justify-end gap-1.5 md:flex md:justify-self-end">
+          <HeaderPillLink href={`/${locale}/work`}>{t.nav.work}</HeaderPillLink>
+          <HeaderPillLink href={`/${locale}/about`}>{t.nav.about}</HeaderPillLink>
+          <HeaderConnectButton t={t} />
+          <ThemeToggle t={t} />
           <LanguageSwitch locale={locale} />
-          <MobileMenu locale={locale} />
         </div>
       </Container>
     </header>
+  );
+}
+
+function HeaderPillLink({
+  href,
+  children,
+  variant = "nav",
+}: {
+  href: string;
+  children: React.ReactNode;
+  variant?: "nav" | "logo";
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface font-mono text-xs uppercase tracking-wide shadow-sm transition-all active:scale-95",
+        variant === "logo"
+          ? "px-4 py-1.5 text-sm normal-case tracking-wide text-text hover:border-signal hover:text-signal"
+          : "px-3 py-1.5 text-text-muted hover:border-text-muted hover:text-text"
+      )}
+    >
+      {children}
+    </Link>
   );
 }

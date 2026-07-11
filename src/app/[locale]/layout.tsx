@@ -1,9 +1,14 @@
 import { Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import { locales, type Locale } from "@/content/types";
+import { cookies } from "next/headers";
+import { locales, type Locale, type ThemeMode } from "@/content/types";
 import { buildMetadata } from "@/lib/seo";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { AmbientBackground } from "@/components/ui/AmbientBackground";
+import { WorldNavProvider } from "@/context/WorldNavContext";
+import { GridScrollProvider } from "@/context/GridScrollContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "../globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -44,9 +49,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
 
+  const cookieStore = await cookies();
+  const initialTheme: ThemeMode = cookieStore.get("theme")?.value === "light" ? "light" : "dark";
+
   return (
     <html
       lang={locale}
+      data-theme={initialTheme}
       className={`${instrumentSans.variable} ${instrumentSerif.variable} ${plexMono.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
@@ -57,11 +66,18 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         >
           Skip to content
         </a>
-        <SiteHeader locale={locale as Locale} />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter locale={locale as Locale} />
+        <ThemeProvider initialTheme={initialTheme}>
+          <AmbientBackground />
+          <WorldNavProvider>
+            <GridScrollProvider>
+              <SiteHeader locale={locale as Locale} />
+              <main id="main" className="flex-1">
+                {children}
+              </main>
+            </GridScrollProvider>
+          </WorldNavProvider>
+          <SiteFooter locale={locale as Locale} />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@ export const en = {
   nav: {
     work: "Work",
     about: "About",
-    contact: "Contact",
+    contact: "Connect",
   },
   hero: {
     eyebrow: "PORTFOLIO / 2026",
@@ -17,18 +17,55 @@ export const en = {
     worlds: {
       "3d": "3D",
       video: "Video Creator",
-      developers: "Developers",
+      developers: "Developer",
     },
     worldTagline: {
       "3d": "Blender, Cinema 4D, 3ds Max, and prints that leave the screen.",
       video: "Storyboards, generative pipelines, and Remotion delivery.",
       developers: "Apps, websites, and AI automation — no-code to full-code.",
     },
-    prevLabel: "Previous project",
-    nextLabel: "Next project",
+    back: "Back",
+    prevLabel: "Previous world",
+    nextLabel: "Next world",
     viewProject: "View case study",
     comingSoon: "More work landing here soon",
     switchWorld: "Switch world",
+    blockLabel: "Block",
+  },
+  bioCard: {
+    role: "AI Creator & Product Builder",
+    ageLabel: "Age",
+    age: "31",
+    countryLabel: "Base",
+    hobbiesLabel: "Hobbies",
+    hobbies: ["AI video", "App development", "3D printing", "Design", "Football"],
+  },
+  connect: {
+    cta: "Let's connect",
+    telegram: "Telegram",
+    email: "Email",
+    twitter: "Twitter",
+  },
+  gridScroll: {
+    toggle: "Grid scroll",
+    speed: "Speed",
+  },
+  theme: {
+    switchToLight: "Switch to light theme",
+    switchToDark: "Switch to dark theme",
+  },
+  developersFilter: {
+    all: "All",
+    apps: "Apps",
+    websites: "Websites",
+    games: "Games",
+  },
+  videoWorld: {
+    toolsTitle: "Tools I use",
+    toolsComingSoon: "Tool list landing here soon.",
+    videosTitle: "Videos by category",
+    videosComingSoon: "Categorized videos landing here soon.",
+    uncategorized: "Other",
   },
   rail: {
     label: "Across layers",
@@ -111,9 +148,9 @@ export const en = {
     eyebrow: "ABOUT",
     title: "About",
     body: [
-      "I am a multidisciplinary builder from Ukraine working across AI products, mobile apps, generative media, automation, and 3D.",
-      "I learn by building. A product problem may take me from UX logic to Supabase, from a camera workflow to an AI proxy, from a storyboard to a generative video pipeline, or from Blender to a physical print.",
-      "The common thread is simple: I like turning vague ideas into systems that work.",
+      "I'm Serhii — a builder based in Kyiv. I move between AI products, mobile apps, video, automation, and 3D, depending on where the problem takes me.",
+      "Most of what I know, I picked up by actually building things: figuring out the UX, wiring up Supabase, turning a camera into an AI-powered workflow, or taking a model from Blender to a real, physical print.",
+      "What ties it all together is pretty simple — I like taking a messy idea and turning it into something that actually works.",
     ],
   },
   contact: {

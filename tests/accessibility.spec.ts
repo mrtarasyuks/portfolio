@@ -7,11 +7,11 @@ test.describe("accessibility", () => {
     await expect(page.getByRole("link", { name: "Skip to content" })).toBeAttached();
   });
 
-  test("nav buttons have accessible labels", async ({ page }) => {
+  test("world-switch nav buttons have accessible labels", async ({ page }) => {
     await page.goto("/en");
     await page.waitForTimeout(1000);
-    await expect(page.getByRole("button", { name: "Previous project" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Next project" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Previous world" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Next world" })).toBeVisible();
   });
 
   test("keyboard can reach and activate the primary CTA", async ({ page }) => {

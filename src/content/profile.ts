@@ -1,8 +1,10 @@
 export const profile = {
-  name: "Serega Tarasyuk",
+  name: "Serhii Tarasiuk",
   handle: "@mrtarasyuks",
   email: "mrtarasyuks@gmail.com",
-  location: "Ukraine",
-  /** Kept off until explicitly confirmed by Serega — see docs/content-evidence.md */
+  location: "Kyiv, Ukraine",
+  telegram: "https://t.me/mrtarasyuk",
+  twitter: "https://x.com/berleco",
+  /** Kept off until explicitly confirmed by Serhii — see docs/content-evidence.md */
   availabilityConfirmed: false,
 } as const;
