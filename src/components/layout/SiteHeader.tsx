@@ -59,10 +59,10 @@ function HeaderPillLink({ href, children }: { href: string; children: React.Reac
     <Link
       href={href}
       className={cn(
-        "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-3 py-2 font-mono text-lg uppercase tracking-wide text-text-muted shadow-sm transition-all",
+        "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-3 py-2 font-display text-base font-bold uppercase tracking-normal text-text-muted shadow-[0_0_20px_-12px_var(--signal)] transition-all",
         // `bg-none` clears the gradient's `background-image` first — otherwise it keeps painting
         // over the solid `bg-signal` `background-color` and the fill never actually shows.
-        "hover:border-signal hover:bg-none hover:bg-signal hover:text-signal-ink",
+        "hover:border-signal hover:bg-none hover:bg-signal hover:text-signal-ink hover:shadow-[0_0_30px_-8px_var(--signal)]",
         "active:scale-95 active:border-signal active:bg-none active:bg-signal active:text-signal-ink active:shadow-[0_0_30px_-8px_var(--signal)]"
       )}
     >

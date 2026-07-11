@@ -135,6 +135,13 @@ export const en = {
     roleLabel: "Role",
     stackLabel: "Stack",
   },
+  caseStudy: {
+    hardPart: "The hard part",
+    summary: "Overview",
+    approach: "Approach",
+    demo: "Walkthrough",
+    verificationNote: "Verification note",
+  },
   capabilities: {
     eyebrow: "CAPABILITIES",
     title: "Evidence, not percentages",

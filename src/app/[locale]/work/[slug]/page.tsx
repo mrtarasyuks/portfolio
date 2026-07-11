@@ -1,7 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
+import { LogoBadge } from "@/components/work/LogoBadge";
+import { WorldTitleCube } from "@/components/work/WorldTitleCube";
+import { BackToWorkButton } from "@/components/work/BackToWorkButton";
+import { StaggerFadeIn } from "@/components/ui/StaggerFadeIn";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { FoodyFlowDiagram } from "@/components/graphics/FoodyFlowDiagram";
@@ -13,6 +17,8 @@ import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 import { locales } from "@/content/types";
 import { getWorldTheme } from "@/content/worldTheme";
+import { projectLogoSrc } from "@/content/assetPaths";
+import { publicAssetExists } from "@/lib/publicAsset";
 import { buildMetadata } from "@/lib/seo";
 
 const diagrams: Record<string, React.ComponentType> = {
@@ -35,6 +41,32 @@ export async function generateMetadata({ params }: PageProps) {
   return { ...meta, title: `${project.shortTitle} — ${meta.title}` };
 }
 
+/** Light-glow glass card recipe shared by Role/Stack/Challenge/Diagram/Video/Approach — one step
+ * down from the Summary card's heavier `edgeDistortion` treatment, so the page reads as a clear
+ * hierarchy (Summary is the one guaranteed block on every project, so it gets the loudest frame). */
+function cardStyle(accent: string): React.CSSProperties {
+  return {
+    background: `linear-gradient(160deg, ${accent}14, var(--glass-tint))`,
+    boxShadow: `0 30px 80px -24px ${accent}40`,
+  };
+}
+
+function Chip({ label, accent }: { label: string; accent: string }) {
+  return (
+    <span
+      className="rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide"
+      style={{
+        borderColor: `${accent}4d`,
+        background: `linear-gradient(160deg, ${accent}26, rgba(255,255,255,0.02))`,
+        color: accent,
+        boxShadow: `0 0 20px -8px ${accent}80`,
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 export default async function CaseStudyPage({ params }: PageProps) {
   const { locale, slug } = await params;
   const project = getProject(slug);
@@ -44,122 +76,171 @@ export default async function CaseStudyPage({ params }: PageProps) {
   const t = getCopy(l);
   const Diagram = diagrams[project.slug];
   const accent = getWorldTheme(project.world).signal;
+  const hasLogo = publicAssetExists(projectLogoSrc(project.slug));
+  const videoMedia = project.media?.filter((m) => m.kind === "video" && m.src) ?? [];
+
+  let stepIndex = 0;
+  const next = () => stepIndex++;
 
   return (
     <article className="relative pb-24 pt-14 md:pb-32 md:pt-20">
       <PageTitleWatermark title={project.shortTitle} accent={accent} />
 
-      <Container className="relative">
-        <Link
-          href={`/${l}/work`}
-          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-text-dim transition-colors hover:text-text"
-        >
-          ← {t.selectedWork.title}
-        </Link>
+      <Container className="relative flex flex-col items-center pb-14 text-center md:pb-20">
+        <StaggerFadeIn index={next()}>
+          <div className="flex items-center justify-center gap-4 sm:gap-6">
+            <BackToWorkButton locale={l} t={t} />
+            {/* Hidden below `sm`: the badge + its gap push this row past a 320px viewport
+                (measured, not guessed — Playwright reported 334px of content in a 320px frame). */}
+            <div className="hidden sm:block">
+              <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={accent} />
+            </div>
+            <WorldTitleCube label={project.shortTitle} color={accent} />
+          </div>
+        </StaggerFadeIn>
 
-        <div className="mt-8 flex items-center gap-4 font-mono text-xs text-text-dim">
-          <ProjectStatusBadge status={project.status} labels={t.status} />
-          <span>{project.year}</span>
-        </div>
+        <StaggerFadeIn index={next()}>
+          <div className="mt-8 flex items-center justify-center gap-4 font-mono text-xs text-text-dim">
+            <ProjectStatusBadge status={project.status} labels={t.status} />
+            <span>{project.year}</span>
+          </div>
+        </StaggerFadeIn>
 
-        <h1 className="mt-4 max-w-3xl text-3xl font-medium leading-tight tracking-tight text-text md:text-5xl">
-          {project.title}
-        </h1>
-
-        <p className="mt-6 max-w-xl text-lg text-text-muted">{project.oneLine[l]}</p>
+        <p className="mt-6 max-w-xl text-lg text-text-muted">
+          <TypewriterText text={project.oneLine[l]} startDelayMs={300} speedMs={12} />
+        </p>
 
         {project.links && project.links.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-3">
-            {project.links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-line-strong px-6 py-3 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-10 grid grid-cols-2 gap-6 border-y border-line py-6 font-mono text-[11px] uppercase tracking-wide md:grid-cols-4">
-          <div>
-            <p className="mb-2 text-text-dim">Role</p>
-            <ul className="space-y-1 text-text-muted">
-              {project.role.map((r) => (
-                <li key={r}>{r}</li>
+          <StaggerFadeIn index={next()}>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              {project.links.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-mono text-sm font-semibold uppercase tracking-wide transition-transform hover:scale-105 active:scale-95"
+                  style={{ backgroundColor: accent, color: "#0c0c0e", boxShadow: `0 16px 40px -12px ${accent}90` }}
+                >
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
+                  {link.label}
+                </a>
               ))}
-            </ul>
-          </div>
-          {project.stack && (
-            <div>
-              <p className="mb-2 text-text-dim">Stack</p>
-              <ul className="space-y-1 text-text-muted">
-                {project.stack.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
             </div>
+          </StaggerFadeIn>
+        )}
+      </Container>
+
+      <div
+        className="pulse-line mx-auto h-px w-full max-w-[1440px] bg-line-strong"
+        style={{ "--pulse-color": accent } as React.CSSProperties}
+        aria-hidden
+      />
+
+      <Container className="relative pt-14 md:pt-20">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <StaggerFadeIn index={next()}>
+            <GlassPanel className="h-full p-6 md:p-8" style={cardStyle(accent)}>
+              <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.selectedWork.roleLabel}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {project.role.map((r) => (
+                  <Chip key={r} label={r} accent={accent} />
+                ))}
+              </div>
+            </GlassPanel>
+          </StaggerFadeIn>
+
+          {project.stack && (
+            <StaggerFadeIn index={next()}>
+              <GlassPanel className="h-full p-6 md:p-8" style={cardStyle(accent)}>
+                <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.selectedWork.stackLabel}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.stack.map((s) => (
+                    <Chip key={s} label={s} accent={accent} />
+                  ))}
+                </div>
+              </GlassPanel>
+            </StaggerFadeIn>
           )}
-          <div>
-            <p className="mb-2 text-text-dim">Year</p>
-            <p className="text-text-muted">{project.year}</p>
-          </div>
-          <div>
-            <p className="mb-2 text-text-dim">Status</p>
-            <p className="text-text-muted">{t.status[project.status]}</p>
-          </div>
         </div>
 
-        <div className="mt-14 max-w-2xl space-y-6 text-text-muted">
-          <p className="text-base leading-relaxed md:text-lg">
-            <TypewriterText text={project.summary[l]} startDelayMs={200} speedMs={10} />
-          </p>
-        </div>
+        <StaggerFadeIn index={next()} className="mt-4 block">
+          <GlassPanel
+            edgeDistortion
+            className="p-8 md:p-12"
+            style={{
+              background: `linear-gradient(155deg, ${accent}14, var(--glass-tint))`,
+              boxShadow: `0 40px 100px -30px ${accent}55, 0 20px 60px -15px rgba(0,0,0,0.6)`,
+            }}
+          >
+            <p className="text-base leading-relaxed text-text-muted md:text-lg">
+              <TypewriterText text={project.summary[l]} startDelayMs={200} speedMs={10} />
+            </p>
+          </GlassPanel>
+        </StaggerFadeIn>
 
         {project.challenge && (
-          <div className="mt-14 max-w-2xl">
-            <h2 className="font-mono text-xs uppercase tracking-wide text-text-dim">The hard part</h2>
-            <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">{project.challenge[l]}</p>
-          </div>
+          <StaggerFadeIn index={next()} className="mt-4 block">
+            <GlassPanel className="p-6 md:p-8" style={cardStyle(accent)}>
+              <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.caseStudy.hardPart}</p>
+              <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">{project.challenge[l]}</p>
+            </GlassPanel>
+          </StaggerFadeIn>
         )}
 
         {Diagram && (
-          <div className="mt-14">
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-wide text-text-dim">System</h2>
-            <Diagram />
-          </div>
+          <StaggerFadeIn index={next()} className="mt-4 block">
+            <GlassPanel className="p-4 md:p-6" style={cardStyle(accent)}>
+              <Diagram />
+            </GlassPanel>
+          </StaggerFadeIn>
         )}
 
-        {project.media
-          ?.filter((m) => m.kind === "video" && m.src)
-          .map((m) => (
-            <div key={m.src} className="mt-14 max-w-2xl">
+        {videoMedia.map((m) => (
+          <StaggerFadeIn key={m.src} index={next()} className="mt-4 block">
+            <GlassPanel className="p-6 md:p-8" style={cardStyle(accent)}>
+              <p className="mb-4 font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.caseStudy.demo}</p>
               <ProjectVideo src={m.src!} label={m.label} t={t} />
-            </div>
-          ))}
+            </GlassPanel>
+          </StaggerFadeIn>
+        ))}
 
         {project.approach && (
-          <div className="mt-14 max-w-2xl">
-            <h2 className="font-mono text-xs uppercase tracking-wide text-text-dim">Approach</h2>
-            <ul className="mt-4 space-y-3">
-              {project.approach[l].map((item) => (
-                <li key={item} className="flex gap-3 text-text-muted">
-                  <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-signal" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <StaggerFadeIn index={next()} className="mt-4 block">
+            <GlassPanel className="p-6 md:p-8" style={cardStyle(accent)}>
+              <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.caseStudy.approach}</p>
+              <ul className="mt-4 space-y-3">
+                {project.approach[l].map((item, i) => (
+                  <li key={item} className="flex items-center gap-3 text-text-muted">
+                    <span
+                      aria-hidden
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[10px]"
+                      style={{
+                        background: `linear-gradient(160deg, ${accent}33, rgba(255,255,255,0.03))`,
+                        color: accent,
+                        boxShadow: `0 0 16px -4px ${accent}90`,
+                      }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </GlassPanel>
+          </StaggerFadeIn>
         )}
 
         {project.verificationNote && (
-          <div className="mt-14 max-w-2xl border-l-2 border-line-strong pl-6">
-            <p className="font-mono text-xs uppercase tracking-wide text-text-dim">Verification note</p>
-            <p className="mt-3 text-sm text-text-muted">{project.verificationNote[l]}</p>
-          </div>
+          <StaggerFadeIn index={next()} className="mt-4 block">
+            <div
+              className="border-l-2 pl-6"
+              style={{ borderColor: `${accent}66`, boxShadow: `-8px 0 24px -18px ${accent}` }}
+            >
+              <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{t.caseStudy.verificationNote}</p>
+              <p className="mt-3 text-sm text-text-muted">{project.verificationNote[l]}</p>
+            </div>
+          </StaggerFadeIn>
         )}
       </Container>
     </article>

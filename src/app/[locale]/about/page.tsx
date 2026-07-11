@@ -71,7 +71,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <AboutVideoPanel
             hasVideoDark={hasVideoDark}
             hasVideoLight={hasVideoLight}
-            className="mx-auto aspect-[9/16] h-[62vh] min-h-[420px] w-auto justify-self-center md:h-[80vh] md:min-h-[560px] md:-mt-16 lg:-mt-24"
+            className="mx-auto aspect-[9/16] h-[62vh] min-h-[420px] w-auto justify-self-center md:h-[80vh] md:min-h-[560px] md:-mt-16 lg:-mt-20"
           />
         </div>
       </Container>

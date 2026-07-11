@@ -137,6 +137,13 @@ export const uk: typeof en = {
     roleLabel: "Роль",
     stackLabel: "Стек",
   },
+  caseStudy: {
+    hardPart: "Найскладніша частина",
+    summary: "Огляд",
+    approach: "Підхід",
+    demo: "Демо",
+    verificationNote: "Примітка щодо перевірки",
+  },
   capabilities: {
     eyebrow: "МОЖЛИВОСТІ",
     title: "Докази, а не відсотки",
