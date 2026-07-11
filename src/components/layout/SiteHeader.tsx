@@ -22,12 +22,11 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
           <div className="flex items-center gap-3 md:hidden">
             <ThemeToggle t={t} />
-            <LanguageSwitch locale={locale} />
             <MobileMenu locale={locale} />
           </div>
         </div>
 
-        <div className="order-last flex flex-col items-stretch gap-1.5 md:order-none md:flex-row md:items-center md:justify-self-center md:gap-3">
+        <div className="order-last flex flex-col items-center gap-1.5 md:order-none md:flex-row md:justify-self-center md:gap-3">
           <HeroGridScrollBar locale={locale} />
           <WorldSwitchHeaderNav locale={locale} />
         </div>
@@ -49,8 +48,11 @@ function HeaderPillLink({ href, children }: { href: string; children: React.Reac
     <Link
       href={href}
       className={cn(
-        "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface font-mono text-xs uppercase tracking-wide shadow-sm transition-all active:scale-95",
-        "px-3 py-1.5 text-text-muted hover:border-text-muted hover:text-text"
+        "cursor-pointer rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-3 py-2 font-mono text-lg uppercase tracking-wide text-text-muted shadow-sm transition-all",
+        // `bg-none` clears the gradient's `background-image` first — otherwise it keeps painting
+        // over the solid `bg-signal` `background-color` and the fill never actually shows.
+        "hover:border-signal hover:bg-none hover:bg-signal hover:text-signal-ink",
+        "active:scale-95 active:border-signal active:bg-none active:bg-signal active:text-signal-ink active:shadow-[0_0_30px_-8px_var(--signal)]"
       )}
     >
       {children}

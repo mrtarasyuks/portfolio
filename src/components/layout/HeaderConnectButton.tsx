@@ -34,8 +34,12 @@ export function HeaderConnectButton({ t }: { t: CopyDict }) {
         aria-expanded={open}
         aria-haspopup="true"
         className={cn(
-          "cursor-pointer rounded-full border bg-gradient-to-b from-surface-soft to-surface px-3 py-1.5 font-mono text-xs uppercase tracking-wide shadow-sm transition-all active:scale-95",
-          open ? "border-signal text-signal" : "border-line-strong text-text-muted hover:border-text-muted hover:text-text"
+          "cursor-pointer rounded-full border px-3 py-2 font-mono text-lg uppercase tracking-wide shadow-sm transition-all active:scale-95",
+          open
+            ? // No gradient class here at all — layering a solid `bg-signal` under a `bg-gradient-to-b`
+              // `background-image` would just hide the fill behind the (opaque) gradient again.
+              "border-signal bg-signal text-signal-ink shadow-[0_0_30px_-8px_var(--signal)]"
+            : "border-line-strong bg-gradient-to-b from-surface-soft to-surface text-text-muted hover:border-signal hover:bg-none hover:bg-signal hover:text-signal-ink"
         )}
       >
         {t.nav.contact}

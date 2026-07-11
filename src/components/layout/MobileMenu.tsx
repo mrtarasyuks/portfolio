@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { profile } from "@/content/profile";
+import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 import type { Locale } from "@/content/types";
 import { getCopy } from "@/content/copy";
 
@@ -56,6 +57,10 @@ export function MobileMenu({ locale }: { locale: Locale }) {
               </a>
             </li>
           </ul>
+
+          <div className="mt-6 border-t border-line pt-6">
+            <LanguageSwitch locale={locale} />
+          </div>
         </nav>
       )}
     </div>

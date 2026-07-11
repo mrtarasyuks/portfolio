@@ -2,7 +2,19 @@
 
 Synthesis of Phase A discovery (ux-portfolio-architect, portfolio-story-editor, brand-art-director), reconciled into one direction. Where the three disagreed, this section is the tie-break — implementation follows this file, not the raw agent output.
 
-## 2026-07-11 (fourteenth pivot): bio cube full-bleed photos, header logo glow, About page rework, connect-button redesign, header/hero background seam fix
+## 2026-07-11 (fifteenth pivot): mobile header overlap fix, grid-scroll collapsed to a dropdown, language switch folded into the mobile menu, bigger nav pills
+
+Reported bug: on mobile, the grid-scroll bar and the three world-switch buttons sat low enough in the header to visually overlap the avatar underneath. Root cause — the header's center group (`HeroGridScrollBar` + `WorldSwitchHeaderNav`) stacks as full-width rows on mobile (`flex-col`), and the grid-scroll bar was a permanently-visible full-width slider, pushing the header's total stacked height tall enough to cross into where the avatar renders (the header sits at `z-50` above the canvas). Fixed at the source, not by nudging offsets:
+
+**`GridScrollControl.tsx` rewritten**: the always-visible `w-full`/`md:w-[130px]` toggle+slider bar is gone, replaced by just the circular on/off toggle button (same footprint as the header's other icon buttons). The speed slider is now a small dropdown panel (`absolute right-0 top-full`, `scaleY`/`max-height`/opacity transition) that unrolls top-down next to the button only while the effect is on — the header's static footprint on every route is now just one button, not a bar.
+
+**World-switch nav centered**: the center group's mobile `items-stretch` (which stretched `WorldSwitchHeaderNav`'s pill to full width, leaving its prev/label/next content left-aligned inside the extra space) changed to `items-center` — the pill now shrinks to its content and the whole cluster centers as a block, no separate change needed inside `WorldSwitchHeaderNav.tsx` itself.
+
+**Language switch folded into the mobile menu**: `LanguageSwitch` removed from the mobile icon row (down to just `ThemeToggle` + `MobileMenu`, one fewer element competing for space) and rendered instead inside `MobileMenu.tsx`'s dropdown panel, below the nav links behind a divider.
+
+**Work/About/Connect enlarged to match the logo button, with real hover/press fill** — hit two real bugs shipping this, not guesses:
+1. `hover:bg-signal`/`active:bg-signal` alone did nothing visually — the base pill's `bg-gradient-to-b from-surface-soft to-surface` sets `background-image`, a different CSS property than `background-color`, and an opaque gradient image keeps painting over a solid background-color regardless of which one a hover variant changes. Fixed with `hover:bg-none`/`active:bg-none` (clears the gradient's `background-image`) alongside `hover:bg-signal` (sets the color) — and for `HeaderConnectButton`'s `open` state, by not applying the gradient classes there at all rather than trying to override them.
+2. A literal same-size-as-the-logo (`px-8 py-3 text-lg`) pass on all three pills (Work/About/Connect) plus the existing theme/language icons overflowed the header's right grid column into the center column at 1280px — Playwright's default test viewport, and a genuinely common laptop width — caught by `header prev/next arrows cycle worlds` failing with "subtree intercepts pointer events," the exact click-blocking failure mode this file has documented before for header collisions. Diagnosed by measuring actual `getBoundingClientRect()`s of the "Next world" button vs the "Work" link (not guessing), landing on `px-3 py-2` (same `text-lg` font size as the logo button — the height/scale read as "big" — just less horizontal padding, since three pills compound padding-width three times over where the logo button only pays that cost once) as the smallest reduction that clears the overlap with real margin.
 
 Five independent asks, mostly refinement on top of the thirteenth pivot's ship.
 
