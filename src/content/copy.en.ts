@@ -23,7 +23,7 @@ export const en = {
       developers: "Developer",
     },
     worldTagline: {
-      "3d": "Blender, Cinema 4D, 3ds Max, and prints that leave the screen.",
+      "3d": "Blender, Cinema 4D, 3ds Max — modeled, sliced, and printed for real.",
       video: "Storyboards, generative pipelines, and Remotion delivery.",
       developers: "Apps, websites, and AI automation — no-code to full-code.",
     },
@@ -33,7 +33,6 @@ export const en = {
     viewProject: "View case study",
     comingSoon: "More work landing here soon",
     switchWorld: "Switch world",
-    blockLabel: "Block",
   },
   extraWork: {
     games: {
@@ -69,9 +68,10 @@ export const en = {
       },
       {
         title: "3D Modelling + Print",
-        description: "Blender to Cinema 4D to a sliced, printed object — ideas that leave the screen.",
+        description: "From a Blender model to a sliced file to a print that actually has to hold together.",
       },
     ],
+    explore: "Explore work",
   },
   connect: {
     cta: "Let's connect",
@@ -118,13 +118,13 @@ export const en = {
   rail: {
     label: "Across layers",
     nodes: [
-      { id: "product", label: "PRODUCT", proof: "UX logic, onboarding, release readiness" },
-      { id: "mobile", label: "MOBILE", proof: "Expo / React Native / Supabase" },
-      { id: "ai", label: "AI", proof: "Gemini / Claude, fallback logic, server-side proxy" },
-      { id: "video", label: "VIDEO", proof: "Storyboards, Remotion, generative pipelines" },
-      { id: "3d", label: "3D", proof: "Blender, slicing, FDM printing" },
-      { id: "automation", label: "AUTOMATION", proof: "Webhooks, Telegram bots, Edge Functions" },
-      { id: "deploy", label: "DEPLOY", proof: "GitHub / Coolify / Hetzner / Cloudflare" },
+      { id: "product", label: "PRODUCT", proof: "Feature scope that holds up past the happy path" },
+      { id: "mobile", label: "MOBILE", proof: "Native-feeling apps built in Expo, backed by Supabase" },
+      { id: "ai", label: "AI", proof: "A primary model with a backup that kicks in automatically" },
+      { id: "video", label: "VIDEO", proof: "One brief becomes a finished video, not a raw generation" },
+      { id: "3d", label: "3D", proof: "A model that has to survive being sliced and printed" },
+      { id: "automation", label: "AUTOMATION", proof: "Work that runs on a webhook, not a to-do list" },
+      { id: "deploy", label: "DEPLOY", proof: "Self-hosted infrastructure, not a managed platform" },
     ],
   },
   selectedWork: {
@@ -144,34 +144,34 @@ export const en = {
   },
   capabilities: {
     eyebrow: "CAPABILITIES",
-    title: "Evidence, not percentages",
+    title: "Seven areas, and the real tools behind each one.",
     groups: [
       {
-        label: "Product systems, not isolated screens",
+        label: "Decisions that don't show up in a screenshot",
         items: ["Feature architecture", "Onboarding thinking", "Monetization boundaries", "Release readiness", "Iterative feedback"],
       },
       {
-        label: "Mobile products from interaction to backend",
+        label: "Where the tap becomes a database write",
         items: ["Expo / React Native", "TypeScript", "Navigation", "OTA updates", "Supabase", "Widgets"],
       },
       {
-        label: "AI as product infrastructure",
+        label: "AI that keeps working when the model doesn't",
         items: ["Claude", "Gemini", "Structured outputs", "Fallback logic", "Server-side proxy", "Vision & voice"],
       },
       {
-        label: "Generative media with production discipline",
+        label: "Generated footage, edited like real footage",
         items: ["Veo / Kling", "Storyboards", "Continuity", "Shot design", "Remotion", "AI music workflows"],
       },
       {
-        label: "Small systems that remove manual work",
+        label: "The parts I don't do by hand anymore",
         items: ["Supabase Edge Functions", "Cloudflare Workers", "Webhooks", "Telegram bots"],
       },
       {
-        label: "I care about the path to production",
+        label: "Getting it live is part of the job, not someone else's problem",
         items: ["GitHub", "Coolify", "Hetzner", "Cloudflare", "Push-to-deploy"],
       },
       {
-        label: "From pixels to physical objects",
+        label: "Modeling doesn't end until the print does",
         items: ["Blender", "Cinema 4D", "3ds Max", "FDM printing", "Bambu Studio", "Physical iteration"],
       },
     ],
@@ -183,7 +183,7 @@ export const en = {
     stages: [
       { index: "01", title: "Find the real problem", body: "I reduce a vague idea to one useful user action and one clear outcome." },
       { index: "02", title: "Build the system, not only the screen", body: "I map data, states, edge cases, AI behavior, backend boundaries, and the path to deployment." },
-      { index: "03", title: "Use agents aggressively, not blindly", body: "Claude Code, Codex, and specialized AI workflows accelerate execution. Project memory, constraints, review, and verification keep the work coherent." },
+      { index: "03", title: "Let agents execute, keep the judgment calls", body: "Claude Code and Codex handle the mechanical parts — scaffolding, repetitive edits, boilerplate. Every change still gets reviewed against project memory and constraints before it ships." },
       { index: "04", title: "Iterate in public reality", body: "Real devices, real API limits, weird edge cases, store requirements, broken generations, and failed prints are part of the process." },
       { index: "05", title: "Ship, observe, refine", body: "Push, deploy, test, collect feedback, fix what matters, repeat." },
     ],
@@ -191,7 +191,7 @@ export const en = {
   agentNative: {
     eyebrow: "AGENT-NATIVE, PRODUCT-LED",
     title: "Agent-native, product-led",
-    body: "I use AI coding agents as a development environment, not a one-shot code generator. I keep project memory, split work into stages, review behavior, and push changes through a real Git and deployment workflow.",
+    body: "Every change follows the loop below: an intent, project memory, one agent turn, a check on a real device or browser, then Git and deploy. Feedback from that becomes the next intent.",
     loop: ["INTENT", "PROJECT MEMORY", "AGENT", "IMPLEMENTATION", "REVIEW", "REAL DEVICE / BROWSER", "GIT", "DEPLOY", "FEEDBACK"],
   },
   about: {

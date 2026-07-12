@@ -22,14 +22,14 @@ export function HeroIdentity({ locale }: { locale: Locale }) {
             {t.hero.headline}
           </h1>
 
-          <p className="mt-6 font-mono text-sm uppercase tracking-wide text-signal">{t.hero.role}</p>
+          <p className="mt-6 font-mono text-sm uppercase tracking-wide text-signal-text">{t.hero.role}</p>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-text-muted md:text-lg">{t.hero.body}</p>
 
           <div className="mt-10 flex flex-wrap items-center gap-8">
             <Link
               href={`/${locale}/work`}
-              className="group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
+              className="group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal-text"
             >
               <span aria-hidden className="inline-block h-px w-4 bg-current transition-all group-hover:w-6" />
               {t.hero.ctaPrimary}

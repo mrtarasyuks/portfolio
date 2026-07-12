@@ -17,10 +17,11 @@ test.describe("orbit worlds", () => {
     await expect(page.getByText("3D Lab", { exact: true }).first()).toBeVisible();
 
     // Video Creator has no case-study projects of its own (genres/categories only) — its drum
-    // carousel falls back to numbered placeholder slots.
+    // carousel falls back to a single "coming soon" card instead of ghost-padding to a fixed
+    // count.
     await page.getByRole("tab", { name: "Video Creator" }).click();
     await page.waitForTimeout(1200);
-    await expect(page.getByText("Block 1", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("More work landing here soon", { exact: true }).first()).toBeVisible();
   });
 
   test("header prev/next arrows cycle worlds", async ({ page }) => {

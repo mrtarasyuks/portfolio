@@ -47,6 +47,13 @@ test("reduced motion still allows world switching", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/en");
   await page.waitForTimeout(500);
-  const first = await page.locator('[aria-label="Previous world"]').isVisible();
+  // WorldSwitchHeaderNav now renders twice (mobile row + desktop-centered column, same
+  // dual-render-by-breakpoint pattern this codebase already uses for HeroGridScrollBar/FlagIcon).
+  // A raw attribute selector matches both DOM copies regardless of which is `display:none` at the
+  // current viewport, and `.first()` picks by DOM order, not visibility — coincidentally the
+  // mobile (hidden, at this test's default desktop viewport) copy. `getByRole` is accessibility-
+  // tree-aware and excludes hidden elements, same as the other header tests in this suite already
+  // rely on.
+  const first = await page.getByRole("button", { name: "Previous world" }).isVisible();
   expect(first).toBe(true);
 });

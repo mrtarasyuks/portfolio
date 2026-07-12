@@ -16,6 +16,19 @@
   --signal: #ffd21f;
   --signal-soft: #e9c524;
   --signal-ink: #151300;
+  /* Text-safe variant of --signal — identical to it in dark theme, darkened in the light-theme
+     override below. --signal itself stays a fixed-purpose accent (glow/border/background wash,
+     tuned to read on near-black surfaces) and is never swapped per theme; --signal-text exists
+     specifically for foreground TEXT, which needs real contrast against light-theme's near-white
+     surfaces that a raw #ffd21f can't provide. */
+  --signal-text: var(--signal);
+
+  /* Per-world text-safe accents, same reasoning as --signal-text above, one per ProjectWorld
+     signal color (see src/content/worldTheme.ts). Dark-theme default equals each world's own
+     `signal` hex; the light-theme override further down darkens each for contrast. */
+  --developers-signal-text: #ffd21f;
+  --world-3d-signal-text: #ff6a2c;
+  --video-signal-text: #2de0c2;
 
   --line: rgba(255, 255, 255, 0.12);
   --line-strong: rgba(255, 255, 255, 0.22);
@@ -55,6 +68,15 @@
   --glass-border: rgba(10, 10, 11, 0.12);
   --glass-specular: rgba(10, 10, 11, 0.22);
   --glass-tint-strong: rgba(10, 10, 11, 0.09);
+
+  /* Darkened per-world accents for foreground text — same hue family as each world's `signal`,
+     pulled down in lightness for real contrast against this theme's near-white surfaces. Backgrounds/
+     borders/glows keep using the raw `signal` hex (translucent low-opacity fills read fine in both
+     themes); only literal text color routes through these. */
+  --signal-text: #7a5d00;
+  --developers-signal-text: #7a5d00;
+  --world-3d-signal-text: #a83e10;
+  --video-signal-text: #0d7d6c;
 }
 
 @media (min-width: 768px) {
@@ -85,6 +107,7 @@
   --color-signal: var(--signal);
   --color-signal-soft: var(--signal-soft);
   --color-signal-ink: var(--signal-ink);
+  --color-signal-text: var(--signal-text);
 
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
@@ -240,22 +263,74 @@ body {
   animation: marquee-right 32s linear infinite;
 }
 
-/* A brief glow visits each step of the Agent-Native pipeline in sequence, then loops — "the agent
-   is here now," moving step to step. Same total-duration-with-staggered-delay technique as the
-   pulse-sweep divider, just per-block instead of one continuous line. */
-@keyframes agent-pulse {
+/* Five genuinely different idle animations for the Agent-Native pipeline's steps (cycled by index
+   so adjacent steps never share one) — smooth continuous loops, not a hard on/off flash. Each pairs
+   a distinct motion with a softer breathing glow than the old single shared keyframe. */
+@keyframes agent-glow-breathe {
   0%,
   100% {
     box-shadow: 0 0 0px 0px transparent;
     border-color: var(--line-strong);
   }
-  4% {
-    box-shadow: 0 0 30px 2px var(--signal);
+  50% {
+    box-shadow: 0 0 28px 2px var(--signal);
     border-color: var(--signal);
   }
-  9% {
+}
+
+@keyframes agent-float {
+  0%,
+  100% {
+    transform: translateY(0);
     box-shadow: 0 0 0px 0px transparent;
     border-color: var(--line-strong);
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px -10px var(--signal);
+    border-color: var(--signal);
+  }
+}
+
+@keyframes agent-scale-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px 0px transparent;
+    border-color: var(--line-strong);
+  }
+  50% {
+    transform: scale(1.07);
+    box-shadow: 0 0 22px 0px var(--signal);
+    border-color: var(--signal);
+  }
+}
+
+@keyframes agent-tilt {
+  0%,
+  100% {
+    transform: rotate(0deg);
+    box-shadow: 0 0 0px 0px transparent;
+    border-color: var(--line-strong);
+  }
+  50% {
+    transform: rotate(-4deg);
+    box-shadow: 0 8px 20px -8px var(--signal);
+    border-color: var(--signal);
+  }
+}
+
+@keyframes agent-hue-drift {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+    box-shadow: 0 0 18px -4px var(--signal);
+    border-color: var(--signal);
+  }
+  50% {
+    filter: hue-rotate(45deg);
+    box-shadow: 0 0 24px -2px var(--signal);
+    border-color: var(--signal);
   }
 }
 

@@ -14,7 +14,7 @@ export default function LocaleNotFound() {
         <p className="mt-4 max-w-md text-text-muted">{t.notFound.body}</p>
         <Link
           href={`/${defaultLocale}`}
-          className="group mt-8 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
+          className="group mt-8 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal-text"
         >
           <span aria-hidden className="inline-block h-px w-4 bg-current transition-all group-hover:w-6" />
           {t.notFound.cta}

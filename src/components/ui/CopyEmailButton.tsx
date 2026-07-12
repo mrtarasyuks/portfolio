@@ -30,7 +30,7 @@ export function CopyEmailButton({
       type="button"
       onClick={handleCopy}
       className={cn(
-        "group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text-muted transition-colors hover:text-signal",
+        "group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text-muted transition-colors hover:text-signal-text",
         className
       )}
     >

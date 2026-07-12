@@ -18,12 +18,12 @@ export function Workflow({ locale }: { locale: Locale }) {
           </div>
 
           <div className="md:col-span-7">
-            <ol className="flex flex-col">
+            <ol className="flex flex-col gap-6 md:gap-8">
               {stages.map((stage, i) => (
                 <StaggerFadeIn key={stage.index} index={i}>
                   <li className="group flex gap-5">
                     <div className="flex flex-col items-center">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-signal/50 bg-gradient-to-b from-signal/20 to-transparent font-mono text-xs font-bold text-signal shadow-[0_0_18px_-4px_var(--signal)]">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-signal/50 bg-gradient-to-b from-signal/20 to-transparent font-mono text-xs font-bold text-signal-text shadow-[0_0_18px_-4px_var(--signal)]">
                         {stage.index}
                       </span>
                       {i < stages.length - 1 && (

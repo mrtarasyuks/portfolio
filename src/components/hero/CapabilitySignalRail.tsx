@@ -52,7 +52,7 @@ export function CapabilitySignalRail({ nodes, label }: { nodes: RailNode[]; labe
                 <span
                   className={cn(
                     "font-mono text-sm tracking-wide transition-colors duration-300",
-                    isActive ? "text-signal" : "text-text-muted"
+                    isActive ? "text-signal-text" : "text-text-muted"
                   )}
                 >
                   {node.label}

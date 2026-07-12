@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { mediaUrl } from "@/lib/media";
+import { useInView } from "@/hooks/useInView";
 
 /**
  * A uniform-aspect thumbnail card, regardless of the source clip's own orientation (this gallery
@@ -14,6 +16,14 @@ import { mediaUrl } from "@/lib/media";
  * as a plain non-interactive `<div>` instead — required once a whole category block becomes one
  * `<Link>` (a nested `<button>` inside a `<Link>` would be invalid/broken click semantics), and it
  * also drops the hover play-icon overlay, which would be misleading on a clip that isn't clickable.
+ *
+ * Autoplay cards only actually load/play once scrolled near the viewport (`useInView`), not on
+ * mount — a page like `/work/video` mounts up to a dozen autoplaying cards at once, most of them
+ * below the fold; loading and decoding all of them immediately was the real cause of a reported
+ * "hangs when it starts" jank. Playback is driven imperatively via a ref (this codebase's
+ * established pattern for continuous/dynamic media state, same idiom `VideoLightbox` already uses
+ * for volume/mute) rather than the `autoPlay` attribute, since that attribute only takes effect on
+ * initial mount and can't react to `inView` changing later.
  */
 export function VideoCard({
   src,
@@ -26,14 +36,25 @@ export function VideoCard({
   onOpen?: () => void;
   autoPlay?: boolean;
 }) {
+  const [wrapRef, inView] = useInView<HTMLElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const shouldPlay = autoPlay && inView;
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !autoPlay) return;
+    if (inView) v.play().catch(() => {});
+    else v.pause();
+  }, [autoPlay, inView]);
+
   const video = (
     <video
+      ref={videoRef}
       src={mediaUrl(src)}
       muted
       playsInline
-      autoPlay={autoPlay}
       loop={autoPlay}
-      preload={autoPlay ? "auto" : "metadata"}
+      preload={shouldPlay ? "auto" : "metadata"}
       tabIndex={-1}
       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       aria-hidden
@@ -48,7 +69,10 @@ export function VideoCard({
 
   if (!onOpen) {
     return (
-      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-line-strong bg-black shadow-sm">
+      <div
+        ref={wrapRef as React.RefObject<HTMLDivElement | null>}
+        className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-line-strong bg-black shadow-sm"
+      >
         {video}
         {caption}
       </div>
@@ -57,6 +81,7 @@ export function VideoCard({
 
   return (
     <button
+      ref={wrapRef as React.RefObject<HTMLButtonElement | null>}
       type="button"
       onClick={onOpen}
       className="group relative aspect-[4/3] w-full cursor-pointer overflow-hidden rounded-xl border border-line-strong bg-black text-left shadow-sm transition-transform active:scale-[0.98]"

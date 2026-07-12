@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Html } from "@react-three/drei";
 import { profile } from "@/content/profile";
 import {
@@ -9,7 +9,9 @@ import {
   BIO_CARD_PHOTO_BACK_SRC,
   BIO_CARD_PHOTO_LEFT_SRC,
 } from "@/content/assetPaths";
+import { BioCardDetailModal } from "@/components/scene/BioCardDetailModal";
 import type { CopyDict } from "@/content/copy";
+import type { Locale, ProjectWorld } from "@/content/types";
 
 /**
  * Left side, roughly chest height. `distanceFactor` is unchanged from the original tuning (7.2)
@@ -33,10 +35,22 @@ const START_ANGLE_DEG = 26;
 const DRAG_SENSITIVITY_DEG = 0.3;
 const VELOCITY_DECAY = 3.2;
 const OPAQUE_FACE_BG = "#101013";
+/** Pointer movement (px) below which a pointerdown→pointerup counts as a click on the front face
+ * rather than a drag — same threshold idiom `ProjectSliderPanel`'s drum carousel already uses to
+ * tell a flick-to-spin from a plain click. */
+const CLICK_DRAG_THRESHOLD_PX = 4;
 
 type SpinState = { value: number; velocity: number };
 
-type Experience = { title: string; description: string; photoSrc: string; hasPhoto: boolean };
+type Experience = {
+  title: string;
+  description: string;
+  photoSrc: string;
+  hasPhoto: boolean;
+  /** Real site section this experience maps to, for the detail overlay's "Explore" link — `null`
+   * for faces with no direct world mapping (Project Manager isn't a `ProjectWorld`). */
+  world: ProjectWorld | null;
+};
 
 function CubeFace({ rotateDeg, children }: { rotateDeg: number; children: React.ReactNode }) {
   return (
@@ -116,8 +130,26 @@ function ExperienceFace({
   );
 }
 
+/** Which of the 4 faces (by their index in `faces` below) currently faces the camera, given the
+ * cube's live Y rotation — the face whose own `rotateDeg` plus the group's spin lands closest to 0
+ * (mod 360) is the one actually visible/readable right now, not showing its back. */
+function frontFaceIndex(spinValue: number, rotateDegs: number[]): number {
+  let bestIndex = 0;
+  let bestDelta = Infinity;
+  for (let i = 0; i < rotateDegs.length; i++) {
+    const effective = (((spinValue + rotateDegs[i]) % 360) + 360) % 360;
+    const delta = Math.abs(effective > 180 ? effective - 360 : effective);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      bestIndex = i;
+    }
+  }
+  return bestIndex;
+}
+
 export function BioCard({
   t,
+  locale,
   color,
   hasPortrait,
   hasPhotoRight,
@@ -126,6 +158,7 @@ export function BioCard({
   reducedMotion = false,
 }: {
   t: CopyDict;
+  locale: Locale;
   color: string;
   hasPortrait: boolean;
   hasPhotoRight: boolean;
@@ -136,14 +169,17 @@ export function BioCard({
   const spinRef = useRef<HTMLDivElement>(null);
   const spin = useRef<SpinState>({ value: START_ANGLE_DEG, velocity: 0 });
   const dragging = useRef(false);
+  const dragStarted = useRef(false);
+  const pointerDownX = useRef(0);
   const lastX = useRef(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const [pm, aiDev, videoCreator, printMaker] = t.bioCard.experiences;
   const faces: [number, Experience][] = [
-    [0, { ...pm, photoSrc: BIO_CARD_PORTRAIT_SRC, hasPhoto: hasPortrait }],
-    [90, { ...aiDev, photoSrc: BIO_CARD_PHOTO_RIGHT_SRC, hasPhoto: hasPhotoRight }],
-    [180, { ...videoCreator, photoSrc: BIO_CARD_PHOTO_BACK_SRC, hasPhoto: hasPhotoBack }],
-    [-90, { ...printMaker, photoSrc: BIO_CARD_PHOTO_LEFT_SRC, hasPhoto: hasPhotoLeft }],
+    [0, { ...pm, photoSrc: BIO_CARD_PORTRAIT_SRC, hasPhoto: hasPortrait, world: null }],
+    [90, { ...aiDev, photoSrc: BIO_CARD_PHOTO_RIGHT_SRC, hasPhoto: hasPhotoRight, world: "developers" }],
+    [180, { ...videoCreator, photoSrc: BIO_CARD_PHOTO_BACK_SRC, hasPhoto: hasPhotoBack, world: "video" }],
+    [-90, { ...printMaker, photoSrc: BIO_CARD_PHOTO_LEFT_SRC, hasPhoto: hasPhotoLeft, world: "3d" }],
   ];
 
   // Continuous rAF loop mutating the transform directly via a ref, not React state — same idiom
@@ -176,6 +212,8 @@ export function BioCard({
 
   function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     dragging.current = true;
+    dragStarted.current = false;
+    pointerDownX.current = e.clientX;
     lastX.current = e.clientX;
     spin.current.velocity = 0;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -185,12 +223,19 @@ export function BioCard({
     if (!dragging.current) return;
     const deltaX = e.clientX - lastX.current;
     lastX.current = e.clientX;
+    if (!dragStarted.current) {
+      if (Math.abs(e.clientX - pointerDownX.current) <= CLICK_DRAG_THRESHOLD_PX) return;
+      dragStarted.current = true;
+    }
     const rotationDelta = deltaX * DRAG_SENSITIVITY_DEG;
     spin.current.value += rotationDelta;
     spin.current.velocity = reducedMotion ? 0 : rotationDelta;
   }
 
   function handlePointerUp() {
+    if (dragging.current && !dragStarted.current) {
+      setOpenIndex(frontFaceIndex(spin.current.value, faces.map(([deg]) => deg)));
+    }
     dragging.current = false;
   }
 
@@ -218,6 +263,28 @@ export function BioCard({
             </div>
           </div>
         </div>
+
+        {/* This whole subtree already lives inside drei's Html, which itself portals into plain
+            DOM — nesting a second createPortal here (targeting document.body directly) is a normal
+            portal-within-a-portal, not a cross-renderer conflict with the surrounding R3F/Three
+            scene graph. Needed because BioCardDetailModal must render as a true fullscreen overlay,
+            escaping the scale(0.5)/perspective() ancestors above that would otherwise shrink and
+            reposition a plain nested `position: fixed` element. */}
+        {openIndex !== null && (
+          <BioCardDetailModal
+            title={faces[openIndex][1].title}
+            description={faces[openIndex][1].description}
+            photoSrc={faces[openIndex][1].photoSrc}
+            hasPhoto={faces[openIndex][1].hasPhoto}
+            age={t.bioCard.age}
+            country={profile.location}
+            color={color}
+            world={faces[openIndex][1].world}
+            locale={locale}
+            t={t}
+            onClose={() => setOpenIndex(null)}
+          />
+        )}
       </Html>
     </group>
   );

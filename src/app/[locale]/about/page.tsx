@@ -7,7 +7,7 @@ import { ConnectBurstButton } from "@/components/hero/ConnectBurstButton";
 import { getCopy } from "@/content/copy";
 import { profile } from "@/content/profile";
 import { locales, type Locale } from "@/content/types";
-import { worldThemes } from "@/content/worldTheme";
+import { worldThemes, getWorldTheme } from "@/content/worldTheme";
 import { ABOUT_VIDEO_SRC_DARK, ABOUT_VIDEO_SRC_LIGHT } from "@/content/assetPaths";
 import { buildMetadata } from "@/lib/seo";
 import { publicAssetExists } from "@/lib/publicAsset";
@@ -48,14 +48,27 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <PageTitleWatermark title={t.about.title} accent={ACCENT} />
 
       <Container className="relative">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] md:items-start md:gap-12">
-          <div>
+        {/* Three independently-ordered grid items rather than two (text-column, video) — on
+            mobile the owner wants name/role first, then the video panel, then the description,
+            not "all text, then video." `order-*` reorders them visually on mobile while explicit
+            column/row placement recombines name+role and body+CTA back into one left column on
+            desktop, reconstructing today's exact side-by-side look there. */}
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] md:grid-rows-[auto_auto] md:items-start md:gap-x-12 md:gap-y-0">
+          <div className="order-1 md:col-start-1 md:row-start-1">
             <WorldTitleCube label={profile.name} color={ACCENT} />
-            <p className="mt-4 font-mono text-sm uppercase tracking-wide" style={{ color: ACCENT }}>
+            <p className="mt-4 font-mono text-sm uppercase tracking-wide" style={{ color: getWorldTheme("developers").signalTextVar }}>
               {t.hero.role}
             </p>
+          </div>
 
-            <div className="relative mt-8 max-w-xl space-y-3">
+          <AboutVideoPanel
+            hasVideoDark={hasVideoDark}
+            hasVideoLight={hasVideoLight}
+            className="order-2 mx-auto aspect-[9/16] h-[62vh] min-h-[420px] w-auto justify-self-center md:order-2 md:col-start-2 md:row-start-1 md:row-span-2 md:h-[80vh] md:min-h-[560px] md:-mt-16 lg:-mt-20"
+          />
+
+          <div className="order-3 md:col-start-1 md:row-start-2">
+            <div className="relative max-w-xl space-y-3">
               {bodyWithDelays.map(({ paragraph, startDelayMs }, i) => (
                 <p key={i} className="text-base leading-relaxed text-text md:text-lg">
                   <TypewriterText text={paragraph} startDelayMs={startDelayMs} speedMs={TYPEWRITER_SPEED_MS} />
@@ -67,12 +80,6 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <ConnectBurstButton t={t} color={ACCENT} size="lg" />
             </div>
           </div>
-
-          <AboutVideoPanel
-            hasVideoDark={hasVideoDark}
-            hasVideoLight={hasVideoLight}
-            className="mx-auto aspect-[9/16] h-[62vh] min-h-[420px] w-auto justify-self-center md:h-[80vh] md:min-h-[560px] md:-mt-16 lg:-mt-20"
-          />
         </div>
       </Container>
     </div>

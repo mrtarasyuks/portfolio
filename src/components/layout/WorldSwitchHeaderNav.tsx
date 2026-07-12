@@ -30,7 +30,12 @@ export function WorldSwitchHeaderNav({ locale }: { locale: Locale }) {
     >
       <HeaderArrow direction="prev" label={t.orbit.prevLabel} onClick={prev} />
 
-      <span className="world-role whitespace-nowrap px-1.5 font-mono text-sm font-bold uppercase tracking-wide lg:hidden">
+      {/* Text label hidden below `md:` — on mobile this nav now shares one compact header row
+          with the home button and grid-scroll toggle (see SiteHeader.tsx), no room for it there;
+          the world's own signal color plus the arrows are enough to navigate. Still shown from
+          `md:` to `lg:` (a standalone centered row with room to spare) before the full tab row
+          takes over at `lg:`. */}
+      <span className="world-role hidden whitespace-nowrap px-1.5 font-mono text-sm font-bold uppercase tracking-wide md:inline-flex lg:hidden">
         {t.orbit.worlds[world]}{" "}
         <span className="text-text-dim">
           {activeIndex + 1}/{worlds.length}

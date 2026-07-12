@@ -84,6 +84,7 @@ export function HeroOrbitScene({
           {showSidePanels && (
             <BioCard
               t={t}
+              locale={locale}
               color={theme.signal}
               hasPortrait={hasPortrait}
               hasPhotoRight={hasPhotoRight}

@@ -2,12 +2,24 @@ import { Container } from "@/components/ui/Container";
 import { toolLogosRowA, toolLogosRowB, type ToolLogo } from "@/content/toolLogos";
 import type { CopyDict } from "@/content/copy";
 
+/** How many times the source logo list is repeated before the seamless-loop duplication is
+ * applied — a "one lap" base list needs to be wider than any realistic viewport on its own, or the
+ * `-50%` reset (see below) leaves visible empty space for part of the loop instead of reading as
+ * gapless. 4 laps of a 5-6 logo row comfortably clears ultra-wide desktop viewports. */
+const REPEAT = 4;
+
 /** Two infinite-scroll rows, opposite directions — the duplicated-list marquee idiom already used
  * elsewhere in this codebase (`.animate-slide-up`), adapted to a horizontal `translateX`. Logos
  * render via a real `<img>` (this codebase's first — every other asset so far has been a
  * decorative CSS background-image, but a logo wall needs real alt text and intrinsic sizing). */
 function MarqueeRow({ logos, direction }: { logos: ToolLogo[]; direction: "left" | "right" }) {
-  const doubled = [...logos, ...logos];
+  // The `-50%` keyframe reset only reads as seamless if the pre-duplication base list is already
+  // wider than the viewport — otherwise the doubled list finishes short of the container's right
+  // edge and the reset shows as a visible empty gap before repeating. Repeating the source list
+  // first (not just doubling the raw short array) guarantees the base lap is always wide enough,
+  // regardless of screen width or how few logos a row has.
+  const base = Array.from({ length: REPEAT }, () => logos).flat();
+  const doubled = [...base, ...base];
   return (
     <div
       className="overflow-hidden py-2"
@@ -24,7 +36,7 @@ function MarqueeRow({ logos, direction }: { logos: ToolLogo[]; direction: "left"
               src={logo.src}
               alt={logo.name}
               loading="lazy"
-              className="h-8 w-auto object-contain opacity-75 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+              className="h-8 w-auto object-contain opacity-90 transition-all duration-300 hover:scale-110 hover:opacity-100"
             />
           </div>
         ))}

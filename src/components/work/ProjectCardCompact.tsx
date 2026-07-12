@@ -20,7 +20,9 @@ export function ProjectCardCompact({
   t: CopyDict;
   hasLogo?: boolean;
 }) {
-  const color = getWorldTheme(project.world).signal;
+  const theme = getWorldTheme(project.world);
+  const color = theme.signal;
+  const textColor = theme.signalTextVar;
 
   return (
     <article className="border-t border-line py-16 md:py-20">
@@ -66,7 +68,7 @@ export function ProjectCardCompact({
                       style={{
                         borderColor: `${color}4d`,
                         background: `linear-gradient(160deg, ${color}26, rgba(255,255,255,0.02))`,
-                        color,
+                        color: textColor,
                         boxShadow: `0 0 20px -8px ${color}80`,
                       }}
                     >

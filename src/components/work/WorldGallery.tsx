@@ -32,7 +32,11 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
   } as React.CSSProperties;
 
   return (
-    <div className="world-scope world-light-surface world-gallery-page relative" data-world={world} style={vars}>
+    <div
+      className="world-scope world-light-surface world-gallery-page relative overflow-x-hidden"
+      data-world={world}
+      style={vars}
+    >
       <PageTitleWatermark title={t.orbit.worlds[world]} accent={theme.signal} />
 
       <Container className="relative flex flex-col items-center pb-20 pt-14 text-center md:pb-28 md:pt-20">

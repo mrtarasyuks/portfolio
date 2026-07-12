@@ -41,7 +41,9 @@ export function ProjectCardFlagship({
   hasLogo?: boolean;
 }) {
   const Diagram = diagrams[project.slug];
-  const color = getWorldTheme(project.world).signal;
+  const theme = getWorldTheme(project.world);
+  const color = theme.signal;
+  const textColor = theme.signalTextVar;
 
   return (
     <article className="border-t border-line py-16 md:py-24">
@@ -95,7 +97,7 @@ export function ProjectCardFlagship({
                         style={{
                           borderColor: `${color}4d`,
                           background: `linear-gradient(160deg, ${color}26, rgba(255,255,255,0.02))`,
-                          color,
+                          color: textColor,
                           boxShadow: `0 0 20px -8px ${color}80`,
                         }}
                       >
@@ -121,7 +123,7 @@ export function ProjectCardFlagship({
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-line-strong px-6 py-3 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
+                    className="inline-flex items-center gap-2 rounded-full border border-line-strong px-6 py-3 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal-text"
                   >
                     {link.label}
                   </a>

@@ -36,13 +36,13 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         </p>
 
         {profile.availabilityConfirmed && (
-          <p className="mt-4 font-mono text-xs uppercase tracking-wide text-signal">{t.contact.availability}</p>
+          <p className="mt-4 font-mono text-xs uppercase tracking-wide text-signal-text">{t.contact.availability}</p>
         )}
 
         <div className="mt-10 flex flex-wrap items-center gap-8">
           <a
             href={`mailto:${profile.email}`}
-            className="group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal"
+            className="group inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wide text-text transition-colors hover:text-signal-text"
           >
             <span aria-hidden className="inline-block h-px w-4 bg-current transition-all group-hover:w-6" />
             {t.contact.ctaPrimary}

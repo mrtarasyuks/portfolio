@@ -16,8 +16,8 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
   return (
     <header className="relative z-50">
-      <Container className="grid grid-cols-1 items-center gap-y-3 py-4 md:grid-cols-[1fr_auto_1fr] md:gap-x-4 md:py-3">
-        <div className="flex items-center justify-between md:justify-self-start md:gap-4">
+      <Container className="grid grid-cols-1 items-center gap-y-2 py-3 md:grid-cols-[1fr_auto_1fr] md:gap-x-4 md:gap-y-0 md:py-3">
+        <div className="flex items-center justify-between gap-2 md:justify-self-start md:gap-4">
           <HeaderLogoButton locale={locale} />
 
           {/* Desktop-only instance — the left grid column has far more free width than the
@@ -29,16 +29,17 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             <HeroGridScrollBar locale={locale} />
           </div>
 
-          <div className="flex items-center gap-3 md:hidden">
-            <ThemeToggle t={t} />
+          {/* Mobile: everything else lives in this one row (world-switch + grid-scroll + menu)
+              instead of a second stacked row below the logo — two rows made the header tall
+              enough to overlap the avatar in the 3D canvas below on short mobile viewports. */}
+          <div className="flex items-center gap-2 md:hidden">
+            <WorldSwitchHeaderNav locale={locale} />
+            <HeroGridScrollBar locale={locale} />
             <MobileMenu locale={locale} />
           </div>
         </div>
 
-        <div className="order-last flex flex-col items-center gap-1.5 md:order-none md:flex-row md:justify-self-center md:gap-3">
-          <div className="md:hidden">
-            <HeroGridScrollBar locale={locale} />
-          </div>
+        <div className="hidden md:flex md:items-center md:justify-self-center md:gap-3">
           <WorldSwitchHeaderNav locale={locale} />
         </div>
 

@@ -11,6 +11,10 @@ export type WorldTheme = {
   signal: string;
   signalSoft: string;
   signalInk: string;
+  /** var() reference to this world's light-theme-safe text accent (globals.css) — use for literal
+   * foreground TEXT color instead of `signal` (which stays a fixed, theme-invariant hex tuned for
+   * glow/border/background washes, not plain text on a light-theme near-white surface). */
+  signalTextVar: string;
   fog: string;
 };
 
@@ -26,6 +30,7 @@ export const worldThemes: Record<ProjectWorld, WorldTheme> = {
     signal: "#ffd21f",
     signalSoft: "#e9c524",
     signalInk: "#151300",
+    signalTextVar: "var(--developers-signal-text)",
     fog: "#0a0a0b",
   },
   "3d": {
@@ -39,6 +44,7 @@ export const worldThemes: Record<ProjectWorld, WorldTheme> = {
     signal: "#ff6a2c",
     signalSoft: "#e6591e",
     signalInk: "#200d02",
+    signalTextVar: "var(--world-3d-signal-text)",
     fog: "#1c1611",
   },
   video: {
@@ -52,6 +58,7 @@ export const worldThemes: Record<ProjectWorld, WorldTheme> = {
     signal: "#2de0c2",
     signalSoft: "#24bfa6",
     signalInk: "#03150f",
+    signalTextVar: "var(--video-signal-text)",
     fog: "#0b1615",
   },
 };

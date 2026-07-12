@@ -1,58 +1,47 @@
-/** How long each step's glow stays lit, in real time — the sequential sweep's total loop duration
- * is this times the step count, so adding/removing steps keeps the same per-step pacing. */
-const STEP_DURATION_S = 0.6;
+/** Five distinct idle animations (globals.css), cycled by step index so no two adjacent steps ever
+ * share one — replaces a single shared hard on/off flash that read as the whole row "blinking" in
+ * lockstep. Each has its own duration so the loop doesn't resettle into a visible sync either. */
+const ANIMATIONS = [
+  { name: "agent-glow-breathe", durationS: 2.6 },
+  { name: "agent-float", durationS: 3.4 },
+  { name: "agent-scale-pulse", durationS: 2.2 },
+  { name: "agent-tilt", durationS: 3.0 },
+  { name: "agent-hue-drift", durationS: 3.8 },
+] as const;
+
+const STEP_DELAY_S = 0.3;
 
 export function AgentLoopDiagram({ steps }: { steps: string[] }) {
-  const mid = Math.ceil(steps.length / 2);
-  const topRow = steps.slice(0, mid);
-  const bottomRow = steps.slice(mid).reverse();
-  const total = steps.length;
-
   return (
     <div className="rounded-2xl border border-line-strong bg-gradient-to-b from-surface-soft to-surface p-6 shadow-sm md:p-8">
-      <Row items={topRow} startIndex={0} total={total} />
-      <div className="my-3 flex justify-end pr-6">
-        <Turn />
-      </div>
-      <Row items={bottomRow} startIndex={topRow.length} total={total} reverse />
-    </div>
-  );
-}
-
-function Row({ items, startIndex, total, reverse }: { items: string[]; startIndex: number; total: number; reverse?: boolean }) {
-  return (
-    <div className={"flex flex-wrap items-center gap-3 " + (reverse ? "flex-row-reverse" : "")}>
-      {items.map((item, i) => {
-        const stepIndex = startIndex + i;
-        return (
-          <div key={item} className="flex items-center gap-3">
-            <div
-              className="flex min-w-[7.5rem] items-center gap-2 rounded-xl border bg-bg px-4 py-3 transition-colors"
-              style={{
-                borderColor: "var(--line-strong)",
-                animation: `agent-pulse ${total * STEP_DURATION_S}s ease-in-out infinite`,
-                animationDelay: `${stepIndex * STEP_DURATION_S}s`,
-              }}
-            >
-              <span className="font-mono text-[10px] text-text-dim">{String(stepIndex + 1).padStart(2, "0")}</span>
-              <span className="text-xs font-medium text-text">{item}</span>
+      {/* One full-width line — falls back to horizontal scroll on viewports too narrow for 9
+          comfortably-sized steps, rather than either wrapping to a second row or shrinking text
+          past legibility. */}
+      <div className="flex items-stretch gap-2 overflow-x-auto pb-1 md:gap-3">
+        {steps.map((step, i) => {
+          const anim = ANIMATIONS[i % ANIMATIONS.length];
+          return (
+            <div key={step} className="flex shrink-0 items-center gap-2 md:flex-1 md:basis-0">
+              <div
+                className="flex min-w-[7.5rem] flex-1 items-center gap-2 rounded-xl border bg-bg px-4 py-3"
+                style={{
+                  borderColor: "var(--line-strong)",
+                  animation: `${anim.name} ${anim.durationS}s ease-in-out infinite`,
+                  animationDelay: `${i * STEP_DELAY_S}s`,
+                }}
+              >
+                <span className="font-mono text-[10px] text-text-dim">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-xs font-medium text-text">{step}</span>
+              </div>
+              {i < steps.length - 1 && (
+                <span className="shrink-0 text-text-dim" aria-hidden>
+                  →
+                </span>
+              )}
             </div>
-            {i < items.length - 1 && (
-              <span className="text-text-dim" aria-hidden>
-                {reverse ? "←" : "→"}
-              </span>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
-  );
-}
-
-function Turn() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-signal" aria-hidden>
-      <path d="M4 4V14C4 17 6 19 9 19H20M20 19L15 14M20 19L15 23" stroke="currentColor" strokeWidth="1" />
-    </svg>
   );
 }

@@ -10,7 +10,7 @@ export function PipelineDiagram() {
           <div key={stage} className="flex items-stretch">
             <div className="flex min-w-[7rem] flex-col justify-between border border-line-strong px-3 py-4">
               <span className="font-mono text-[11px] text-text-dim">{String(i + 1).padStart(2, "0")}</span>
-              <span className={"mt-4 text-sm " + (stage === "Remotion" ? "text-signal" : "text-text")}>
+              <span className={"mt-4 text-sm " + (stage === "Remotion" ? "text-signal-text" : "text-text")}>
                 {stage}
               </span>
             </div>

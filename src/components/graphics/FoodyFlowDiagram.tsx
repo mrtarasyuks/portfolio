@@ -34,7 +34,7 @@ export function FoodyFlowDiagram() {
               <span className="shrink-0 font-mono text-xs text-text-dim">{String(i + 1).padStart(2, "0")}</span>
               <span
                 className={
-                  "min-w-0 flex-1 text-sm " + (i === stages.length - 1 ? "text-signal" : "text-text")
+                  "min-w-0 flex-1 text-sm " + (i === stages.length - 1 ? "text-signal-text" : "text-text")
                 }
               >
                 {stage.label}
