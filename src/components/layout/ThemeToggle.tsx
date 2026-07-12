@@ -14,7 +14,7 @@ export function ThemeToggle({ t }: { t: CopyDict }) {
       onClick={toggle}
       aria-label={isLight ? t.theme.switchToDark : t.theme.switchToLight}
       title={isLight ? t.theme.switchToDark : t.theme.switchToLight}
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface text-text shadow-sm transition-all active:scale-90"
+      className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface text-text shadow-sm transition-all active:scale-90"
     >
       {isLight ? <MoonGlyph /> : <SunGlyph />}
     </button>

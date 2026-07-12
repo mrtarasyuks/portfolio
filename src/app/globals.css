@@ -256,11 +256,33 @@ body {
 }
 
 .animate-marquee-left {
-  animation: marquee-left 32s linear infinite;
+  animation: marquee-left 70s linear infinite;
 }
 
 .animate-marquee-right {
-  animation: marquee-right 32s linear infinite;
+  animation: marquee-right 70s linear infinite;
+}
+
+/* Pulsing color-matched glow behind the `/work` chooser blocks' title text — reads as "brighter,
+   backlit" on the compact mobile card layout. Reads `--world-glow` (already set on the block's
+   own button element in WorldChooserBlocks, inherited down). Desktop keeps the plain static
+   title with no glow, so this is scoped to the same `sm` breakpoint the mobile layout uses. */
+@keyframes world-block-title-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 10px var(--world-glow, transparent);
+  }
+  50% {
+    text-shadow:
+      0 0 20px var(--world-glow, transparent),
+      0 0 6px var(--world-glow, transparent);
+  }
+}
+
+@media (max-width: 639px) {
+  .world-block-title-glow {
+    animation: world-block-title-glow 2.6s ease-in-out infinite;
+  }
 }
 
 /* Metaverse portal block — three soft blurred blobs drifting independently, plus a shared hue

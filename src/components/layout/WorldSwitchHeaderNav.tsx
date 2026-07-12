@@ -26,7 +26,7 @@ export function WorldSwitchHeaderNav({ locale }: { locale: Locale }) {
       role="tablist"
       aria-label={t.orbit.switchWorld}
       style={accentVars}
-      className="flex items-center gap-1.5 rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface p-1.5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.65)]"
+      className="flex shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface p-1.5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.65)]"
     >
       <HeaderArrow direction="prev" label={t.orbit.prevLabel} onClick={prev} />
 

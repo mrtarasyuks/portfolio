@@ -55,21 +55,32 @@ export function ExtraWorkBlockLink({
       style={{ "--world-glow": color } as React.CSSProperties}
     >
       <div ref={panelRef} style={{ transformStyle: "preserve-3d", transform: TILT_RESET }}>
-        <GlassPanel className="flex h-72 flex-col justify-between p-7 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-80 sm:p-8">
+        <GlassPanel className="flex h-36 items-center gap-4 p-4 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-80 sm:flex-col sm:items-stretch sm:justify-between sm:gap-0 sm:p-8">
           <span
             aria-hidden
-            className="pointer-events-none absolute -bottom-4 -right-2 select-none whitespace-nowrap font-display text-7xl font-bold uppercase leading-none tracking-tight sm:text-8xl"
+            className="pointer-events-none absolute -bottom-4 -right-2 hidden select-none whitespace-nowrap font-display text-8xl font-bold uppercase leading-none tracking-tight sm:block"
             style={{ color: "transparent", WebkitTextStroke: `1px ${color}33`, textShadow: `0 0 40px ${color}1f` }}
           >
             {label}
           </span>
 
-          <span className="relative font-mono text-4xl" style={{ color }} aria-hidden>
+          <span className="relative hidden font-mono text-4xl sm:block" style={{ color }} aria-hidden>
             {glyph}
           </span>
-          <div className="relative">
-            <h2 className="text-2xl font-medium text-text transition-colors group-hover:text-[var(--world-glow)]">{label}</h2>
-            <p className="mt-2 text-sm text-text">{tagline}</p>
+
+          <span
+            className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl font-mono text-2xl sm:hidden"
+            style={{ color, backgroundColor: `${color}1a`, boxShadow: `0 0 24px -8px ${color}` }}
+            aria-hidden
+          >
+            {glyph}
+          </span>
+
+          <div className="relative min-w-0">
+            <h2 className="world-block-title-glow text-xl font-semibold text-text transition-colors group-hover:text-[var(--world-glow)] sm:text-2xl sm:font-medium">
+              {label}
+            </h2>
+            <p className="mt-1.5 text-sm text-text sm:mt-2">{tagline}</p>
           </div>
         </GlassPanel>
       </div>

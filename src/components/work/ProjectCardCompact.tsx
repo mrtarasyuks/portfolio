@@ -25,11 +25,11 @@ export function ProjectCardCompact({
   const textColor = theme.signalTextVar;
 
   return (
-    <article className="border-t border-line py-16 md:py-20">
+    <article className="border-t border-line py-10 md:py-20">
       <Container>
         <GlassPanel
           edgeDistortion
-          className="relative p-8 md:p-10"
+          className="relative p-5 md:p-10"
           style={{
             background: `linear-gradient(155deg, ${color}14, var(--glass-tint))`,
             boxShadow: `0 30px 80px -28px ${color}50, 0 16px 46px -14px rgba(0,0,0,0.55)`,
@@ -37,13 +37,13 @@ export function ProjectCardCompact({
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -bottom-5 -right-3 select-none whitespace-nowrap font-display text-[5rem] font-bold uppercase leading-none tracking-tight md:text-[7rem]"
+            className="pointer-events-none absolute -bottom-5 -right-3 select-none whitespace-nowrap font-display text-[3rem] font-bold uppercase leading-none tracking-tight md:text-[7rem]"
             style={{ color: "transparent", WebkitTextStroke: `1px ${color}2e`, textShadow: `0 0 50px ${color}1f` }}
           >
             {project.shortTitle}
           </span>
 
-          <div className="relative flex flex-col gap-10 md:flex-row md:items-center md:gap-16">
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:gap-16">
             <div className="md:w-5/12 md:shrink-0">
               <div className="mb-6 flex items-center gap-4 font-mono text-xs text-text-dim">
                 <ProjectStatusBadge status={project.status} labels={t.status} />

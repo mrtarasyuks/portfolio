@@ -31,8 +31,12 @@ export function SiteHeader({ locale }: { locale: Locale }) {
 
           {/* Mobile: everything else lives in this one row (world-switch + grid-scroll + menu)
               instead of a second stacked row below the logo — two rows made the header tall
-              enough to overlap the avatar in the 3D canvas below on short mobile viewports. */}
-          <div className="flex items-center gap-2 md:hidden">
+              enough to overlap the avatar in the 3D canvas below on short mobile viewports.
+              `min-w-0 flex-1` gives this row a real, bounded width (container width minus the
+              logo) instead of letting `justify-between` size it purely by content — that's what
+              lets the grid-scroll speed slider below shrink to fit instead of overflowing the
+              viewport when it expands. */}
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 md:hidden">
             <WorldSwitchHeaderNav locale={locale} />
             <HeroGridScrollBar locale={locale} />
             <MobileMenu locale={locale} />

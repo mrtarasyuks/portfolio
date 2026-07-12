@@ -46,11 +46,11 @@ export function ProjectCardFlagship({
   const textColor = theme.signalTextVar;
 
   return (
-    <article className="border-t border-line py-16 md:py-24">
+    <article className="border-t border-line py-10 md:py-24">
       <Container>
         <GlassPanel
           edgeDistortion
-          className="relative p-8 md:p-12"
+          className="relative p-5 md:p-12"
           style={{
             background: `linear-gradient(155deg, ${color}14, var(--glass-tint))`,
             boxShadow: `0 40px 100px -30px ${color}55, 0 20px 60px -15px rgba(0,0,0,0.6)`,
@@ -58,13 +58,13 @@ export function ProjectCardFlagship({
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -bottom-6 -right-4 select-none whitespace-nowrap font-display text-[6rem] font-bold uppercase leading-none tracking-tight md:text-[9rem]"
+            className="pointer-events-none absolute -bottom-6 -right-4 select-none whitespace-nowrap font-display text-[3.5rem] font-bold uppercase leading-none tracking-tight md:text-[9rem]"
             style={{ color: "transparent", WebkitTextStroke: `1px ${color}2e`, textShadow: `0 0 50px ${color}1f` }}
           >
             {project.shortTitle}
           </span>
 
-          <div className={cn("relative flex flex-col gap-10 md:gap-16", reverse ? "md:flex-row-reverse" : "md:flex-row")}>
+          <div className={cn("relative flex flex-col gap-6 md:gap-16", reverse ? "md:flex-row-reverse" : "md:flex-row")}>
             <div className="md:w-5/12 md:shrink-0">
               <div className="mb-6 flex items-center gap-4 font-mono text-xs text-text-dim">
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -131,7 +131,15 @@ export function ProjectCardFlagship({
               </div>
             </div>
 
-            <div className="relative min-w-0 md:flex-1">{Diagram && <Diagram />}</div>
+            {/* The system-flow diagrams are dense, tall, and built for a wide reading column —
+                on a stacked mobile layout they just make an already-long card much longer, so
+                they're desktop/tablet only; the case-study page (which links from the CTA below)
+                still shows them at full size. */}
+            {Diagram && (
+              <div className="relative hidden min-w-0 md:block md:flex-1">
+                <Diagram />
+              </div>
+            )}
           </div>
         </GlassPanel>
       </Container>

@@ -125,14 +125,19 @@ export function WorldChooserBlocks({
                 }}
                 style={{ transformStyle: "preserve-3d", transform: TILT_RESET }}
               >
+                {/* Mobile: a short, wide strip — glyph sits to the left of the title (a real
+                    row, not the desktop's stacked-above-title/corner-watermark composition,
+                    which doesn't have room on a half-height card) with a color-matched animated
+                    glow behind the title text. `sm:` and up restores the original desktop
+                    composition untouched. */}
                 <GlassPanel
-                  className="flex h-72 flex-col justify-between p-7 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-80 sm:p-8"
+                  className="flex h-36 items-center gap-4 p-4 transition-shadow duration-300 group-hover:shadow-[0_0_70px_-14px_var(--world-glow)] sm:h-80 sm:flex-col sm:items-stretch sm:justify-between sm:gap-0 sm:p-8"
                   style={{ boxShadow: isTarget ? `0 0 90px -10px ${theme.signal}` : undefined }}
                 >
-                  {/* Large embossed/hollow watermark of the world's own name, tucked in the back corner — same technique as PageTitleWatermark, scoped to this one block so each of the three reads as a distinct large "signature" rather than three identically-sized generic rectangles. */}
+                  {/* Large embossed/hollow watermark of the world's own name, tucked in the back corner — same technique as PageTitleWatermark, scoped to this one block so each of the three reads as a distinct large "signature" rather than three identically-sized generic rectangles. Desktop/tablet only — on the shorter mobile strip it has nowhere to sit without colliding with the title. */}
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -bottom-4 -right-2 select-none whitespace-nowrap font-display text-7xl font-bold uppercase leading-none tracking-tight sm:text-8xl"
+                    className="pointer-events-none absolute -bottom-4 -right-2 hidden select-none whitespace-nowrap font-display text-8xl font-bold uppercase leading-none tracking-tight sm:block"
                     style={{
                       color: "transparent",
                       WebkitTextStroke: `1px ${theme.signal}33`,
@@ -142,14 +147,23 @@ export function WorldChooserBlocks({
                     {t.orbit.worlds[w]}
                   </span>
 
-                  <span className="relative font-mono text-4xl" style={{ color: theme.signal }} aria-hidden>
+                  <span className="relative hidden font-mono text-4xl sm:block" style={{ color: theme.signal }} aria-hidden>
                     {GLYPH_BY_WORLD[w]}
                   </span>
-                  <div className="relative">
-                    <h2 className="text-2xl font-medium text-text transition-colors group-hover:text-[var(--world-glow)]">
+
+                  <span
+                    className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl font-mono text-2xl sm:hidden"
+                    style={{ color: theme.signal, backgroundColor: `${theme.signal}1a`, boxShadow: `0 0 24px -8px ${theme.signal}` }}
+                    aria-hidden
+                  >
+                    {GLYPH_BY_WORLD[w]}
+                  </span>
+
+                  <div className="relative min-w-0">
+                    <h2 className="world-block-title-glow text-xl font-semibold text-text transition-colors group-hover:text-[var(--world-glow)] sm:text-2xl sm:font-medium">
                       {t.orbit.worlds[w]}
                     </h2>
-                    <p className="mt-2 text-sm text-text">{t.orbit.worldTagline[w]}</p>
+                    <p className="mt-1.5 text-sm text-text sm:mt-2">{t.orbit.worldTagline[w]}</p>
                   </div>
                 </GlassPanel>
               </div>

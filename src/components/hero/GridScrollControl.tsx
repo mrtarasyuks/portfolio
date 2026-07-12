@@ -25,12 +25,19 @@ function PowerGlyph() {
  * flow siblings out of each other's way). It now expands in normal document flow instead — a
  * width transition on an `overflow-hidden` wrapper, the classic CSS-only accordion technique —
  * so opening it can only ever widen its own row, never float over anything else.
+ *
+ * The expanding panel's own width is its *preferred* size, not a guaranteed one — both this root
+ * and the panel wrapper carry `min-w-0` so the browser's normal flex-shrink can compress the
+ * panel down to whatever room its flex-row ancestor actually has left, instead of forcing that
+ * ancestor to overflow. On the homepage mobile header (a tight `flex-1` row shared with several
+ * other icon buttons) that's the difference between the slider shrinking to fit and it shoving
+ * the menu/theme buttons off the edge of the viewport.
  */
 export function GridScrollControl({ color, t }: { color: string; t: CopyDict }) {
   const { on, speed, toggle, setSpeed } = useGridScroll();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <button
         type="button"
         role="switch"
@@ -46,10 +53,10 @@ export function GridScrollControl({ color, t }: { color: string; t: CopyDict }) 
         <PowerGlyph />
       </button>
 
-      <div className="overflow-hidden transition-all duration-300 ease-out" style={{ width: on ? PANEL_WIDTH : 0, opacity: on ? 1 : 0 }}>
+      <div className="min-w-0 overflow-hidden transition-all duration-300 ease-out" style={{ width: on ? PANEL_WIDTH : 0, opacity: on ? 1 : 0 }}>
         <div
           className="flex items-center whitespace-nowrap rounded-full border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-3 py-2.5"
-          style={{ width: PANEL_WIDTH }}
+          style={{ width: "100%", minWidth: 56 }}
         >
           <input
             type="range"
