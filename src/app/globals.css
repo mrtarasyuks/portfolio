@@ -263,6 +263,88 @@ body {
   animation: marquee-right 32s linear infinite;
 }
 
+/* Metaverse portal block — three soft blurred blobs drifting independently, plus a shared hue
+   cycle (phase-offset per blob via negative animation-delay in the component, not separate
+   keyframes) for the iridescent shimmer. No hard edges anywhere, by design — this is the one
+   background in the codebase that's deliberately not built from lines/grids/geometry. */
+@keyframes portal-blob-drift-a {
+  0%,
+  100% {
+    transform: translate(-8%, -6%) scale(1);
+  }
+  50% {
+    transform: translate(6%, 8%) scale(1.18);
+  }
+}
+
+@keyframes portal-blob-drift-b {
+  0%,
+  100% {
+    transform: translate(8%, -10%) scale(1.05);
+  }
+  50% {
+    transform: translate(-8%, 6%) scale(0.88);
+  }
+}
+
+@keyframes portal-blob-drift-c {
+  0%,
+  100% {
+    transform: translate(-2%, 10%) scale(1);
+  }
+  50% {
+    transform: translate(-8%, -10%) scale(1.22);
+  }
+}
+
+@keyframes portal-hue-drift {
+  from {
+    filter: blur(70px) hue-rotate(0deg);
+  }
+  to {
+    filter: blur(70px) hue-rotate(360deg);
+  }
+}
+
+/* Two animation-names per element in one `animation` shorthand — two separate utility classes
+   each setting their own `animation` property would NOT combine (CSS cascade just picks one
+   winner for the whole shorthand), so the drift + hue cycle have to be declared together here.
+   The component still gives each blob its own phase via a two-value `animation-delay` list
+   (first value → the drift keyframe, second → the shared hue keyframe). */
+.animate-portal-blob-a {
+  animation:
+    portal-blob-drift-a 24s ease-in-out infinite,
+    portal-hue-drift 20s linear infinite;
+}
+
+.animate-portal-blob-b {
+  animation:
+    portal-blob-drift-b 29s ease-in-out infinite,
+    portal-hue-drift 20s linear infinite;
+}
+
+.animate-portal-blob-c {
+  animation:
+    portal-blob-drift-c 33s ease-in-out infinite,
+    portal-hue-drift 20s linear infinite;
+}
+
+/* One-shot press feedback for the drum's spin button — the icon element is remounted (via a
+   changing `key`) on every click, so this replays from scratch each time rather than needing
+   manual animation resets. */
+@keyframes spin-kick {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-kick {
+  animation: spin-kick 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Five genuinely different idle animations for the Agent-Native pipeline's steps (cycled by index
    so adjacent steps never share one) — smooth continuous loops, not a hard on/off flash. Each pairs
    a distinct motion with a softer breathing glow than the old single shared keyframe. */

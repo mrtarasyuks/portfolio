@@ -89,7 +89,7 @@ export function ProjectCardCompact({
             </div>
 
             <div className="relative min-w-0 max-w-sm md:flex-1">
-              <ProcessLoop steps={["Idea", "Model", "Check", "Slice", "Print", "Adjust"]} label="Physical iteration loop" />
+              <ProcessLoop steps={["Idea", "Model", "Check", "Slice", "Print", "Adjust"]} label={t.metaverse.loopLabel} />
             </div>
           </div>
         </GlassPanel>

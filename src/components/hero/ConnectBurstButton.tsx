@@ -49,7 +49,7 @@ export function ConnectBurstButton({
 
       {/* Three strips drop down from the button first; the links then appear already arranged in a row beneath them, not as a vertical list. */}
       <div aria-hidden={!open} className="flex flex-col items-center">
-        <div className="flex items-center justify-center gap-8" aria-hidden>
+        <div className={cn("flex items-center justify-center", large ? "gap-16" : "gap-8")} aria-hidden>
           {Array.from({ length: STRIP_COUNT }, (_, i) => (
             <span
               key={i}

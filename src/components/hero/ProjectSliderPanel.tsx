@@ -14,6 +14,12 @@ const FALLOFF_DEG = 130;
 const DRAG_SENSITIVITY = 0.55;
 const DRAG_THRESHOLD_PX = 4;
 const VELOCITY_DECAY = 2.6;
+/** A button-triggered spin just injects a big one-off velocity into the same flick-decay physics
+ * a manual drag already produces — reusing the existing `VELOCITY_DECAY` curve rather than a
+ * separate spin-up/spin-down animation, so it settles back into the idle auto-spin exactly the
+ * way a real flick does. Clicks stack (capped) instead of resetting, so a second tap mid-spin adds momentum. */
+const SPIN_KICK_DEG = 34;
+const MAX_SPIN_VELOCITY_DEG = 70;
 
 /** Same fly-to-center transition timing `WorldChooserBlocks` uses for the `/work` index blocks —
  * reused verbatim rather than inventing new numbers, so both feel like one consistent interaction. */
@@ -186,71 +192,118 @@ export function ProjectSliderPanel({
     window.setTimeout(() => router.push(`/${locale}/work/${slug}`), NAVIGATE_DELAY_MS);
   }
 
-  return (
-    <div
-      ref={containerRef}
-      onPointerDown={handlePointerDown}
-      className={cn(
-        "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
-        zoomingSlug ? "overflow-visible" : "overflow-hidden"
-      )}
-      style={{ perspective: 1400 }}
-    >
-      <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
-        {slots.map((slot, i) => {
-          const isTarget = slot.project && zoomingSlug === slot.project.slug;
-          const flyTransform = flyOffset ? `translate(${flyOffset.dx}px, ${flyOffset.dy}px) scale(3.2)` : "scale(3.2)";
+  function handleSpin() {
+    if (frozen.current || reducedMotion.current) return;
+    velocity.current = Math.min(velocity.current + SPIN_KICK_DEG, MAX_SPIN_VELOCITY_DEG);
+  }
 
-          return (
-            <div
-              key={slot.key}
-              ref={(el) => {
-                cardRefs.current[i] = el;
-              }}
-              className="absolute inset-x-0 top-1/2 flex justify-center"
-              style={{
-                transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
-                backfaceVisibility: "hidden",
-              }}
-            >
+  return (
+    <div className="flex items-center gap-4">
+      <div
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
+        className={cn(
+          "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
+          zoomingSlug ? "overflow-visible" : "overflow-hidden"
+        )}
+        style={{ perspective: 1400 }}
+      >
+        <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+          {slots.map((slot, i) => {
+            const isTarget = slot.project && zoomingSlug === slot.project.slug;
+            const flyTransform = flyOffset ? `translate(${flyOffset.dx}px, ${flyOffset.dy}px) scale(3.2)` : "scale(3.2)";
+
+            return (
               <div
+                key={slot.key}
                 ref={(el) => {
-                  flyRefs.current[i] = el;
+                  cardRefs.current[i] = el;
                 }}
-                style={
-                  isTarget
-                    ? {
-                        position: "relative",
-                        zIndex: 40,
-                        transitionProperty: "transform",
-                        transitionDuration: `${FLY_DURATION_MS}ms`,
-                        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                        transform: flyTransform,
-                      }
-                    : undefined
-                }
+                className="absolute inset-x-0 top-1/2 flex justify-center"
+                style={{
+                  transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
+                  backfaceVisibility: "hidden",
+                }}
               >
-                {slot.project ? (
-                  <DrumProjectCard
-                    project={slot.project}
-                    locale={locale}
-                    t={t}
-                    onSelect={() => handleSelect(slot.project!.slug, i)}
-                  />
-                ) : (
-                  <DrumComingSoonCard label={t.orbit.comingSoon} world={world} />
-                )}
+                <div
+                  ref={(el) => {
+                    flyRefs.current[i] = el;
+                  }}
+                  style={
+                    isTarget
+                      ? {
+                          position: "relative",
+                          zIndex: 40,
+                          transitionProperty: "transform",
+                          transitionDuration: `${FLY_DURATION_MS}ms`,
+                          transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                          transform: flyTransform,
+                        }
+                      : undefined
+                  }
+                >
+                  {slot.project ? (
+                    <DrumProjectCard
+                      project={slot.project}
+                      locale={locale}
+                      t={t}
+                      onSelect={() => handleSelect(slot.project!.slug, i)}
+                    />
+                  ) : (
+                    <DrumComingSoonCard label={t.orbit.comingSoon} world={world} />
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <div
+          className="pointer-events-none fixed inset-0 z-50 bg-black transition-opacity"
+          style={{ transitionDuration: `${BLACKOUT_DURATION_MS}ms`, opacity: blackout ? 1 : 0 }}
+          aria-hidden
+        />
       </div>
 
-      <div
-        className="pointer-events-none fixed inset-0 z-50 bg-black transition-opacity"
-        style={{ transitionDuration: `${BLACKOUT_DURATION_MS}ms`, opacity: blackout ? 1 : 0 }}
-        aria-hidden
-      />
+      <SpinButton onSpin={handleSpin} label={t.orbit.spin} />
     </div>
+  );
+}
+
+/** Voluminous round glass knob beside the drum — a physical-feeling control, not a flat icon
+ * button, matching the same thick-glass language `BackToWorkButton`/`GlassPanel` establish
+ * elsewhere. The chevron ring spins once on each press purely as click feedback; the drum's own
+ * spin is driven by the real velocity physics in the parent, not by this animation. */
+function SpinButton({ onSpin, label }: { onSpin: () => void; label: string }) {
+  const [pulseKey, setPulseKey] = useState(0);
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onSpin();
+        setPulseKey((k) => k + 1);
+      }}
+      aria-label={label}
+      title={label}
+      className="pointer-events-auto flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] text-text shadow-[0_24px_60px_-16px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-transform hover:scale-105 active:scale-90"
+    >
+      <svg
+        key={pulseKey}
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+        className="animate-spin-kick"
+      >
+        <path d="M3 12a9 9 0 1 1 3 6.7" />
+        <path d="M3 12v5h5" />
+      </svg>
+    </button>
   );
 }

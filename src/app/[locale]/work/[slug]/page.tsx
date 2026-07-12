@@ -10,12 +10,12 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 import { PageTitleWatermark } from "@/components/ui/PageTitleWatermark";
 import { FoodyFlowDiagram } from "@/components/graphics/FoodyFlowDiagram";
 import { PipelineDiagram } from "@/components/graphics/PipelineDiagram";
-import { ProcessLoop } from "@/components/graphics/ProcessLoop";
+import { MetaversePortalBlock } from "@/components/work/MetaversePortalBlock";
 import { ProjectVideo } from "@/components/work/ProjectVideo";
 import { projects, getProject } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
-import { locales } from "@/content/types";
+import { locales, worlds } from "@/content/types";
 import { getWorldTheme } from "@/content/worldTheme";
 import { projectLogoSrc } from "@/content/assetPaths";
 import { publicAssetExists } from "@/lib/publicAsset";
@@ -24,14 +24,21 @@ import { buildMetadata } from "@/lib/seo";
 const diagrams: Record<string, React.ComponentType> = {
   foody: FoodyFlowDiagram,
   frameforg: PipelineDiagram,
-  "3d-lab": () => <ProcessLoop steps={["Idea", "Model", "Check", "Slice", "Print", "Adjust"]} label="Physical iteration loop" />,
 };
+
+/** 3d-lab's own diagram doesn't go through the generic `diagrams` map above — it gets a distinct
+ * treatment (moved up beside Stack, wrapped in the amorphous Metaverse portal) rather than sitting
+ * in the shared Summary/Diagram/Video order every other case study uses. */
+const PROCESS_LOOP_STEPS = ["Idea", "Model", "Check", "Slice", "Print", "Adjust"];
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => projects.map((p) => ({ locale, slug: p.slug })));
 }
 
-type PageProps = { params: Promise<{ locale: string; slug: string }> };
+type PageProps = {
+  params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<{ from?: string }>;
+};
 
 export async function generateMetadata({ params }: PageProps) {
   const { locale, slug } = await params;
@@ -77,13 +84,15 @@ function Chip({ label, accent, accentText }: { label: string; accent: string; ac
   );
 }
 
-export default async function CaseStudyPage({ params }: PageProps) {
+export default async function CaseStudyPage({ params, searchParams }: PageProps) {
   const { locale, slug } = await params;
+  const { from } = await searchParams;
   const project = getProject(slug);
   if (!project) notFound();
 
   const l = locale as Locale;
   const t = getCopy(l);
+  const backHref = worlds.includes(from as (typeof worlds)[number]) ? `/${l}/work/${from}` : undefined;
   const Diagram = diagrams[project.slug];
   const theme = getWorldTheme(project.world);
   const accent = theme.signal;
@@ -106,7 +115,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
       <Container className="relative flex flex-col items-center pb-14 text-center md:pb-20">
         <StaggerFadeIn index={next()}>
           <div className="flex items-center justify-center gap-4 sm:gap-6">
-            <BackToWorkButton locale={l} t={t} />
+            <BackToWorkButton locale={l} t={t} backHref={backHref} />
             {/* Hidden below `sm`: the badge + its gap push this row past a 320px viewport
                 (measured, not guessed — Playwright reported 334px of content in a 320px frame). */}
             <div className="hidden sm:block">
@@ -199,6 +208,12 @@ export default async function CaseStudyPage({ params }: PageProps) {
             </StaggerFadeIn>
           )}
         </div>
+
+        {project.slug === "3d-lab" && (
+          <StaggerFadeIn index={next()} variant="rise" className="mt-5 block">
+            <MetaversePortalBlock locale={l} t={t} accent={accent} steps={PROCESS_LOOP_STEPS} label={t.metaverse.loopLabel} />
+          </StaggerFadeIn>
+        )}
 
         <StaggerFadeIn index={next()} variant="scale" className="mt-5 block">
           <GlassPanel

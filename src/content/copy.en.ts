@@ -33,6 +33,7 @@ export const en = {
     viewProject: "View case study",
     comingSoon: "More work landing here soon",
     switchWorld: "Switch world",
+    spin: "Spin the reel",
   },
   extraWork: {
     games: {
@@ -141,6 +142,14 @@ export const en = {
     approach: "Approach",
     demo: "Walkthrough",
     verificationNote: "Verification note",
+  },
+  metaverse: {
+    cta: "3D View",
+    loopLabel: "Physical iteration loop",
+    title: "The Print Room",
+    tagline: "A light room built to hold every physical print as it ships — fly the camera around, empty pedestals for now.",
+    empty: "Nothing on the shelves yet — check back once a print ships.",
+    webglFallback: "This room needs WebGL — try a different browser or device to fly the camera through it.",
   },
   capabilities: {
     eyebrow: "CAPABILITIES",

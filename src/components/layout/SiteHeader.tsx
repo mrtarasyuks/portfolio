@@ -36,6 +36,9 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             <WorldSwitchHeaderNav locale={locale} />
             <HeroGridScrollBar locale={locale} />
             <MobileMenu locale={locale} />
+            {/* Visible immediately next to the menu button, not tucked inside the dropdown — the
+                dropdown itself now only carries nav links + language switch. */}
+            <ThemeToggle t={t} />
           </div>
         </div>
 

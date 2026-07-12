@@ -29,7 +29,10 @@ export function GlassProjectBlock({
   const liveLink = project.links?.[0];
 
   return (
-    <Link href={`/${locale}/work/${project.slug}`} className="group block h-full">
+    // `from` records the world-gallery page this card lives on (this component only ever renders
+    // inside a `WorldGallery`/`DevelopersFilter` grid) so the case-study's back button can return
+    // here instead of always falling back to the generic /work index.
+    <Link href={`/${locale}/work/${project.slug}?from=${project.world}`} className="group block h-full">
       <GlassPanel
         className="relative flex h-full min-h-[300px] flex-col justify-between overflow-hidden p-8 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02]"
         style={{

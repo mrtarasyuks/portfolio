@@ -10,6 +10,25 @@ const worldBarLabel: Record<ProjectWorld, string> = {
   developers: "</> APP",
 };
 
+/** Elongated corner radius (horizontal/vertical) rather than a uniform `rounded-*` class — the
+ * drum spins around its X axis (a vertical reel), so exaggerating the top/bottom curve over the
+ * side curve is what actually reads as "this card is a curved slat on a barrel," not just a
+ * rounded rectangle. Set via inline style since it must win over GlassPanel's own `rounded-2xl`
+ * class, and this codebase's plain `cn()` doesn't dedupe/override classes by source order. */
+const BARREL_RADIUS = "26px / 54px";
+
+/** Cylindrical shading overlay — darkens toward the top/bottom edges the way light falls off a
+ * curved surface, reinforcing the barrel read without any extra geometry. Purely decorative. */
+function BarrelShading() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.4), transparent 22%, transparent 78%, rgba(0,0,0,0.4))" }}
+    />
+  );
+}
+
 /** Bigger, voluminous upgrade of the old flat OrbitProjectCard — used on the homepage drum
  * carousel. Same BioCard-style folded-spine trick (a face turned 90° via preserve-3d) so the card
  * reads as a real thick object as the drum rotates, not a flat plane. The whole card is now the
@@ -47,18 +66,19 @@ export function DrumProjectCard({
       />
       <GlassPanel
         edgeDistortion
-        className="relative flex min-h-[340px] flex-col p-6 sm:min-h-[380px] sm:p-7"
-        style={{ transform: "translateZ(4px)", backgroundColor: "var(--glass-tint-strong)" }}
+        className="relative flex min-h-[240px] flex-col p-5 sm:min-h-[270px] sm:p-6"
+        style={{ transform: "translateZ(4px)", backgroundColor: "var(--glass-tint-strong)", borderRadius: BARREL_RADIUS }}
       >
-        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-text-dim">
+        <BarrelShading />
+        <div className="relative flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-text-dim">
           <span>{worldBarLabel[project.world]}</span>
           <span>{project.year}</span>
         </div>
-        <ProjectStatusBadge status={project.status} labels={t.status} className="mt-4" />
-        <h3 className="mt-3 text-lg font-medium leading-snug text-text">{project.shortTitle}</h3>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm text-text-muted">{project.oneLine[locale]}</p>
+        <ProjectStatusBadge status={project.status} labels={t.status} className="relative mt-3" />
+        <h3 className="relative mt-2 text-lg font-medium leading-snug text-text">{project.shortTitle}</h3>
+        <p className="relative mt-2 line-clamp-2 flex-1 text-sm text-text-muted">{project.oneLine[locale]}</p>
         <span
-          className="mt-5 inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide transition-transform group-hover:scale-105"
+          className="relative mt-4 inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide transition-transform group-hover:scale-105"
           style={{ backgroundColor: accent, color: "#0c0c0e", boxShadow: `0 16px 36px -14px ${accent}90` }}
         >
           {t.orbit.viewProject}
@@ -73,11 +93,12 @@ export function DrumComingSoonCard({ label, world }: { label: string; world: Pro
   return (
     <GlassPanel
       edgeDistortion
-      className="pointer-events-auto flex min-h-[340px] w-[250px] flex-col items-center justify-center gap-2 border-dashed px-4 py-10 text-center select-none sm:min-h-[380px] sm:w-[290px]"
-      style={{ backgroundColor: "var(--glass-tint-strong)" }}
+      className="pointer-events-auto relative flex min-h-[240px] w-[250px] flex-col items-center justify-center gap-2 border-dashed px-4 py-8 text-center select-none sm:min-h-[270px] sm:w-[290px]"
+      style={{ backgroundColor: "var(--glass-tint-strong)", borderRadius: BARREL_RADIUS }}
     >
-      <span className="font-mono text-[10px] uppercase tracking-wide text-text-dim">{worldBarLabel[world]}</span>
-      <p className="font-mono text-xs uppercase tracking-wide text-text-dim">{label}</p>
+      <BarrelShading />
+      <span className="relative font-mono text-[10px] uppercase tracking-wide text-text-dim">{worldBarLabel[world]}</span>
+      <p className="relative font-mono text-xs uppercase tracking-wide text-text-dim">{label}</p>
     </GlassPanel>
   );
 }

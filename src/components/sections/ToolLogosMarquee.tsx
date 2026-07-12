@@ -29,14 +29,17 @@ function MarqueeRow({ logos, direction }: { logos: ToolLogo[]; direction: "left"
         {doubled.map((logo, i) => (
           <div
             key={`${logo.name}-${i}`}
-            className="flex h-16 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-gradient-to-b from-surface-soft to-surface px-7 shadow-sm"
+            // Fixed light card, independent of light/dark chrome theme — several tool logos
+            // (ChatGPT, GitHub-style marks) are dark-on-transparent and assume a light backdrop;
+            // a theme-following dark surface made them unreadable in dark mode.
+            className="flex h-16 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-gradient-to-b from-white to-[#efeee8] px-7 shadow-sm"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logo.src}
               alt={logo.name}
               loading="lazy"
-              className="h-8 w-auto object-contain opacity-90 transition-all duration-300 hover:scale-110 hover:opacity-100"
+              className="h-8 w-auto object-contain opacity-95 transition-all duration-300 hover:scale-110 hover:opacity-100"
             />
           </div>
         ))}
