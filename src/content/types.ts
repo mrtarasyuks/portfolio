@@ -29,9 +29,9 @@ export const worlds = ["3d", "video", "developers"] as const;
 export type ProjectWorld = (typeof worlds)[number];
 
 export type ProjectMedia = {
-  kind: "diagram" | "cover" | "video";
+  kind: "diagram" | "cover" | "video" | "screenshot";
   label: string;
-  /** Only for kind: "video" — set once the user supplies footage. */
+  /** Only for kind: "video" | "screenshot" — set once the user supplies footage/images. */
   src?: string;
   /** Only for kind: "video" — groups the Video-world gallery's "videos by category" section. */
   category?: string;

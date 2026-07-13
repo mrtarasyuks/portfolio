@@ -142,6 +142,7 @@ export const en = {
     approach: "Approach",
     demo: "Walkthrough",
     verificationNote: "Verification note",
+    gallery: "Screenshots",
   },
   metaverse: {
     cta: "3D View",
@@ -236,5 +237,17 @@ export const en = {
     title: "Page not found",
     body: "This page does not exist, or the idea behind it never shipped.",
     cta: "Back home",
+  },
+  aiAgent: {
+    openLabel: "Ask about Serhii",
+    closeLabel: "Close chat",
+    title: "Ask about Serhii",
+    subtitle: "Grounded in his real skills and projects — not a generic chatbot.",
+    greeting: "Hi! Ask me anything about Serhii's skills, background, or projects.",
+    placeholder: "Ask a question...",
+    send: "Send",
+    thinking: "Thinking...",
+    errorMessage: "Something went wrong — try again in a moment.",
+    unknownFallback: "I don't have that detail on hand — I'll check with Serhii and get back to you.",
   },
 };

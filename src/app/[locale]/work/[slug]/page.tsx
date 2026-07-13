@@ -12,6 +12,7 @@ import { FoodyFlowDiagram } from "@/components/graphics/FoodyFlowDiagram";
 import { PipelineDiagram } from "@/components/graphics/PipelineDiagram";
 import { MetaversePortalBlock } from "@/components/work/MetaversePortalBlock";
 import { ProjectVideo } from "@/components/work/ProjectVideo";
+import { ProductImageSlider } from "@/components/work/ProductImageSlider";
 import { projects, getProject } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
@@ -71,7 +72,7 @@ const CARD_SHAPE = {
 function Chip({ label, accent, accentText }: { label: string; accent: string; accentText: string }) {
   return (
     <span
-      className="rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide"
+      className="rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide sm:px-3 sm:py-1.5 sm:text-[11px]"
       style={{
         borderColor: `${accent}4d`,
         background: `linear-gradient(160deg, ${accent}26, rgba(255,255,255,0.02))`,
@@ -99,12 +100,13 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
   const accentText = theme.signalTextVar;
   const hasLogo = publicAssetExists(projectLogoSrc(project.slug));
   const videoMedia = project.media?.filter((m) => m.kind === "video" && m.src) ?? [];
+  const screenshotMedia = project.media?.filter((m) => m.kind === "screenshot" && m.src) ?? [];
 
   let stepIndex = 0;
   const next = () => stepIndex++;
 
   return (
-    <article className="relative overflow-x-hidden pb-24 pt-14 md:pb-32 md:pt-20">
+    <article className="relative overflow-x-hidden pb-16 pt-10 sm:pb-24 sm:pt-14 md:pb-32 md:pt-20">
       {/* The Role/Stack/Challenge grid's slide-left/slide-right entrance variants translate ±28px
           horizontally from their resting position during the pre-hydration mount window — on a
           narrow viewport where a card's resting width is already near the full page width, that
@@ -163,12 +165,12 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         aria-hidden
       />
 
-      <Container className="relative pt-14 md:pt-20">
+      <Container className="relative pt-8 sm:pt-14 md:pt-20">
         {/* Role/Stack/Challenge distribute across up to 3 columns when there's room, instead of
             Challenge always dropping to its own full-width row underneath a 2-up Role/Stack pair. */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <StaggerFadeIn index={next()} variant="slide-left">
-            <GlassPanel className="h-full p-8 md:p-10" style={{ ...cardStyle(accent), ...CARD_SHAPE.role }}>
+            <GlassPanel className="h-full p-5 sm:p-8 md:p-10" style={{ ...cardStyle(accent), ...CARD_SHAPE.role }}>
               <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.selectedWork.roleLabel}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {project.role.map((r) => (
@@ -188,7 +190,7 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
                 <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-[#0a0a0c] px-6 py-2 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]">
                   <p className="font-mono text-[11px] font-black uppercase tracking-wide text-white">{t.selectedWork.stackLabel}</p>
                 </div>
-                <GlassPanel className="h-full p-8 pt-10 md:p-10 md:pt-12" style={cardStyle(accent)}>
+                <GlassPanel className="h-full p-5 pt-9 sm:p-8 sm:pt-10 md:p-10 md:pt-12" style={cardStyle(accent)}>
                   <div className="flex flex-wrap gap-2">
                     {project.stack.map((s) => (
                       <Chip key={s} label={s} accent={accent} accentText={accentText} />
@@ -201,7 +203,7 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
 
           {project.challenge && (
             <StaggerFadeIn index={next()} variant="rise">
-              <GlassPanel className="h-full p-8 md:p-10" style={{ ...cardStyle(accent), ...CARD_SHAPE.challenge }}>
+              <GlassPanel className="h-full p-5 sm:p-8 md:p-10" style={{ ...cardStyle(accent), ...CARD_SHAPE.challenge }}>
                 <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.caseStudy.hardPart}</p>
                 <p className="mt-4 text-base leading-relaxed text-text-muted md:text-lg">{project.challenge[l]}</p>
               </GlassPanel>
@@ -210,15 +212,15 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         </div>
 
         {project.slug === "3d-lab" && (
-          <StaggerFadeIn index={next()} variant="rise" className="mt-5 block">
+          <StaggerFadeIn index={next()} variant="rise" className="mt-4 sm:mt-5 block">
             <MetaversePortalBlock locale={l} t={t} accent={accent} steps={PROCESS_LOOP_STEPS} label={t.metaverse.loopLabel} />
           </StaggerFadeIn>
         )}
 
-        <StaggerFadeIn index={next()} variant="scale" className="mt-5 block">
+        <StaggerFadeIn index={next()} variant="scale" className="mt-4 sm:mt-5 block">
           <GlassPanel
             edgeDistortion
-            className="p-8 md:p-12"
+            className="p-6 sm:p-8 md:p-12"
             style={{
               background: `linear-gradient(155deg, ${accent}14, var(--glass-tint))`,
               boxShadow: `0 44px 110px -28px ${accent}60, 0 20px 60px -15px rgba(0,0,0,0.6)`,
@@ -232,16 +234,26 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         </StaggerFadeIn>
 
         {Diagram && (
-          <StaggerFadeIn index={next()} variant="rise" className="mt-5 block">
+          <StaggerFadeIn index={next()} variant="rise" className="mt-4 sm:mt-5 block">
             <GlassPanel className="p-4 md:p-6" style={cardStyle(accent)}>
               <Diagram />
             </GlassPanel>
           </StaggerFadeIn>
         )}
 
+        {screenshotMedia.length > 0 && (
+          <StaggerFadeIn index={next()} variant="rise" className="mt-4 sm:mt-5 block">
+            <ProductImageSlider
+              images={screenshotMedia.map((m) => ({ src: m.src!, label: m.label }))}
+              accent={accent}
+              label={t.caseStudy.gallery}
+            />
+          </StaggerFadeIn>
+        )}
+
         {videoMedia.map((m) => (
-          <StaggerFadeIn key={m.src} index={next()} variant="slide-left" className="mt-5 block">
-            <GlassPanel className="relative overflow-hidden p-8 md:p-10" style={cardStyle(accent)}>
+          <StaggerFadeIn key={m.src} index={next()} variant="slide-left" className="mt-4 sm:mt-5 block">
+            <GlassPanel className="relative overflow-hidden p-5 sm:p-8 md:p-10" style={cardStyle(accent)}>
               {/* Viewfinder-bracket corner accents — a small motif of this card's own, distinct
                   from every other card's shape treatment on this page. */}
               <span
@@ -261,8 +273,8 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         ))}
 
         {project.approach && (
-          <StaggerFadeIn index={next()} variant="rise" className="mt-5 block">
-            <GlassPanel className="p-8 md:p-10" style={cardStyle(accent)}>
+          <StaggerFadeIn index={next()} variant="rise" className="mt-4 sm:mt-5 block">
+            <GlassPanel className="p-5 sm:p-8 md:p-10" style={cardStyle(accent)}>
               <p className="font-mono text-[11px] uppercase tracking-wide text-text-dim">{t.caseStudy.approach}</p>
               <ul className="mt-4 space-y-3">
                 {project.approach[l].map((item, i) => (
@@ -291,7 +303,7 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         )}
 
         {project.verificationNote && (
-          <StaggerFadeIn index={next()} className="mt-5 block">
+          <StaggerFadeIn index={next()} className="mt-4 sm:mt-5 block">
             <div
               className="border-l-2 pl-6"
               style={{ borderColor: `${accent}66`, boxShadow: `-8px 0 24px -18px ${accent}` }}

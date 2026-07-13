@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DrumProjectCard, DrumComingSoonCard } from "@/components/hero/DrumProjectCard";
+import { getWorldTheme } from "@/content/worldTheme";
 import { cn } from "@/lib/cn";
 import type { PortfolioProject, Locale, ProjectWorld } from "@/content/types";
 import type { CopyDict } from "@/content/copy";
@@ -21,13 +22,6 @@ const VELOCITY_DECAY = 2.6;
 const SPIN_KICK_DEG = 34;
 const MAX_SPIN_VELOCITY_DEG = 70;
 
-/** Same fly-to-center transition timing `WorldChooserBlocks` uses for the `/work` index blocks —
- * reused verbatim rather than inventing new numbers, so both feel like one consistent interaction. */
-const FLY_DURATION_MS = 850;
-const BLACKOUT_DELAY_MS = 480;
-const BLACKOUT_DURATION_MS = 420;
-const NAVIGATE_DELAY_MS = BLACKOUT_DELAY_MS + BLACKOUT_DURATION_MS;
-
 /**
  * Right-side glass block on the homepage — a vertical "slot machine drum": cards sit around a
  * circle on the X axis (rotateX moves them up/down, exactly the "vertical reel" read) and the
@@ -38,13 +32,14 @@ const NAVIGATE_DELAY_MS = BLACKOUT_DELAY_MS + BLACKOUT_DURATION_MS;
  * pointer-drag spins it manually with a decaying flick velocity, same physics idiom as the
  * avatar's own drag-rotate, blending back into the idle auto-spin once the flick settles.
  *
- * Clicking a card freezes the spin, then flies that one card toward viewport-center and fades to
- * black before navigating — the exact same state-driven transition `WorldChooserBlocks` already
- * established for the `/work` index blocks (measure the clicked element's rect once, store the
- * offset in state, let JSX apply the transform), reused here instead of a plain same-page `<Link>`.
- * The container's `overflow-hidden` (needed the rest of the time — 3D `translateZ` cards can bleed
- * past a distant ancestor's clip and inflate `document.scrollWidth`) is switched to visible only
- * while a card is actually flying past the panel's own bounds toward center.
+ * Clicking a card freezes the spin in place (no fly-to-viewport-center/blackout — that effect was
+ * removed) and selects it: the card highlights (accent-colored outline glow) and pops slightly
+ * forward via its own local `translateZ` (handled in `DrumProjectCard`, driven by `isSelected`), and
+ * a "View case study"/"Back" pill pair fades in below it. "Back" clears the selection and resumes
+ * the idle spin; "View case study" navigates. The button pair is a plain 2D overlay, a sibling of
+ * the 3D `groupRef` tree rather than a descendant of it, so it isn't subject to the group's
+ * `perspective`/`preserve-3d` and always renders flat and legible regardless of the selected card's
+ * current rotation.
  */
 export function ProjectSliderPanel({
   projects,
@@ -66,11 +61,11 @@ export function ProjectSliderPanel({
     [projects, world]
   );
   const segmentAngle = 360 / slots.length;
+  const accent = getWorldTheme(world).signal;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const groupRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const flyRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rotation = useRef(0);
   const velocity = useRef(0);
   const dragging = useRef(false);
@@ -80,9 +75,7 @@ export function ProjectSliderPanel({
   const reducedMotion = useRef(false);
   const frozen = useRef(false);
 
-  const [zoomingSlug, setZoomingSlug] = useState<string | null>(null);
-  const [flyOffset, setFlyOffset] = useState<{ dx: number; dy: number } | null>(null);
-  const [blackout, setBlackout] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
   const applyFrame = useCallback(() => {
     if (groupRef.current) groupRef.current.style.transform = `rotateX(${rotation.current}deg)`;
@@ -155,8 +148,7 @@ export function ProjectSliderPanel({
       last = now;
 
       if (frozen.current) {
-        // Selected card is flying to center — leave rotation exactly where it stopped so the
-        // outer positioning transform (which the fly transform layers on top of) stays static.
+        // A card is selected — leave rotation exactly where it stopped.
       } else if (dragging.current && dragStarted.current) {
         // rotation/velocity already updated directly by the window pointermove handler
       } else {
@@ -173,23 +165,20 @@ export function ProjectSliderPanel({
     return () => cancelAnimationFrame(raf);
   }, [applyFrame]);
 
-  function handleSelect(slug: string, index: number) {
-    if (zoomingSlug) return;
+  function handleSelect(slug: string) {
+    if (selectedSlug) return;
     frozen.current = true;
     dragging.current = false;
+    setSelectedSlug(slug);
+  }
 
-    const el = flyRefs.current[index];
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      setFlyOffset({
-        dx: window.innerWidth / 2 - (rect.left + rect.width / 2),
-        dy: window.innerHeight / 2 - (rect.top + rect.height / 2),
-      });
-    }
+  function handleBack() {
+    setSelectedSlug(null);
+    frozen.current = false;
+  }
 
-    setZoomingSlug(slug);
-    window.setTimeout(() => setBlackout(true), BLACKOUT_DELAY_MS);
-    window.setTimeout(() => router.push(`/${locale}/work/${slug}`), NAVIGATE_DELAY_MS);
+  function handleViewCase() {
+    if (selectedSlug) router.push(`/${locale}/work/${selectedSlug}`);
   }
 
   function handleSpin() {
@@ -204,14 +193,13 @@ export function ProjectSliderPanel({
         onPointerDown={handlePointerDown}
         className={cn(
           "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
-          zoomingSlug ? "overflow-visible" : "overflow-hidden"
+          selectedSlug ? "overflow-visible" : "overflow-hidden"
         )}
         style={{ perspective: 1400 }}
       >
         <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
           {slots.map((slot, i) => {
-            const isTarget = slot.project && zoomingSlug === slot.project.slug;
-            const flyTransform = flyOffset ? `translate(${flyOffset.dx}px, ${flyOffset.dy}px) scale(3.2)` : "scale(3.2)";
+            const isSelected = Boolean(slot.project && selectedSlug === slot.project.slug);
 
             return (
               <div
@@ -223,46 +211,50 @@ export function ProjectSliderPanel({
                 style={{
                   transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
                   backfaceVisibility: "hidden",
+                  zIndex: isSelected ? 20 : undefined,
                 }}
               >
-                <div
-                  ref={(el) => {
-                    flyRefs.current[i] = el;
-                  }}
-                  style={
-                    isTarget
-                      ? {
-                          position: "relative",
-                          zIndex: 40,
-                          transitionProperty: "transform",
-                          transitionDuration: `${FLY_DURATION_MS}ms`,
-                          transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-                          transform: flyTransform,
-                        }
-                      : undefined
-                  }
-                >
-                  {slot.project ? (
-                    <DrumProjectCard
-                      project={slot.project}
-                      locale={locale}
-                      t={t}
-                      onSelect={() => handleSelect(slot.project!.slug, i)}
-                    />
-                  ) : (
-                    <DrumComingSoonCard label={t.orbit.comingSoon} world={world} />
-                  )}
-                </div>
+                {slot.project ? (
+                  <DrumProjectCard
+                    project={slot.project}
+                    locale={locale}
+                    t={t}
+                    isSelected={isSelected}
+                    onSelect={() => handleSelect(slot.project!.slug)}
+                  />
+                ) : (
+                  <DrumComingSoonCard label={t.orbit.comingSoon} world={world} />
+                )}
               </div>
             );
           })}
         </div>
 
         <div
-          className="pointer-events-none fixed inset-0 z-50 bg-black transition-opacity"
-          style={{ transitionDuration: `${BLACKOUT_DURATION_MS}ms`, opacity: blackout ? 1 : 0 }}
-          aria-hidden
-        />
+          className={cn(
+            "pointer-events-none absolute inset-x-0 top-1/2 flex justify-center gap-3 transition-all duration-300",
+            selectedSlug ? "translate-y-[168px] opacity-100" : "translate-y-[140px] opacity-0"
+          )}
+        >
+          <button
+            type="button"
+            onClick={handleViewCase}
+            disabled={!selectedSlug}
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide shadow-[0_16px_36px_-14px_rgba(0,0,0,0.7)] transition-transform hover:scale-105 active:scale-95"
+            style={{ backgroundColor: accent, color: "#0c0c0e" }}
+          >
+            {t.orbit.viewProject}
+            <span aria-hidden>→</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleBack}
+            disabled={!selectedSlug}
+            className="pointer-events-auto rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-text backdrop-blur-xl transition-transform hover:scale-105 active:scale-95"
+          >
+            {t.orbit.back}
+          </button>
+        </div>
       </div>
 
       <SpinButton onSpin={handleSpin} label={t.orbit.spin} />

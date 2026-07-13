@@ -32,18 +32,21 @@ function BarrelShading() {
 /** Bigger, voluminous upgrade of the old flat OrbitProjectCard — used on the homepage drum
  * carousel. Same BioCard-style folded-spine trick (a face turned 90° via preserve-3d) so the card
  * reads as a real thick object as the drum rotates, not a flat plane. The whole card is now the
- * single clickable element (`onSelect`, not an inner `<Link>`) — the parent `ProjectSliderPanel`
- * owns the click-to-fly-to-center transition, the same pattern `WorldChooserBlocks` already
- * established for the `/work` index blocks, just scoped to one drum card instead of three. */
+ * single clickable element (`onSelect`, not an inner `<Link>`) — clicking it freezes the drum and
+ * selects it (`ProjectSliderPanel` owns that state); `isSelected` here just drives the visual
+ * response — an accent-colored outline glow plus a small extra `translateZ` pop toward the
+ * viewer — rather than the old fly-to-viewport-center/blackout transition that used to live here. */
 export function DrumProjectCard({
   project,
   locale,
   t,
+  isSelected = false,
   onSelect,
 }: {
   project: PortfolioProject;
   locale: Locale;
   t: CopyDict;
+  isSelected?: boolean;
   onSelect: () => void;
 }) {
   const accent = getWorldTheme(project.world).signal;
@@ -53,6 +56,7 @@ export function DrumProjectCard({
       type="button"
       onClick={onSelect}
       aria-label={`${t.orbit.viewProject}: ${project.shortTitle}`}
+      aria-pressed={isSelected}
       className="group pointer-events-auto relative block w-[250px] cursor-pointer select-none text-left sm:w-[290px]"
       style={{ transformStyle: "preserve-3d" }}
     >
@@ -66,8 +70,16 @@ export function DrumProjectCard({
       />
       <GlassPanel
         edgeDistortion
-        className="relative flex min-h-[240px] flex-col p-5 sm:min-h-[270px] sm:p-6"
-        style={{ transform: "translateZ(4px)", backgroundColor: "var(--glass-tint-strong)", borderRadius: BARREL_RADIUS }}
+        className="relative flex min-h-[240px] flex-col p-5 transition-transform duration-300 sm:min-h-[270px] sm:p-6"
+        style={{
+          transform: `translateZ(${isSelected ? 32 : 4}px) scale(${isSelected ? 1.05 : 1})`,
+          backgroundColor: "var(--glass-tint-strong)",
+          borderRadius: BARREL_RADIUS,
+          borderColor: isSelected ? accent : undefined,
+          boxShadow: isSelected
+            ? `0 20px 60px -15px rgba(0,0,0,0.6), 0 0 0 2px ${accent}, 0 0 44px 6px ${accent}66`
+            : undefined,
+        }}
       >
         <BarrelShading />
         <div className="relative flex items-center justify-between font-mono text-[10px] uppercase tracking-wide text-text-dim">

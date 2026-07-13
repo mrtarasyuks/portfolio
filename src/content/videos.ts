@@ -26,7 +26,7 @@ export const videos: VideoItem[] = [
   // Viral Video — tagged aiMade: true (see VideoItem.aiMade doc comment)
   { label: "Funny Kids: Messi, Ronaldo, Mbappe", src: "video-creator/viral-video/Funny-Kids-Messi-Ronaldo-Mbappe.mp4", category: "viralVideo", aiMade: true },
   { label: "Funny: Messi & Ronaldo — Big Builders", src: "video-creator/viral-video/Funny-Messi&Ronaldo-Big-Builders.mp4", category: "viralVideo", aiMade: true },
-  { label: "Mbappe & Neymar — Story 03", src: "video-creator/viral-video/Mbappe&Neymar-story03.mov", category: "viralVideo", aiMade: true },
+  { label: "Mbappe & Neymar — Story 03", src: "video-creator/viral-video/Mbappe&Neymar-story03.mp4", category: "viralVideo", aiMade: true },
   { label: "Messi & Ronaldo — Crazy Frog", src: "video-creator/viral-video/Messi&Ronaldo-Crazy-Frog.mp4", category: "viralVideo", aiMade: true },
   {
     label: "Messi & Ronaldo — Gladiators, Story 06",

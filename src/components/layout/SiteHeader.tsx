@@ -33,16 +33,23 @@ export function SiteHeader({ locale }: { locale: Locale }) {
               instead of a second stacked row below the logo — two rows made the header tall
               enough to overlap the avatar in the 3D canvas below on short mobile viewports.
               `min-w-0 flex-1` gives this row a real, bounded width (container width minus the
-              logo) instead of letting `justify-between` size it purely by content — that's what
-              lets the grid-scroll speed slider below shrink to fit instead of overflowing the
-              viewport when it expands. */}
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 md:hidden">
+              logo) instead of letting `justify-between` size it purely by content. World-switch
+              sits right next to the home icon; the grid-scroll control lives in its own
+              `flex-1 min-w-0` middle slot so its expanding speed slider only ever grows into
+              whatever space is actually left, shrinking (not overflowing) if that's tight —
+              theme/menu stay in a `shrink-0` group at the end, so the slider can never push them
+              further right regardless of how wide it expands. */}
+          <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
             <WorldSwitchHeaderNav locale={locale} />
-            <HeroGridScrollBar locale={locale} />
-            <MobileMenu locale={locale} />
-            {/* Visible immediately next to the menu button, not tucked inside the dropdown — the
-                dropdown itself now only carries nav links + language switch. */}
-            <ThemeToggle t={t} />
+            <div className="flex min-w-0 flex-1 items-center">
+              <HeroGridScrollBar locale={locale} />
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {/* Visible immediately next to the menu button, not tucked inside the dropdown —
+                  the dropdown itself only carries nav links + language switch. */}
+              <ThemeToggle t={t} />
+              <MobileMenu locale={locale} />
+            </div>
           </div>
         </div>
 

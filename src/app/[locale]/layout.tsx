@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { HeaderHeightVar } from "@/components/layout/HeaderHeightVar";
 import { AmbientBackground } from "@/components/ui/AmbientBackground";
+import { ChatWidget } from "@/components/ai-agent/ChatWidget";
 import { WorldNavProvider } from "@/context/WorldNavContext";
 import { GridScrollProvider } from "@/context/GridScrollContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -79,6 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             </GridScrollProvider>
           </WorldNavProvider>
           <SiteFooter locale={locale as Locale} />
+          <ChatWidget locale={locale as Locale} />
         </ThemeProvider>
       </body>
     </html>

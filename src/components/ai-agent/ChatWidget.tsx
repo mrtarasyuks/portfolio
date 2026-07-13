@@ -1,0 +1,147 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { getCopy } from "@/content/copy";
+import type { Locale } from "@/content/types";
+import { cn } from "@/lib/cn";
+
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
+/**
+ * Floating "ask about Serhii" chat widget, mounted once globally (root layout) — a round toggle
+ * button bottom-right that expands a small panel in normal document flow (accordion-style height
+ * transition, same idiom `GridScrollControl`'s width transition uses) rather than as a modal
+ * overlay, since the rest of the page stays usable behind it. Conversation state is plain
+ * component state, not persisted — this is the phase-1 text-only agent; a recorded voice call is
+ * separate follow-up scope. Every reply is grounded server-side (`/api/chat`) in the site's real
+ * profile/project content, not freeform.
+ */
+export function ChatWidget({ locale }: { locale: Locale }) {
+  const t = getCopy(locale);
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, pending]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const content = input.trim();
+    if (!content || pending) return;
+
+    const next = [...messages, { role: "user" as const, content }];
+    setMessages(next);
+    setInput("");
+    setPending(true);
+    setError(false);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: next }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.reply) throw new Error("chat request failed");
+      setMessages([...next, { role: "assistant", content: data.reply as string }]);
+    } catch {
+      setError(true);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
+      <div
+        role="region"
+        aria-label={t.aiAgent.title}
+        aria-hidden={!open}
+        className={cn(
+          "w-[min(340px,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300",
+          open ? "scale-100 opacity-100" : "pointer-events-none h-0 scale-95 opacity-0"
+        )}
+      >
+        <div className="flex flex-col gap-0.5 border-b border-[var(--glass-border)] px-4 py-3">
+          <p className="font-display text-sm font-bold text-text">{t.aiAgent.title}</p>
+          <p className="text-xs text-text-muted">{t.aiAgent.subtitle}</p>
+        </div>
+
+        <div ref={listRef} className="flex max-h-[50vh] min-h-[160px] flex-col gap-2 overflow-y-auto px-4 py-3">
+          <Bubble role="assistant">{t.aiAgent.greeting}</Bubble>
+          {messages.map((m, i) => (
+            <Bubble key={i} role={m.role}>
+              {m.content}
+            </Bubble>
+          ))}
+          {pending && <Bubble role="assistant">{t.aiAgent.thinking}</Bubble>}
+          {error && <Bubble role="assistant">{t.aiAgent.errorMessage}</Bubble>}
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 border-t border-[var(--glass-border)] p-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={t.aiAgent.placeholder}
+            tabIndex={open ? 0 : -1}
+            className="min-w-0 flex-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint)] px-4 py-2 text-sm text-text outline-none placeholder:text-text-dim"
+          />
+          <button
+            type="submit"
+            disabled={pending || !input.trim()}
+            tabIndex={open ? 0 : -1}
+            className="shrink-0 rounded-full bg-signal px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-signal-ink transition-transform active:scale-95 disabled:opacity-50"
+          >
+            {t.aiAgent.send}
+          </button>
+        </form>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? t.aiAgent.closeLabel : t.aiAgent.openLabel}
+        title={open ? t.aiAgent.closeLabel : t.aiAgent.openLabel}
+        className="flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] text-text shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-transform hover:scale-105 active:scale-95"
+      >
+        <ChatGlyph open={open} />
+      </button>
+    </div>
+  );
+}
+
+function Bubble({ role, children }: { role: "user" | "assistant"; children: React.ReactNode }) {
+  return (
+    <p
+      className={cn(
+        "max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-snug",
+        role === "user"
+          ? "self-end rounded-br-sm bg-signal text-signal-ink"
+          : "self-start rounded-bl-sm border border-[var(--glass-border)] bg-[var(--glass-tint)] text-text"
+      )}
+    >
+      {children}
+    </p>
+  );
+}
+
+function ChatGlyph({ open }: { open: boolean }) {
+  if (open) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    );
+  }
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}

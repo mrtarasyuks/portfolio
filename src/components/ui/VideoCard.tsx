@@ -24,6 +24,16 @@ import { useInView } from "@/hooks/useInView";
  * established pattern for continuous/dynamic media state, same idiom `VideoLightbox` already uses
  * for volume/mute) rather than the `autoPlay` attribute, since that attribute only takes effect on
  * initial mount and can't react to `inView` changing later.
+ *
+ * Video Creator clips (`src` under `video-creator/`) also render a `poster` — a same-name `.jpg`
+ * sitting next to the clip on the media host — and default `preload` to `"none"`. Without a
+ * poster, even `preload="metadata"` forces the browser to fetch a real byte range of the video
+ * just to paint a first frame, and a category page like `/work/video/[category]` mounts a dozen-
+ * plus of these non-autoplay cards at once. The poster removes any need to touch the video file at
+ * all until playback is actually requested (either `autoPlay` scrolling into view, or the lightbox
+ * opening). Case-study clips elsewhere don't have a generated poster yet, so the lookup is scoped
+ * to that one folder — guessing a poster path for those would 404 (and trip the "no console
+ * errors" test) rather than gracefully falling back to no poster.
  */
 export function VideoCard({
   src,
@@ -39,6 +49,7 @@ export function VideoCard({
   const [wrapRef, inView] = useInView<HTMLElement>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const shouldPlay = autoPlay && inView;
+  const poster = src.startsWith("video-creator/") ? mediaUrl(src.replace(/\.(mp4|mov)$/i, ".jpg")) : undefined;
 
   useEffect(() => {
     const v = videoRef.current;
@@ -51,10 +62,11 @@ export function VideoCard({
     <video
       ref={videoRef}
       src={mediaUrl(src)}
+      poster={poster}
       muted
       playsInline
       loop={autoPlay}
-      preload={shouldPlay ? "auto" : "metadata"}
+      preload={shouldPlay ? "auto" : "none"}
       tabIndex={-1}
       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       aria-hidden

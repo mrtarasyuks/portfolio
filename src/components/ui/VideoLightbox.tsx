@@ -114,6 +114,7 @@ export function VideoLightbox({ src, label, onClose, t }: { src: string; label?:
           <video
             ref={videoRef}
             src={mediaUrl(src)}
+            poster={src.startsWith("video-creator/") ? mediaUrl(src.replace(/\.(mp4|mov)$/i, ".jpg")) : undefined}
             autoPlay
             playsInline
             className="max-h-[78vh] max-w-[94vw] rounded-xl bg-black shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)]"

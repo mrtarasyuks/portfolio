@@ -13,8 +13,8 @@ const GridScrollContext = createContext<GridScrollValue | null>(null);
 
 /** Replaces the old spotlight beam: toggling this scrolls the floor grid under the avatar's platform (Tron-style), the slider sets scroll speed instead of brightness. */
 export function GridScrollProvider({ children }: { children: React.ReactNode }) {
-  const [on, setOn] = useState(false);
-  const [speed, setSpeed] = useState(0.6);
+  const [on, setOn] = useState(true);
+  const [speed, setSpeed] = useState(2);
 
   const value = useMemo(
     () => ({ on, speed, toggle: () => setOn((v) => !v), setSpeed }),
