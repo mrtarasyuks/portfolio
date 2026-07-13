@@ -6,6 +6,7 @@ import { VoiceVisualizer } from "@/components/voice/VoiceVisualizer";
 import { CallTimer } from "@/components/voice/CallTimer";
 import { useAudioLevel } from "@/hooks/useAudioLevel";
 import { startVoiceCall, type VoiceCallSession, type VoiceCallState as LibCallState } from "@/lib/voice/webrtcClient";
+import { isValidEmail } from "@/lib/voice/email";
 import { BIO_CARD_PORTRAIT_SRC } from "@/content/assetPaths";
 import type { Locale } from "@/content/types";
 import type { CopyDict } from "@/content/copy";
@@ -15,7 +16,7 @@ const WRAP_UP_AT_REMAINING_S = 10;
 const SOFT_CUTOFF_AT_ELAPSED_S = CALL_DURATION_S - 10;
 const TURNSTILE_TIMEOUT_MS = 8000;
 
-type CallPhase = "verifying" | "connecting" | LibCallState | "finished" | "error";
+type CallPhase = "email" | "verifying" | "connecting" | LibCallState | "finished" | "error";
 
 /**
  * The whole call lifecycle in one modal: Turnstile → mint an ephemeral OpenAI session → WebRTC
@@ -38,10 +39,11 @@ export function VoiceCallModal({
   hasPortrait: boolean;
 }) {
   const tv = t.aiAgent.voiceCall;
-  const [phase, setPhase] = useState<CallPhase>("verifying");
+  const [phase, setPhase] = useState<CallPhase>("email");
   const [errorMessage, setErrorMessage] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(CALL_DURATION_S);
   const [streams, setStreams] = useState<{ remote: MediaStream; local: MediaStream } | null>(null);
+  const [email, setEmail] = useState("");
 
   const sessionRef = useRef<VoiceCallSession | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -112,7 +114,7 @@ export function VoiceCallModal({
     return () => window.clearTimeout(timeout);
   }, [phase, endCall, tv.notConfigured]);
 
-  function tick() {
+  const tick = useCallback(() => {
     if (!startTimeRef.current || endedRef.current) return;
     const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
     const remaining = CALL_DURATION_S - elapsed;
@@ -123,52 +125,58 @@ export function VoiceCallModal({
       sessionRef.current?.cancelResponse();
     }
     if (remaining <= 0) endCall("finished");
-  }
+  }, [endCall]);
 
-  async function handleTurnstileToken(token: string) {
-    setPhase("connecting");
-    try {
-      const res = await fetch("/api/voice/session", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ turnstileToken: token }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.clientSecret) {
-        if (res.status === 403) return endCall("error", tv.verificationError);
-        if (res.status === 429) return endCall("error", tv.rateLimitedError);
-        if (res.status === 500) return endCall("error", tv.notConfigured);
-        return endCall("error", tv.connectionError);
+  // Stable across re-renders (matters for the same reason `handleClose` needed to be: this is
+  // passed to `TurnstileWidget`, whose own effect depends on it — an unstable callback there would
+  // destroy and recreate the real Cloudflare widget on every unrelated render).
+  const handleTurnstileToken = useCallback(
+    async (token: string) => {
+      setPhase("connecting");
+      try {
+        const res = await fetch("/api/voice/session", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ turnstileToken: token, visitorEmail: email }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.clientSecret) {
+          if (res.status === 403) return endCall("error", tv.verificationError);
+          if (res.status === 429) return endCall("error", tv.rateLimitedError);
+          if (res.status === 500) return endCall("error", tv.notConfigured);
+          return endCall("error", tv.connectionError);
+        }
+
+        const session = await startVoiceCall(data.clientSecret, locale, email, {
+          onStateChange: (state) => {
+            if (endedRef.current) return;
+            setPhase(state);
+            if (!startTimeRef.current) {
+              startTimeRef.current = Date.now();
+              intervalRef.current = window.setInterval(tick, 1000);
+            }
+          },
+          onError: () => endCall("error", tv.connectionError),
+        });
+
+        if (endedRef.current) {
+          session.disconnect();
+          return;
+        }
+
+        sessionRef.current = session;
+        setStreams({ remote: session.remoteStream, local: session.localStream });
+        if (audioRef.current) {
+          audioRef.current.srcObject = session.remoteStream;
+          audioRef.current.play().catch(() => {});
+        }
+      } catch (err) {
+        const isMicDenied = err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "PermissionDeniedError");
+        endCall("error", isMicDenied ? tv.micDenied : tv.connectionError);
       }
-
-      const session = await startVoiceCall(data.clientSecret, locale, {
-        onStateChange: (state) => {
-          if (endedRef.current) return;
-          setPhase(state);
-          if (!startTimeRef.current) {
-            startTimeRef.current = Date.now();
-            intervalRef.current = window.setInterval(tick, 1000);
-          }
-        },
-        onError: () => endCall("error", tv.connectionError),
-      });
-
-      if (endedRef.current) {
-        session.disconnect();
-        return;
-      }
-
-      sessionRef.current = session;
-      setStreams({ remote: session.remoteStream, local: session.localStream });
-      if (audioRef.current) {
-        audioRef.current.srcObject = session.remoteStream;
-        audioRef.current.play().catch(() => {});
-      }
-    } catch (err) {
-      const isMicDenied = err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "PermissionDeniedError");
-      endCall("error", isMicDenied ? tv.micDenied : tv.connectionError);
-    }
-  }
+    },
+    [email, locale, tv, endCall, tick]
+  );
 
   const isLive = phase === "listening" || phase === "speaking";
   const showStatusLabel = phase === "connecting" || isLive;
@@ -212,7 +220,7 @@ export function VoiceCallModal({
       >
         <div>
           <p className="font-display text-lg font-bold text-white">{tv.modalTitle}</p>
-          {phase === "verifying" && <p className="mt-1 text-sm text-white/60">{tv.modalSubtitle}</p>}
+          {(phase === "email" || phase === "verifying") && <p className="mt-1 text-sm text-white/60">{tv.modalSubtitle}</p>}
         </div>
 
         {/* Visible for the whole lifetime of the call window, not just once actually connected —
@@ -220,6 +228,10 @@ export function VoiceCallModal({
         <VoiceVisualizer levelRef={phase === "speaking" ? remoteLevelRef : localLevelRef} color="var(--signal, #ffcc33)">
           <Avatar hasPortrait={hasPortrait} />
         </VoiceVisualizer>
+
+        {phase === "email" && (
+          <EmailStep tv={tv} onSubmit={(value) => { setEmail(value); setPhase("verifying"); }} />
+        )}
 
         {phase === "verifying" && <TurnstileWidget onToken={handleTurnstileToken} />}
 
@@ -271,6 +283,49 @@ export function VoiceCallModal({
         )}
       </div>
     </div>
+  );
+}
+
+/** Gates the call behind an email — required so Serhii can see whose call generated a given
+ * Telegram notification (both the "call started" push and any unanswered-question push carry it). */
+function EmailStep({ tv, onSubmit }: { tv: CopyDict["aiAgent"]["voiceCall"]; onSubmit: (email: string) => void }) {
+  const [value, setValue] = useState("");
+  const [touched, setTouched] = useState(false);
+  const valid = isValidEmail(value);
+
+  return (
+    <form
+      className="flex w-full flex-col items-center gap-3"
+      // noValidate: without it, the browser's own native email-format check intercepts submit
+      // before this handler runs at all for some invalid values, so our own (localized, styled)
+      // error message never gets a chance to show — one validation path, not two disagreeing ones.
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        setTouched(true);
+        if (valid) onSubmit(value.trim());
+      }}
+    >
+      <p className="text-sm text-white/70">{tv.emailPrompt}</p>
+      <input
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={tv.emailPlaceholder}
+        // text-base (16px): the same iOS Safari auto-zoom-on-focus fix already applied to the text
+        // chat's input — any input under 16px triggers it.
+        className="w-full rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-center text-base text-white outline-none placeholder:text-white/40"
+      />
+      {touched && !valid && <p className="text-xs text-red-300">{tv.emailInvalid}</p>}
+      <button
+        type="submit"
+        className="rounded-full bg-signal px-6 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-signal-ink transition-transform hover:scale-105 active:scale-95"
+      >
+        {tv.emailContinue}
+      </button>
+    </form>
   );
 }
 

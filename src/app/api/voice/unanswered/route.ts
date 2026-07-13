@@ -10,6 +10,7 @@ const unansweredSchema = z.object({
   question: z.string().min(1).max(500),
   conversationSummary: z.string().max(300).optional(),
   language: z.string().min(1).max(10),
+  visitorEmail: z.string().max(200).optional(),
 });
 
 /** Called by the browser when the voice agent invokes `save_question_for_serhii` mid-call. No
@@ -27,12 +28,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   }
 
-  const { question, conversationSummary, language } = parsed.data;
+  const { question, conversationSummary, language, visitorEmail } = parsed.data;
   const text = [
     "🎙 New voice-call question from the portfolio site:",
     `Q: ${question}`,
     conversationSummary ? `Context: ${conversationSummary}` : null,
     `Language: ${language}`,
+    visitorEmail ? `Email: ${visitorEmail}` : null,
   ]
     .filter(Boolean)
     .join("\n");

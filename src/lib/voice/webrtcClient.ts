@@ -32,6 +32,7 @@ type FunctionCallOutputItem = {
 export async function startVoiceCall(
   clientSecret: string,
   locale: string,
+  visitorEmail: string,
   handlers: VoiceCallHandlers
 ): Promise<VoiceCallSession> {
   const pc = new RTCPeerConnection();
@@ -74,7 +75,7 @@ export async function startVoiceCall(
       const output = (response?.output ?? []) as FunctionCallOutputItem[];
       for (const item of output) {
         if (item.type === "function_call" && item.name === "save_question_for_serhii") {
-          void handleSaveQuestion(send, item, locale);
+          void handleSaveQuestion(send, item, locale, visitorEmail);
         }
       }
     }
@@ -130,7 +131,8 @@ export async function startVoiceCall(
 async function handleSaveQuestion(
   send: (event: Record<string, unknown>) => void,
   item: FunctionCallOutputItem,
-  fallbackLanguage: string
+  fallbackLanguage: string,
+  visitorEmail: string
 ) {
   let output = "Saved — tell the visitor you've passed it to Serhii.";
   try {
@@ -146,6 +148,7 @@ async function handleSaveQuestion(
         question: args.question,
         conversationSummary: args.conversationSummary,
         language: args.language || fallbackLanguage,
+        visitorEmail,
       }),
     });
   } catch {
