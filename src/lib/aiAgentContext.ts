@@ -54,3 +54,20 @@ ${projectLines}
 
 Contact (only share if asked): email ${profile.email}, Telegram ${profile.telegram}.`;
 }
+
+/**
+ * The voice call's Realtime session `instructions` — the exact same grounding the text widget
+ * uses, plus a short addendum for what's different about a live spoken call. Deliberately not a
+ * separate hand-written prompt: the whole point of `buildAiAgentSystemPrompt()` existing is that
+ * there is one source of truth for what the agent knows, so the voice and text agents can never
+ * say contradictory things about Serhii.
+ */
+export function buildVoiceAgentInstructions(): string {
+  return `${buildAiAgentSystemPrompt()}
+
+This is a live voice call, not a text chat — a few rules on top of the ones above:
+- Speak naturally, the way a person would on a phone call. No markdown, no asterisks, no lists — just spoken sentences.
+- Keep every answer very short: one short sentence, two at most. The whole call is capped at 2 minutes.
+- Open the call with a brief, warm greeting in the visitor's language, then let them talk.
+- If a question isn't covered by the facts above, call save_question_for_serhii with their question, a one-sentence summary of the call, and the language they're speaking — then say out loud that you've passed it to Serhii.`;
+}

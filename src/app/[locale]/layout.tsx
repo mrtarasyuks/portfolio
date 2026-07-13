@@ -1,3 +1,4 @@
+import type { Viewport } from "next";
 import { Instrument_Sans, Instrument_Serif, IBM_Plex_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
@@ -11,6 +12,8 @@ import { ChatWidget } from "@/components/ai-agent/ChatWidget";
 import { WorldNavProvider } from "@/context/WorldNavContext";
 import { GridScrollProvider } from "@/context/GridScrollContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { publicAssetExists } from "@/lib/publicAsset";
+import { BIO_CARD_PORTRAIT_SRC } from "@/content/assetPaths";
 import "../globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -36,6 +39,18 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+/**
+ * `interactiveWidget: "resizes-content"` keeps the layout viewport (and therefore any `vh`/`dvh`
+ * sizing and `fixed` positioning) in sync with the actual visible area once a mobile keyboard
+ * opens, instead of leaving fixed-positioned UI like `ChatWidget` anchored against the pre-keyboard
+ * viewport height.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
+};
+
 type LayoutProps = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -53,6 +68,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
   const cookieStore = await cookies();
   const initialTheme: ThemeMode = cookieStore.get("theme")?.value === "light" ? "light" : "dark";
+  const hasPortrait = publicAssetExists(BIO_CARD_PORTRAIT_SRC);
 
   return (
     <html
@@ -80,7 +96,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             </GridScrollProvider>
           </WorldNavProvider>
           <SiteFooter locale={locale as Locale} />
-          <ChatWidget locale={locale as Locale} />
+          <ChatWidget locale={locale as Locale} hasPortrait={hasPortrait} />
         </ThemeProvider>
       </body>
     </html>

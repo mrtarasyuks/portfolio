@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCopy } from "@/content/copy";
 import type { Locale } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { VoiceCallButton } from "@/components/voice/VoiceCallButton";
+import { VoiceCallModal } from "@/components/voice/VoiceCallModal";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -12,22 +14,38 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
  * button bottom-right that expands a small panel in normal document flow (accordion-style height
  * transition, same idiom `GridScrollControl`'s width transition uses) rather than as a modal
  * overlay, since the rest of the page stays usable behind it. Conversation state is plain
- * component state, not persisted — this is the phase-1 text-only agent; a recorded voice call is
- * separate follow-up scope. Every reply is grounded server-side (`/api/chat`) in the site's real
- * profile/project content, not freeform.
+ * component state, not persisted. Every text reply is grounded server-side (`/api/chat`) in the
+ * site's real profile/project content, not freeform. The bright green banner right under the panel
+ * header opens `VoiceCallModal` — a live voice call (OpenAI Realtime API over WebRTC) grounded in
+ * the exact same content via `buildVoiceAgentInstructions()`, so the two agents can't drift apart.
  */
-export function ChatWidget({ locale }: { locale: Locale }) {
+export function ChatWidget({ locale, hasPortrait }: { locale: Locale; hasPortrait: boolean }) {
   const t = getCopy(locale);
   const [open, setOpen] = useState(false);
+  const [callOpen, setCallOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  // Stable identity — VoiceCallModal's mount/unmount effect depends on this closing over `endCall`;
+  // a fresh inline arrow on every ChatWidget render would make that dependency unstable too.
+  const closeCall = useCallback(() => setCallOpen(false), []);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending]);
+
+  // Keep the page behind the panel still while it's open — otherwise a background scroll (or the
+  // viewport shift a mobile keyboard causes) fights with the panel's own internal scroll.
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,12 +85,15 @@ export function ChatWidget({ locale }: { locale: Locale }) {
           open ? "scale-100 opacity-100" : "pointer-events-none h-0 scale-95 opacity-0"
         )}
       >
-        <div className="flex flex-col gap-0.5 border-b border-[var(--glass-border)] px-4 py-3">
-          <p className="font-display text-sm font-bold text-text">{t.aiAgent.title}</p>
-          <p className="text-xs text-text-muted">{t.aiAgent.subtitle}</p>
+        <div className="flex flex-col gap-3 border-b border-[var(--glass-border)] px-4 py-3">
+          <div className="flex flex-col gap-0.5">
+            <p className="font-display text-sm font-bold text-text">{t.aiAgent.title}</p>
+            <p className="text-xs text-text-muted">{t.aiAgent.subtitle}</p>
+          </div>
+          <VoiceCallButton label={t.aiAgent.voiceCall.bannerLabel} onClick={() => setCallOpen(true)} />
         </div>
 
-        <div ref={listRef} className="flex max-h-[50vh] min-h-[160px] flex-col gap-2 overflow-y-auto px-4 py-3">
+        <div ref={listRef} className="flex max-h-[50dvh] min-h-[160px] flex-col gap-2 overflow-y-auto px-4 py-3">
           <Bubble role="assistant">{t.aiAgent.greeting}</Bubble>
           {messages.map((m, i) => (
             <Bubble key={i} role={m.role}>
@@ -90,7 +111,9 @@ export function ChatWidget({ locale }: { locale: Locale }) {
             onChange={(e) => setInput(e.target.value)}
             placeholder={t.aiAgent.placeholder}
             tabIndex={open ? 0 : -1}
-            className="min-w-0 flex-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint)] px-4 py-2 text-sm text-text outline-none placeholder:text-text-dim"
+            // text-base (16px), not text-sm: iOS Safari auto-zooms the whole page on focus for any
+            // input under 16px, which is the "page zooms in and needs a manual pinch back out" bug.
+            className="min-w-0 flex-1 rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint)] px-4 py-2 text-base text-text outline-none placeholder:text-text-dim"
           />
           <button
             type="submit"
@@ -112,6 +135,8 @@ export function ChatWidget({ locale }: { locale: Locale }) {
       >
         <ChatGlyph open={open} />
       </button>
+
+      {callOpen && <VoiceCallModal locale={locale} t={t} onClose={closeCall} hasPortrait={hasPortrait} />}
     </div>
   );
 }
