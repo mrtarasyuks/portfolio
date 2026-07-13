@@ -72,7 +72,6 @@ export const videos: VideoItem[] = [
   { label: "Prank: Messi vs Ronaldo", src: "video-creator/viral-video/prank-MessivsRonaldo.mp4", category: "viralVideo", aiMade: true },
 
   // Promo
-  { label: "AI Assistant", src: "video-creator/promo/AI_Assistant.mp4", category: "promo" },
   { label: "Digital Horizon", src: "video-creator/promo/Digital-Horizont.mp4", category: "promo" },
   { label: "Faja — Video 01", src: "video-creator/promo/Faja-Video01.mp4", category: "promo" },
   { label: "Faja — Video 02", src: "video-creator/promo/Faja-Video02.mp4", category: "promo" },
@@ -81,7 +80,6 @@ export const videos: VideoItem[] = [
   { label: "Faja — Video 05", src: "video-creator/promo/Faja-Video05.mp4", category: "promo" },
   { label: "Ford — Modern Lights", src: "video-creator/promo/Ford_modern-lights.mp4", category: "promo" },
   { label: "Lamp 3D Print", src: "video-creator/promo/Lamp-3Dprint.mp4", category: "promo" },
-  { label: "Nyma Assistant", src: "video-creator/promo/NymaAssistant.mp4", category: "promo" },
   { label: "VPN", src: "video-creator/promo/VPN.mp4", category: "promo" },
   { label: "Korean Cosmetics", src: "video-creator/promo/korean_cosmetics.mp4", category: "promo" },
 
