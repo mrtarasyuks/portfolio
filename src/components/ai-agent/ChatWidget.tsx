@@ -81,14 +81,19 @@ export function ChatWidget({ locale, hasPortrait }: { locale: Locale; hasPortrai
         aria-label={t.aiAgent.title}
         aria-hidden={!open}
         className={cn(
-          "w-[min(340px,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300",
+          // A solid-ish `bg-surface/95` here, not the translucent `--glass-tint` this codebase's
+          // other glass surfaces use — this widget is `fixed` above arbitrary page content
+          // (the hero scene, ambient blobs, plain light-theme background), so its text needs
+          // guaranteed contrast rather than contrast that depends on whatever happens to render
+          // behind it. `backdrop-blur-xl` stays for a touch of frost at the 5% that's still see-through.
+          "w-[min(340px,calc(100vw-2rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-surface/95 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300",
           open ? "scale-100 opacity-100" : "pointer-events-none h-0 scale-95 opacity-0"
         )}
       >
         <div className="flex flex-col gap-3 border-b border-[var(--glass-border)] px-4 py-3">
           <div className="flex flex-col gap-0.5">
             <p className="font-display text-sm font-bold text-text">{t.aiAgent.title}</p>
-            <p className="text-xs text-text-muted">{t.aiAgent.subtitle}</p>
+            <p className="text-xs font-medium text-text">{t.aiAgent.subtitle}</p>
           </div>
           <VoiceCallButton label={t.aiAgent.voiceCall.bannerLabel} onClick={() => setCallOpen(true)} />
         </div>
@@ -145,10 +150,13 @@ function Bubble({ role, children }: { role: "user" | "assistant"; children: stri
   return (
     <p
       className={cn(
-        "max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-snug",
+        // font-medium (not the plain default weight) + a solid `bg-surface-soft` (not the
+        // translucent `--glass-tint`) for the same "guaranteed contrast against any backdrop"
+        // reasoning as the panel's own background above.
+        "max-w-[85%] rounded-2xl px-3 py-2 text-sm font-medium leading-snug",
         role === "user"
           ? "self-end rounded-br-sm bg-signal text-signal-ink"
-          : "self-start rounded-bl-sm border border-[var(--glass-border)] bg-[var(--glass-tint)] text-text"
+          : "self-start rounded-bl-sm border border-[var(--glass-border)] bg-surface-soft text-text"
       )}
     >
       {renderFormattedText(children)}

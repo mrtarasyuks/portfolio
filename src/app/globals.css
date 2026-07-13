@@ -256,11 +256,11 @@ body {
 }
 
 .animate-marquee-left {
-  animation: marquee-left 70s linear infinite;
+  animation: marquee-left 48s linear infinite;
 }
 
 .animate-marquee-right {
-  animation: marquee-right 70s linear infinite;
+  animation: marquee-right 48s linear infinite;
 }
 
 /* Pulsing color-matched glow behind the `/work` chooser blocks' title text — reads as "brighter,
