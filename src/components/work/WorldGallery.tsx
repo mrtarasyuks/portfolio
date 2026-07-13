@@ -41,9 +41,12 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
 
       <Container className="relative flex flex-col items-center pb-20 pt-14 text-center md:pb-28 md:pt-20">
         <StaggerFadeIn index={0}>
-          <div className="flex items-center justify-center gap-4 sm:gap-6">
+          <div className="flex min-w-0 items-center justify-center gap-3 sm:gap-6">
             <BackToWorkButton locale={locale} t={t} />
-            <div aria-hidden="true">
+            {/* Hidden below `sm`: a purely decorative duplicate of the glyph already shown inside
+                this page's own project blocks — on narrow viewports its padding pushed longer
+                world names (e.g. "AI Creator") past the screen edge (measured, not guessed). */}
+            <div aria-hidden="true" className="hidden sm:block">
               <WorldTitleCube label={glyphByWorld[world]} color={theme.signal} headingTag="div" />
             </div>
             <WorldTitleCube label={t.orbit.worlds[world]} color={theme.signal} />

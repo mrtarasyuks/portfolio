@@ -37,9 +37,12 @@ export function ExtraWorkGalleryShell({
       <PageTitleWatermark title={label} accent={color} />
 
       <Container className="relative flex flex-col items-center pb-20 pt-14 text-center md:pb-28 md:pt-20">
-        <div className="flex items-center justify-center gap-4 sm:gap-6">
+        <div className="flex min-w-0 items-center justify-center gap-3 sm:gap-6">
           <BackToWorkButton locale={locale} t={t} backHref={backHref} />
-          <div aria-hidden="true">
+          {/* Hidden below `sm`: same fix as `WorldGallery` — a purely decorative duplicate glyph
+              whose padding pushed longer labels (e.g. "AI Creator", "Realistic Cinematic") past
+              the screen edge on narrow viewports (measured, not guessed). */}
+          <div aria-hidden="true" className="hidden sm:block">
             <WorldTitleCube label={glyph} color={color} headingTag="div" />
           </div>
           <WorldTitleCube label={label} color={color} />

@@ -65,7 +65,7 @@ export function WorldTitleCube({
       ref={wrapRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="relative cursor-default"
+      className="relative min-w-0 cursor-default"
       style={{ transformStyle: "preserve-3d", transform: BASE_TRANSFORM }}
     >
       <div
@@ -96,7 +96,7 @@ export function WorldTitleCube({
         aria-hidden
       />
       <div
-        className="relative rounded-2xl border px-8 py-5 sm:px-14 sm:py-8"
+        className="relative rounded-2xl border px-5 py-4 sm:px-14 sm:py-8"
         style={{
           borderColor: `${color}${isLight ? "80" : "55"}`,
           background: isLight
@@ -110,7 +110,7 @@ export function WorldTitleCube({
         }}
       >
         <Heading
-          className={`text-4xl font-bold uppercase tracking-tight md:text-6xl ${isLight ? "text-text" : "text-white"}`}
+          className={`text-3xl font-bold uppercase tracking-tight sm:text-4xl md:text-6xl ${isLight ? "text-text" : "text-white"}`}
         >
           {label}
         </Heading>

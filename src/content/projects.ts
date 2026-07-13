@@ -18,8 +18,8 @@ export const projects: PortfolioProject[] = [
       uk: "Мобільний застосунок для обліку продуктів: фото, чек, голос, fallback Gemini/Claude — на тестуванні в Android.",
     },
     summary: {
-      en: "A mobile product built around food inventory, AI-assisted analysis, recipes, shopping, and personal utility workflows — not a chat wrapper, a full product system from camera input to a server-side AI proxy to a personalized experience.",
-      uk: "Мобільний продукт для обліку продуктів удома: AI-аналіз, рецепти, список покупок. Не «обгортка над чатом» — повна продуктова система від камери до серверного AI-проксі й персоналізованого досвіду.",
+      en: "A mobile product built around food inventory, AI-assisted analysis, recipes, shopping, and personal utility workflows: a full product system running from camera input through a server-side AI proxy to a personalized experience.",
+      uk: "Мобільний продукт для обліку продуктів удома: AI-аналіз, рецепти, список покупок. Повна продуктова система від камери до серверного AI-проксі й персоналізованого досвіду.",
     },
     challenge: {
       en: "Food and home inventory data is messy: users don't want to type everything, images are imperfect, receipts are inconsistent, AI can be wrong, and mobile UX must stay fast and understandable.",
@@ -67,8 +67,8 @@ export const projects: PortfolioProject[] = [
       uk: "Жива платформа AI-продакшну відео — від брифу до сторіборду й рендеру в Remotion, доставка приблизно за годину.",
     },
     summary: {
-      en: "A live product for AI-assisted promo video production: a structured creative brief, an AI creative-director agent generating the storyboard, a multi-engine generation stage, Remotion motion graphics, a QA pass, and delivery in vertical, widescreen, and square formats — with revision requests supported.",
-      uk: "Жива продукт для AI-продакшну промо-відео: структурований бриф, AI creative-director агент генерує сторіборд, багатодвигунова генерація, моушн-графіка на Remotion, QA-прохід і доставка у вертикальному, горизонтальному та квадратному форматах — з підтримкою правок.",
+      en: "A live product for AI-assisted promo video production: a structured creative brief, an AI creative-director agent generating the storyboard, a multi-engine generation stage, Remotion motion graphics, a QA pass, and delivery in vertical, widescreen, and square formats, with revision requests supported.",
+      uk: "Жива продукт для AI-продакшну промо-відео: структурований бриф, AI creative-director агент генерує сторіборд, багатодвигунова генерація, моушн-графіка на Remotion, QA-прохід і доставка у вертикальному, горизонтальному та квадратному форматах, з підтримкою правок.",
     },
     approach: {
       en: [
@@ -108,8 +108,8 @@ export const projects: PortfolioProject[] = [
       uk: "Від ідеї через 3D-модель до нарізаного, надрукованого об'єкта — ітерація, яку можна потримати.",
     },
     summary: {
-      en: "I like products that leave the screen. Modeling across Blender, Cinema 4D, and 3ds Max, preparing geometry for print, slicing in Bambu Studio, and iterating through failed prints toward a physical result — 3D printing of practically anything, not one fixed product line.",
-      uk: "Мені подобаються продукти, що залишають екран. Моделювання в Blender, Cinema 4D та 3ds Max, підготовка геометрії до друку, слайсинг у Bambu Studio та ітерації крізь невдалі друки до фізичного результату — 3D-друк практично будь-чого, без прив'язки до однієї лінійки продуктів.",
+      en: "I like products that leave the screen. Modeling across Blender, Cinema 4D, and 3ds Max, preparing geometry for print, slicing in Bambu Studio, and iterating through failed prints toward a physical result: 3D printing that spans practically anything, rather than sticking to one fixed product line.",
+      uk: "Мені подобаються продукти, що залишають екран. Моделювання в Blender, Cinema 4D та 3ds Max, підготовка геометрії до друку, слайсинг у Bambu Studio та ітерації крізь невдалі друки до фізичного результату: 3D-друк, що охоплює практично будь-що, а не тримається однієї лінійки продуктів.",
     },
     media: [{ kind: "diagram", label: "Idea → model → geometry check → slice → print → adjust" }],
   },

@@ -23,9 +23,9 @@ export const en = {
       developers: "Developer",
     },
     worldTagline: {
-      "3d": "Blender, Cinema 4D, 3ds Max — modeled, sliced, and printed for real.",
+      "3d": "Blender, Cinema 4D, 3ds Max: modeled, sliced, and printed for real.",
       video: "Storyboards, generative pipelines, and Remotion delivery.",
-      developers: "Apps, websites, and AI automation — no-code to full-code.",
+      developers: "Apps, websites, and AI automation, from no-code to full-code.",
     },
     back: "Back",
     prevLabel: "Previous world",
@@ -57,7 +57,7 @@ export const en = {
     experiences: [
       {
         title: "Project Manager",
-        description: "Scoping fuzzy ideas into shippable plans — one clear outcome, a path to release, and a scope kept honest.",
+        description: "Scoping fuzzy ideas into shippable plans: one clear outcome, a path to release, and a scope kept honest.",
       },
       {
         title: "Middle AI Developer",
@@ -189,7 +189,7 @@ export const en = {
   workflow: {
     eyebrow: "MY OPERATING SYSTEM",
     title: "My operating system",
-    intro: "Fast does not have to mean careless. I use AI agents aggressively, not blindly — I keep the work grounded in project context, real constraints, review, and deployment.",
+    intro: "Fast does not have to mean careless. I use AI agents aggressively, not blindly. I keep the work grounded in project context, real constraints, review, and deployment.",
     stages: [
       { index: "01", title: "Find the real problem", body: "I reduce a vague idea to one useful user action and one clear outcome." },
       { index: "02", title: "Build the system, not only the screen", body: "I map data, states, edge cases, AI behavior, backend boundaries, and the path to deployment." },
@@ -208,7 +208,7 @@ export const en = {
     eyebrow: "ABOUT",
     title: "About",
     body: [
-      "I'm Serhii — a builder based in Kyiv. I move between AI products, mobile apps, video, automation, and 3D, depending on where the problem takes me.",
+      "I'm Serhii, a builder based in Kyiv. I move between AI products, mobile apps, video, automation, and 3D, depending on where the problem takes me.",
       "Most of what I know, I picked up by actually building things: figuring out the UX, wiring up Supabase, turning a camera into an AI-powered workflow, or taking a model from Blender to a real, physical print.",
       "What ties it all together is pretty simple — I like taking a messy idea and turning it into something that actually works.",
     ],

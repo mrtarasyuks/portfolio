@@ -116,7 +116,7 @@ export function ChatWidget({ locale }: { locale: Locale }) {
   );
 }
 
-function Bubble({ role, children }: { role: "user" | "assistant"; children: React.ReactNode }) {
+function Bubble({ role, children }: { role: "user" | "assistant"; children: string }) {
   return (
     <p
       className={cn(
@@ -126,9 +126,25 @@ function Bubble({ role, children }: { role: "user" | "assistant"; children: Reac
           : "self-start rounded-bl-sm border border-[var(--glass-border)] bg-[var(--glass-tint)] text-text"
       )}
     >
-      {children}
+      {renderFormattedText(children)}
     </p>
   );
+}
+
+/**
+ * The chat bubble is plain text, not a markdown renderer — but the model is allowed to wrap
+ * emphasis in `**double asterisks**`. Turn matched pairs into real <strong>, and strip any leftover
+ * literal asterisks (a stray/unmatched `*` from the model, or a visitor typing one) so raw stars
+ * never show up in the UI.
+ */
+function renderFormattedText(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part.replaceAll("*", "")}</span>;
+  });
 }
 
 function ChatGlyph({ open }: { open: boolean }) {
