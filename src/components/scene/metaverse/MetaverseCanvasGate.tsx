@@ -1,55 +1,50 @@
 "use client";
 
-import { Suspense } from "react";
+import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { MetaverseRoom } from "@/components/scene/metaverse/MetaverseRoom";
+import { LabPlatform } from "@/components/scene/metaverse/LabPlatform";
 import { useMotionCapability } from "@/hooks/useWebglSupport";
-import type { Locale } from "@/content/types";
 import type { CopyDict } from "@/content/copy";
 
-const ROOM_BG = "#f4f2ec";
+const SCENE_BG = "#050814";
 
 /**
  * Gated the same way `HeroSceneGate` gates the homepage canvas — a text fallback rather than a
- * blank/broken WebGL surface on unsupported browsers, and idle drift stops under
- * prefers-reduced-motion instead of just running faster/slower.
+ * blank/broken WebGL surface on unsupported browsers, and idle drift (stars, spinning objects)
+ * stops under prefers-reduced-motion instead of just running faster/slower. Fills its parent
+ * completely (no fixed aspect box) — the page around it is the fullscreen shell.
  */
-export function MetaverseCanvasGate({ locale, t }: { locale: Locale; t: CopyDict }) {
+export function MetaverseCanvasGate({ t }: { t: CopyDict }) {
   const { ready, webglSupported, reducedMotion } = useMotionCapability();
 
-  if (!ready) return <div className="h-[70vh] min-h-[480px] w-full rounded-[3rem] border border-line bg-surface" />;
+  if (!ready) return <div className="h-full w-full bg-[#050814]" />;
 
   if (!webglSupported) {
     return (
-      <div className="flex min-h-[420px] items-center justify-center rounded-[3rem] border border-line bg-surface p-10 text-center">
-        <p className="max-w-sm text-sm text-text-muted">{t.metaverse.webglFallback}</p>
+      <div className="flex h-full w-full items-center justify-center bg-[#050814] p-10 text-center">
+        <p className="max-w-sm text-sm text-white/70">{t.metaverse.webglFallback}</p>
       </div>
     );
   }
 
   return (
-    <div className="relative h-[70vh] min-h-[480px] w-full overflow-hidden rounded-[3rem] border border-line">
-      <Canvas camera={{ position: [0, 2.6, 9.5], fov: 45 }} dpr={[1, 1.75]} gl={{ antialias: true }} shadows>
-        <color attach="background" args={[ROOM_BG]} />
-        <fog attach="fog" args={[ROOM_BG, 13, 24]} />
-        <Suspense fallback={null}>
-          <MetaverseRoom locale={locale} paused={reducedMotion} />
-        </Suspense>
-        <ContactShadows position={[0, 0.012, 0]} opacity={0.3} scale={16} blur={2.6} far={6} />
-        <OrbitControls
-          makeDefault
-          enableDamping
-          dampingFactor={0.08}
-          minDistance={3.5}
-          maxDistance={13}
-          minPolarAngle={Math.PI * 0.16}
-          maxPolarAngle={Math.PI * 0.5}
-          target={[0, 1.5, 0]}
-          autoRotate={!reducedMotion}
-          autoRotateSpeed={0.35}
-        />
-      </Canvas>
-    </div>
+    <Canvas camera={{ position: [0, 13, 17], fov: 50 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
+      <color attach="background" args={[SCENE_BG]} />
+      <fog attach="fog" args={[SCENE_BG, 20, 85]} />
+      <LabPlatform paused={reducedMotion} />
+      <OrbitControls
+        makeDefault
+        enableDamping
+        dampingFactor={0.08}
+        enablePan
+        minDistance={5}
+        maxDistance={40}
+        minPolarAngle={0.15}
+        maxPolarAngle={Math.PI * 0.47}
+        target={[0, 0, 0]}
+        autoRotate={!reducedMotion}
+        autoRotateSpeed={0.15}
+      />
+    </Canvas>
   );
 }

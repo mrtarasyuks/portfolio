@@ -74,4 +74,5 @@ export function getWorldTheme(world: ProjectWorld): WorldTheme {
 export const extraWorkAccents = {
   games: "#8b5cf6",
   aiCreator: "#f472b6",
+  tools: "#22d3ee",
 } as const;

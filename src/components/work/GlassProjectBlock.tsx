@@ -20,10 +20,19 @@ export function GlassProjectBlock({
   project,
   locale,
   t,
+  hrefOverride,
+  ctaLabelOverride,
 }: {
   project: PortfolioProject;
   locale: Locale;
   t: CopyDict;
+  /** Sends the card straight to a different route instead of this project's own case study — used
+   * for "3D Lab", whose card should drop the visitor directly into the fullscreen platform rather
+   * than a normal scrolling case-study page. */
+  hrefOverride?: string;
+  /** Paired with `hrefOverride` — the default CTA text ("View case study") is wrong once the card
+   * no longer opens a case study. */
+  ctaLabelOverride?: string;
 }) {
   const color = getWorldTheme(project.world).signal;
   const liveLink = project.links?.[0];
@@ -32,7 +41,7 @@ export function GlassProjectBlock({
     // `from` records the world-gallery page this card lives on (this component only ever renders
     // inside a `WorldGallery`/`DevelopersFilter` grid) so the case-study's back button can return
     // here instead of always falling back to the generic /work index.
-    <Link href={`/${locale}/work/${project.slug}?from=${project.world}`} className="group block h-full">
+    <Link href={hrefOverride ?? `/${locale}/work/${project.slug}?from=${project.world}`} className="group block h-full">
       <GlassPanel
         className="relative flex h-full min-h-[300px] flex-col justify-between overflow-hidden p-8 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02]"
         style={{
@@ -70,7 +79,7 @@ export function GlassProjectBlock({
             style={{ color }}
           >
             <span aria-hidden className="inline-block h-px w-3 bg-current transition-all group-hover:w-5" />
-            {t.orbit.viewProject}
+            {ctaLabelOverride ?? t.orbit.viewProject}
           </span>
         </div>
       </GlassPanel>

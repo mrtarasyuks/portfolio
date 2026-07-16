@@ -72,7 +72,13 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {worldProjects.map((project, i) => (
               <StaggerFadeIn key={project.slug} index={i}>
-                <GlassProjectBlock project={project} locale={locale} t={t} />
+                <GlassProjectBlock
+                  project={project}
+                  locale={locale}
+                  t={t}
+                  hrefOverride={project.slug === "3d-lab" ? `/${locale}/work/3d/metaverse` : undefined}
+                  ctaLabelOverride={project.slug === "3d-lab" ? t.metaverse.cta : undefined}
+                />
               </StaggerFadeIn>
             ))}
           </div>

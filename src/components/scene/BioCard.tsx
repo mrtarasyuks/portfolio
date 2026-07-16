@@ -34,6 +34,9 @@ const FACE_HEIGHT = 720;
 const START_ANGLE_DEG = 26;
 const DRAG_SENSITIVITY_DEG = 0.3;
 const VELOCITY_DECAY = 3.2;
+/** Gentle always-on idle spin so the cube never sits perfectly still — paused during an active
+ * drag and skipped entirely under `reducedMotion`, same gate the flick-momentum branch honors. */
+const IDLE_ROTATE_DEG_PER_SEC = 6;
 const OPAQUE_FACE_BG = "#101013";
 /** Pointer movement (px) below which a pointerdown→pointerup counts as a click on the front face
  * rather than a drag — same threshold idiom `ProjectSliderPanel`'s drum carousel already uses to
@@ -45,6 +48,10 @@ type SpinState = { value: number; velocity: number };
 type Experience = {
   title: string;
   description: string;
+  /** Longer, paragraph-broken bio — shown only inside `BioCardDetailModal`. Falls back to
+   * `[description]` for faces that don't have one (the card itself always shows the short
+   * `description`, only as much as fits). */
+  fullDescription?: string[];
   photoSrc: string;
   hasPhoto: boolean;
   /** Real site section this experience maps to, for the detail overlay's "Explore" link — `null`
@@ -196,10 +203,15 @@ export function BioCard({
     const tick = (now: number) => {
       const delta = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!dragging.current && spin.current.velocity !== 0) {
-        spin.current.velocity *= Math.max(0, 1 - delta * VELOCITY_DECAY);
-        if (Math.abs(spin.current.velocity) < 0.02) spin.current.velocity = 0;
-        spin.current.value += spin.current.velocity;
+      if (!dragging.current) {
+        if (spin.current.velocity !== 0) {
+          spin.current.velocity *= Math.max(0, 1 - delta * VELOCITY_DECAY);
+          if (Math.abs(spin.current.velocity) < 0.02) spin.current.velocity = 0;
+          spin.current.value += spin.current.velocity;
+        }
+        if (!reducedMotion) {
+          spin.current.value += delta * IDLE_ROTATE_DEG_PER_SEC;
+        }
       }
       if (spinRef.current) {
         spinRef.current.style.transform = `perspective(2200px) rotateY(${spin.current.value}deg)`;
@@ -208,7 +220,7 @@ export function BioCard({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [reducedMotion]);
 
   function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
     dragging.current = true;
@@ -248,7 +260,7 @@ export function BioCard({
             style={{ transform: `perspective(2200px) rotateY(${START_ANGLE_DEG}deg)`, transformStyle: "preserve-3d" }}
           >
             <div
-              className="relative cursor-grab touch-none select-none active:cursor-grabbing"
+              className="relative cursor-pointer touch-none select-none active:cursor-grabbing"
               style={{ width: CARD_WIDTH, height: FACE_HEIGHT, transformStyle: "preserve-3d", pointerEvents: "auto" }}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -273,7 +285,7 @@ export function BioCard({
         {openIndex !== null && (
           <BioCardDetailModal
             title={faces[openIndex][1].title}
-            description={faces[openIndex][1].description}
+            description={faces[openIndex][1].fullDescription ?? [faces[openIndex][1].description]}
             photoSrc={faces[openIndex][1].photoSrc}
             hasPhoto={faces[openIndex][1].hasPhoto}
             age={t.bioCard.age}

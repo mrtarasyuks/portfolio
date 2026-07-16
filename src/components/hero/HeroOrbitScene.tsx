@@ -25,6 +25,7 @@ export function HeroOrbitScene({
   hasPhotoRight,
   hasPhotoBack,
   hasPhotoLeft,
+  logoBySlug,
 }: {
   locale: Locale;
   t: CopyDict;
@@ -33,6 +34,7 @@ export function HeroOrbitScene({
   hasPhotoRight: boolean;
   hasPhotoBack: boolean;
   hasPhotoLeft: boolean;
+  logoBySlug: Record<string, boolean>;
 }) {
   const { world, next, prev } = useWorldNav();
   const { on: gridScrollOn, speed: gridScrollSpeed } = useGridScroll();
@@ -97,7 +99,7 @@ export function HeroOrbitScene({
 
         {showSidePanels && (
           <div className="pointer-events-none absolute inset-y-0 left-[74%] z-10 flex -translate-x-1/2 items-center">
-            <ProjectSliderPanel projects={worldProjects} world={world} locale={locale} t={t} />
+            <ProjectSliderPanel projects={worldProjects} world={world} locale={locale} t={t} logoBySlug={logoBySlug} />
           </div>
         )}
       </div>

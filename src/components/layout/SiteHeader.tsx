@@ -15,7 +15,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
   const t = getCopy(locale);
 
   return (
-    <header className="relative z-50">
+    <header className="sticky top-0 z-50 bg-[var(--glass-tint)] backdrop-blur-md">
       <Container className="grid grid-cols-1 items-center gap-y-2 py-3 md:grid-cols-[1fr_auto_1fr] md:gap-x-4 md:gap-y-0 md:py-3">
         <div className="flex items-center justify-between gap-2 md:justify-self-start md:gap-4">
           <HeaderLogoButton locale={locale} />

@@ -15,12 +15,14 @@ const FALLOFF_DEG = 130;
 const DRAG_SENSITIVITY = 0.55;
 const DRAG_THRESHOLD_PX = 4;
 const VELOCITY_DECAY = 2.6;
-/** A button-triggered spin just injects a big one-off velocity into the same flick-decay physics
- * a manual drag already produces — reusing the existing `VELOCITY_DECAY` curve rather than a
- * separate spin-up/spin-down animation, so it settles back into the idle auto-spin exactly the
- * way a real flick does. Clicks stack (capped) instead of resetting, so a second tap mid-spin adds momentum. */
-const SPIN_KICK_DEG = 34;
-const MAX_SPIN_VELOCITY_DEG = 70;
+/** A card can only be caught/selected while it's sitting within this many degrees of dead-center —
+ * clicking a card elsewhere on the drum (still faded/tilted away) is a no-op, so a click always
+ * reads as "I picked the one currently facing me," not "I picked whichever one my cursor happened
+ * to land on mid-spin." */
+const SELECT_CENTER_TOLERANCE_DEG = 20;
+/** A couple of blurred "more landing here soon" ghost slots appended after each world's real
+ * projects — every world gets these regardless of how many real cards it already has. */
+const SOON_SLOTS_PER_WORLD = 2;
 
 /**
  * Right-side glass block on the homepage — a vertical "slot machine drum": cards sit around a
@@ -46,20 +48,23 @@ export function ProjectSliderPanel({
   world,
   locale,
   t,
+  logoBySlug,
 }: {
   projects: PortfolioProject[];
   world: ProjectWorld;
   locale: Locale;
   t: CopyDict;
+  logoBySlug: Record<string, boolean>;
 }) {
   const router = useRouter();
-  const slots = useMemo(
-    () =>
-      projects.length > 0
-        ? projects.map((p) => ({ key: p.slug, project: p as PortfolioProject | null }))
-        : [{ key: `${world}-ghost`, project: null as PortfolioProject | null }],
-    [projects, world]
-  );
+  const slots = useMemo(() => {
+    const real = projects.map((p) => ({ key: p.slug, project: p as PortfolioProject | null }));
+    const soon = Array.from({ length: SOON_SLOTS_PER_WORLD }, (_, i) => ({
+      key: `${world}-soon-${i}`,
+      project: null as PortfolioProject | null,
+    }));
+    return [...real, ...soon];
+  }, [projects, world]);
   const segmentAngle = 360 / slots.length;
   const accent = getWorldTheme(world).signal;
 
@@ -165,8 +170,11 @@ export function ProjectSliderPanel({
     return () => cancelAnimationFrame(raf);
   }, [applyFrame]);
 
-  function handleSelect(slug: string) {
+  function handleSelect(slug: string, index: number) {
     if (selectedSlug) return;
+    const angle = ((index * segmentAngle + rotation.current) % 360 + 360) % 360;
+    const normalized = angle > 180 ? angle - 360 : angle;
+    if (Math.abs(normalized) > SELECT_CENTER_TOLERANCE_DEG) return;
     frozen.current = true;
     dragging.current = false;
     setSelectedSlug(slug);
@@ -181,121 +189,75 @@ export function ProjectSliderPanel({
     if (selectedSlug) router.push(`/${locale}/work/${selectedSlug}`);
   }
 
-  function handleSpin() {
-    if (frozen.current || reducedMotion.current) return;
-    velocity.current = Math.min(velocity.current + SPIN_KICK_DEG, MAX_SPIN_VELOCITY_DEG);
-  }
-
   return (
-    <div className="flex items-center gap-4">
-      <div
-        ref={containerRef}
-        onPointerDown={handlePointerDown}
-        className={cn(
-          "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
-          selectedSlug ? "overflow-visible" : "overflow-hidden"
-        )}
-        style={{ perspective: 1400 }}
-      >
-        <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
-          {slots.map((slot, i) => {
-            const isSelected = Boolean(slot.project && selectedSlug === slot.project.slug);
+    <div
+      ref={containerRef}
+      onPointerDown={handlePointerDown}
+      className={cn(
+        "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
+        selectedSlug ? "overflow-visible" : "overflow-hidden"
+      )}
+      style={{ perspective: 1400 }}
+    >
+      <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+        {slots.map((slot, i) => {
+          const isSelected = Boolean(slot.project && selectedSlug === slot.project.slug);
 
-            return (
-              <div
-                key={slot.key}
-                ref={(el) => {
-                  cardRefs.current[i] = el;
-                }}
-                className="absolute inset-x-0 top-1/2 flex justify-center"
-                style={{
-                  transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
-                  backfaceVisibility: "hidden",
-                  zIndex: isSelected ? 20 : undefined,
-                }}
-              >
-                {slot.project ? (
-                  <DrumProjectCard
-                    project={slot.project}
-                    locale={locale}
-                    t={t}
-                    isSelected={isSelected}
-                    onSelect={() => handleSelect(slot.project!.slug)}
-                  />
-                ) : (
-                  <DrumComingSoonCard label={t.orbit.comingSoon} world={world} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <div
-          className={cn(
-            "pointer-events-none absolute inset-x-0 top-1/2 flex justify-center gap-3 transition-all duration-300",
-            selectedSlug ? "translate-y-[168px] opacity-100" : "translate-y-[140px] opacity-0"
-          )}
-        >
-          <button
-            type="button"
-            onClick={handleViewCase}
-            disabled={!selectedSlug}
-            className="pointer-events-auto inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide shadow-[0_16px_36px_-14px_rgba(0,0,0,0.7)] transition-transform hover:scale-105 active:scale-95"
-            style={{ backgroundColor: accent, color: "#0c0c0e" }}
-          >
-            {t.orbit.viewProject}
-            <span aria-hidden>→</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleBack}
-            disabled={!selectedSlug}
-            className="pointer-events-auto rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-text backdrop-blur-xl transition-transform hover:scale-105 active:scale-95"
-          >
-            {t.orbit.back}
-          </button>
-        </div>
+          return (
+            <div
+              key={slot.key}
+              ref={(el) => {
+                cardRefs.current[i] = el;
+              }}
+              className="absolute inset-x-0 top-1/2 flex justify-center"
+              style={{
+                transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
+                backfaceVisibility: "hidden",
+                zIndex: isSelected ? 20 : undefined,
+              }}
+            >
+              {slot.project ? (
+                <DrumProjectCard
+                  project={slot.project}
+                  locale={locale}
+                  t={t}
+                  isSelected={isSelected}
+                  hasLogo={logoBySlug[slot.project.slug] ?? false}
+                  onSelect={() => handleSelect(slot.project!.slug, i)}
+                />
+              ) : (
+                <DrumComingSoonCard label={t.orbit.comingSoon} world={world} accent={accent} />
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <SpinButton onSpin={handleSpin} label={t.orbit.spin} />
-    </div>
-  );
-}
-
-/** Voluminous round glass knob beside the drum — a physical-feeling control, not a flat icon
- * button, matching the same thick-glass language `BackToWorkButton`/`GlassPanel` establish
- * elsewhere. The chevron ring spins once on each press purely as click feedback; the drum's own
- * spin is driven by the real velocity physics in the parent, not by this animation. */
-function SpinButton({ onSpin, label }: { onSpin: () => void; label: string }) {
-  const [pulseKey, setPulseKey] = useState(0);
-
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        onSpin();
-        setPulseKey((k) => k + 1);
-      }}
-      aria-label={label}
-      title={label}
-      className="pointer-events-auto flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] text-text shadow-[0_24px_60px_-16px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-transform hover:scale-105 active:scale-90"
-    >
-      <svg
-        key={pulseKey}
-        width="26"
-        height="26"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-        className="animate-spin-kick"
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-1/2 flex justify-center gap-3 transition-all duration-300",
+          selectedSlug ? "translate-y-[168px] opacity-100" : "translate-y-[140px] opacity-0"
+        )}
       >
-        <path d="M3 12a9 9 0 1 1 3 6.7" />
-        <path d="M3 12v5h5" />
-      </svg>
-    </button>
+        <button
+          type="button"
+          onClick={handleViewCase}
+          disabled={!selectedSlug}
+          className="pointer-events-auto inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide shadow-[0_16px_36px_-14px_rgba(0,0,0,0.7)] transition-transform hover:scale-105 active:scale-95"
+          style={{ backgroundColor: accent, color: "#0c0c0e" }}
+        >
+          {t.orbit.viewProject}
+          <span aria-hidden>→</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleBack}
+          disabled={!selectedSlug}
+          className="pointer-events-auto rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-text backdrop-blur-xl transition-transform hover:scale-105 active:scale-95"
+        >
+          {t.orbit.back}
+        </button>
+      </div>
+    </div>
   );
 }

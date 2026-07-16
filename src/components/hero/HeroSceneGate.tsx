@@ -12,12 +12,14 @@ export function HeroSceneGate({
   hasPhotoRight,
   hasPhotoBack,
   hasPhotoLeft,
+  logoBySlug,
 }: {
   locale: Locale;
   hasPortrait: boolean;
   hasPhotoRight: boolean;
   hasPhotoBack: boolean;
   hasPhotoLeft: boolean;
+  logoBySlug: Record<string, boolean>;
 }) {
   const { ready, webglSupported, reducedMotion } = useMotionCapability();
   const t = getCopy(locale);
@@ -35,6 +37,7 @@ export function HeroSceneGate({
       hasPhotoRight={hasPhotoRight}
       hasPhotoBack={hasPhotoBack}
       hasPhotoLeft={hasPhotoLeft}
+      logoBySlug={logoBySlug}
     />
   );
 }

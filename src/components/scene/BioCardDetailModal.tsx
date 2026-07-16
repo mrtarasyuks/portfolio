@@ -29,7 +29,7 @@ export function BioCardDetailModal({
   onClose,
 }: {
   title: string;
-  description: string;
+  description: string[];
   photoSrc: string;
   hasPhoto: boolean;
   age: string;
@@ -94,7 +94,13 @@ export function BioCardDetailModal({
             </span>
           </div>
           <h3 className="font-display text-3xl font-black leading-tight text-white md:text-4xl">{title}</h3>
-          <p className="text-base leading-relaxed text-white/80 md:text-lg">{description}</p>
+          <div className="max-h-[40vh] space-y-3 overflow-y-auto pr-1 md:max-h-none">
+            {description.map((paragraph, i) => (
+              <p key={i} className="text-base leading-relaxed text-white/80 md:text-lg">
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
           {world && (
             <Link

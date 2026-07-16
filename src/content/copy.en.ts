@@ -33,7 +33,6 @@ export const en = {
     viewProject: "View case study",
     comingSoon: "More work landing here soon",
     switchWorld: "Switch world",
-    spin: "Spin the reel",
   },
   extraWork: {
     games: {
@@ -43,6 +42,10 @@ export const en = {
     aiCreator: {
       label: "AI Creator",
       tagline: "Clips made entirely with generative AI — no camera, no crew.",
+    },
+    tools: {
+      label: "Tools / Plugins / Mode",
+      tagline: "Custom tools, plugins, and modes I've built — landing here as they ship.",
     },
   },
   figurines: {
@@ -58,6 +61,11 @@ export const en = {
       {
         title: "Project Manager",
         description: "Scoping fuzzy ideas into shippable plans: one clear outcome, a path to release, and a scope kept honest.",
+        fullDescription: [
+          "Coordinated the day-to-day work of the logistics, warehouse, finance, customer support, and technical teams.",
+          "Managed deals from partner negotiations and contract signing to payment processing and final delivery.",
+          "Improved internal processes, helped teams work better together, and introduced practical solutions that made daily operations faster and more efficient.",
+        ],
       },
       {
         title: "Middle AI Developer",
@@ -70,6 +78,10 @@ export const en = {
       {
         title: "3D Modelling + Print",
         description: "From a Blender model to a sliced file to a print that actually has to hold together.",
+        fullDescription: [
+          "I create custom 3D models using Blender, Cinema 4D, and 3ds Max. I can also modify, optimize, and adapt existing models for specific projects or production needs.",
+          "I run my own 3D printing workshop and online store, producing custom-made items ranging from prototypes and decorative pieces to practical, functional parts.",
+        ],
       },
     ],
     explore: "Explore work",
@@ -145,12 +157,9 @@ export const en = {
     gallery: "Screenshots",
   },
   metaverse: {
-    cta: "3D View",
+    cta: "3D Lab",
     loopLabel: "Physical iteration loop",
-    title: "The Print Room",
-    tagline: "A light room built to hold every physical print as it ships — fly the camera around, empty pedestals for now.",
-    empty: "Nothing on the shelves yet — check back once a print ships.",
-    webglFallback: "This room needs WebGL — try a different browser or device to fly the camera through it.",
+    webglFallback: "The 3D Lab needs WebGL — try a different browser or device to fly the camera through it.",
   },
   capabilities: {
     eyebrow: "CAPABILITIES",
