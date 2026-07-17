@@ -52,6 +52,10 @@ media: [
 
 `src/lib/media.ts`'s `mediaUrl()` resolves that relative path against `NEXT_PUBLIC_MEDIA_BASE_URL` automatically — no other code changes needed. The case-study page (`src/app/[locale]/work/[slug]/page.tsx`) already renders any `kind: "video"` media entries via `ProjectVideo`.
 
+## Not just video
+
+As of 2026-07-17 the same `media.serhiitarasiuk.space` container also serves a non-video downloadable file — the YT Downloader project's Windows installer, at `downloads/yt-downloader/YT-Downloader-Setup.exe`, linked directly from that project's `links` array in `projects.ts` (not via `mediaUrl()`/`NEXT_PUBLIC_MEDIA_BASE_URL`, since it's an absolute external link, not a relative `ProjectMedia.src`). Same volume, same CORS/HTTPS setup — nothing project-specific needed for a plain static download link.
+
 ## Why this shape
 
 - **Separate Coolify app** — video files don't belong in the Next.js Docker image; keeping them on their own service means adding a video never triggers a portfolio rebuild/redeploy.

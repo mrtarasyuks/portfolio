@@ -7,7 +7,7 @@ Tracks what is code/repo-verified vs. user-asserted (from `CLAUDE_PREMIUM_PORTFO
 - Evidence: full source at `../Foody` — Expo 54 / RN 0.81, TypeScript strict, Supabase (Auth/Postgres/Storage/Edge Functions), `ai-proxy` server-side model routing (Gemini primary, Claude fallback), receipt/fridge photo analysis, AI chef chat, voice input, 9-locale i18n, dark/light theme, secure token storage, Android Closed Testing in Play Console.
 - Claims allowed: everything above (repo-verified).
 - Claims not verified: public store launch, user counts, revenue, nutrition accuracy — **excluded**.
-- Assets needed from user: app screenshots (fridge view, camera capture, AI chef chat, receipt import) for the case-study media mosaic. Until supplied, use a designed typographic cover + architecture diagram (no fabricated screenshots).
+- **2026-07-17 update**: 8 real screenshots plus the app's own icon (as its first real `LogoBadge` logo) supplied by the user and wired into `projects.ts`'s `media` array (`kind: "screenshot"`) alongside the existing diagram — rendered through `ProductImageSlider`, verified live.
 
 ## AI Video Production System (now: FrameForg)
 - Status: `shipped` (was `system-design` / `prototype`)
@@ -15,7 +15,7 @@ Tracks what is code/repo-verified vs. user-asserted (from `CLAUDE_PREMIUM_PORTFO
 - **2026-07-12 update**: verified live and public by directly fetching https://frameforg.online — real tagline ("AI Promo Videos Delivered in 1 Hour"), automated storyboard generation via an AI creative-director agent, 12+ AI engines, Remotion motion graphics, 9:16/16:9/1:1 output formats, QA pipeline, revision requests, and real paid pricing tiers with a working checkout. This resolves the prior "do not claim production-live without user confirmation" caveat with direct evidence rather than a user assertion. `projects.ts` slug renamed `ai-video-production` → `frameforg`, `status` → `shipped`, real `links: [{ label: "frameforg.online", href: "..." }]` added.
 - Claims allowed: everything above, plus the live pipeline architecture (brief → AI creative-director → storyboard → multi-engine generation → Remotion → QA → delivery) as a shipped, public product.
 - Claims not verified: specific user counts or revenue — **still excluded**, not claimed anywhere in copy.
-- Assets needed: product screenshots or the pipeline diagram only (diagram can be built without screenshots) — the diagram continues to ship as the case-study cover.
+- **2026-07-17 update**: 8 real screenshots plus a real logo supplied by the user and wired in the same way as Foody, alongside the existing (always-unused-for-rendering) diagram entry.
 
 ## Coffydoor / Cruise Brothers / Cinematic Continuity Experiment (Elvis scene) — DROPPED
 - 2026-07-10 decision (user, directly): these video ad projects are **not to be featured**. Removed from `content/projects.ts` entirely. Do not resurrect unless the user asks again.
@@ -52,8 +52,11 @@ Tracks what is code/repo-verified vs. user-asserted (from `CLAUDE_PREMIUM_PORTFO
 2. Video hosting decided: self-hosted via Coolify (Caddy + volume) on the user's existing Hetzner server — see `docs/media-hosting.md` for exact setup steps the user needs to run (no access to their infra from this session).
 3. "More pages" resolved as both: world-specific gallery pages (`/work/3d`, `/work/video`, `/work/developers`) now exist, and the flat case-study system (`/work/[slug]`) remains open for new projects.
 
+## Resolved (2026-07-17)
+1. Foody, Foody Web (appfoody.com), and FrameForg screenshots — all supplied and wired in (see each project's entry above). `foody-web` also got its first real logo.
+2. New project added: **YT Downloader**, a Windows desktop video/audio downloader+converter (Python/CustomTkinter, separate repo at `../YT-Downloader`) — real logo, 3 screenshots, and a working "Download for Windows" link to the `.exe`, hosted on the same Hetzner media server as `video-creator/`. Lives under **Tools** (`extraWork: "tools"`, see `docs/design-decisions.md`'s twenty-eighth pivot), not Developers.
+
 ## Still open
-1. Foody screenshots exist (confirmed by user) but haven't been supplied yet — `/work/foody` currently ships with the diagram-only cover. Swap in real screenshots when available.
-2. 3D-printing videos exist (confirmed by user) but haven't been supplied — `ProjectMedia` supports a `video` kind (rendered via `ProjectVideo`) for `3d-lab` once footage lands and `NEXT_PUBLIC_MEDIA_BASE_URL` is configured per `docs/media-hosting.md`.
-3. Availability status line stays hidden (`profile.availabilityConfirmed = false`) until the user confirms current availability.
-4. User is developing further websites/apps/games — add them to `projects.ts` as they ship (see reserved-slug note next to the `worlds` export in `src/content/types.ts` — never slug a project `3d`, `video`, or `developers`).
+1. 3D-printing videos exist (confirmed by user) but haven't been supplied — `ProjectMedia` supports a `video` kind (rendered via `ProjectVideo`) for `3d-lab` once footage lands and `NEXT_PUBLIC_MEDIA_BASE_URL` is configured per `docs/media-hosting.md`.
+2. Availability status line stays hidden (`profile.availabilityConfirmed = false`) until the user confirms current availability.
+3. User is developing further websites/apps/games — add them to `projects.ts` as they ship (see reserved-slug note next to the `worlds` export in `src/content/types.ts` — never slug a project `3d`, `video`, or `developers`).
