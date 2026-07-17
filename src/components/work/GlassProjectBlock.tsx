@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
+import { LogoBadge } from "@/components/work/LogoBadge";
 import { getWorldTheme } from "@/content/worldTheme";
+import { projectLogoSrc } from "@/content/assetPaths";
 import type { PortfolioProject, Locale } from "@/content/types";
 import type { CopyDict } from "@/content/copy";
 
@@ -23,6 +25,7 @@ export function GlassProjectBlock({
   hrefOverride,
   ctaLabelOverride,
   colorOverride,
+  hasLogo = false,
 }: {
   project: PortfolioProject;
   locale: Locale;
@@ -38,6 +41,8 @@ export function GlassProjectBlock({
    * instead of its project's `world` signal color, since `extraWork` projects still keep their
    * original `world` for case-study theming purposes. */
   colorOverride?: string;
+  /** Server-existence-checked the same way as the case-study header's own badge - see LogoBadge. */
+  hasLogo?: boolean;
 }) {
   const color = colorOverride ?? getWorldTheme(project.world).signal;
   const liveLink = project.links?.[0];
@@ -78,7 +83,10 @@ export function GlassProjectBlock({
               </span>
             )}
           </div>
-          <h3 className="text-2xl font-black leading-tight text-white sm:text-3xl">{project.shortTitle}</h3>
+          <div className="flex items-center gap-3">
+            <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={color} />
+            <h3 className="text-2xl font-black leading-tight text-white sm:text-3xl">{project.shortTitle}</h3>
+          </div>
         </div>
         <div className="relative">
           <p className="text-sm text-white/80">{project.oneLine[locale]}</p>

@@ -121,11 +121,7 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
         <StaggerFadeIn index={next()}>
           <div className="flex items-center justify-center gap-4 sm:gap-6">
             <BackToWorkButton locale={l} t={t} backHref={backHref} />
-            {/* Hidden below `sm`: the badge + its gap push this row past a 320px viewport
-                (measured, not guessed — Playwright reported 334px of content in a 320px frame). */}
-            <div className="hidden sm:block">
-              <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={accent} size={112} />
-            </div>
+            <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={accent} size="responsive" />
             <WorldTitleCube label={project.shortTitle} color={accent} />
           </div>
         </StaggerFadeIn>

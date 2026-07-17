@@ -10,7 +10,17 @@ import type { CopyDict } from "@/content/copy";
 type Category = "all" | "app" | "website" | "game";
 
 /** Developers-world-only filter tabs (Apps/Websites/Games) over the existing project grid — client-only since filtering needs interactivity, kept as a small sub-component rather than converting the whole (mostly server) WorldGallery. */
-export function DevelopersFilter({ projects, locale, t }: { projects: PortfolioProject[]; locale: Locale; t: CopyDict }) {
+export function DevelopersFilter({
+  projects,
+  locale,
+  t,
+  logoBySlug,
+}: {
+  projects: PortfolioProject[];
+  locale: Locale;
+  t: CopyDict;
+  logoBySlug: Record<string, boolean>;
+}) {
   const [category, setCategory] = useState<Category>("all");
   const filtered = category === "all" ? projects : projects.filter((p) => p.developerCategory === category);
 
@@ -46,7 +56,7 @@ export function DevelopersFilter({ projects, locale, t }: { projects: PortfolioP
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project, i) => (
             <StaggerFadeIn key={project.slug} index={i}>
-              <GlassProjectBlock project={project} locale={locale} t={t} />
+              <GlassProjectBlock project={project} locale={locale} t={t} hasLogo={logoBySlug[project.slug] ?? false} />
             </StaggerFadeIn>
           ))}
         </div>

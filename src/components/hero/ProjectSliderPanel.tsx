@@ -11,8 +11,11 @@ import type { VideoItem } from "@/content/videos";
 import type { CopyDict } from "@/content/copy";
 
 /** How many real clips populate the Video Creator world's drum - the rest of that world's slots
- * are the usual "Soon" ghosts, same as every other world. */
-const DRUM_VIDEO_PICK_COUNT = 6;
+ * are the usual "Soon" ghosts, same as every other world. Kept low: the drum's fixed RADIUS/card
+ * width was sized for the handful of slots a `PortfolioProject`-backed world typically has (3-5) -
+ * too many slots means too little angle between them for a fixed-width card, and they start
+ * visibly cutting through each other as they rotate past center. */
+const DRUM_VIDEO_PICK_COUNT = 4;
 
 type Slot =
   | { kind: "project"; key: string; project: PortfolioProject }

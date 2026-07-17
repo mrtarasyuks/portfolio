@@ -58,7 +58,9 @@ export function SiteHeader({ locale }: { locale: Locale }) {
         </div>
 
         <div className="hidden min-w-0 items-center justify-end gap-1.5 md:flex md:justify-self-end">
-          <HeaderPillLink href={`/${locale}/work`}>{t.nav.work}</HeaderPillLink>
+          <HeaderPillLink href={`/${locale}/work`} attention>
+            {t.nav.work}
+          </HeaderPillLink>
           <HeaderPillLink href={`/${locale}/about`}>{t.nav.about}</HeaderPillLink>
           <HeaderConnectButton t={t} />
           <ThemeToggle t={t} />
@@ -69,7 +71,17 @@ export function SiteHeader({ locale }: { locale: Locale }) {
   );
 }
 
-function HeaderPillLink({ href, children }: { href: string; children: React.ReactNode }) {
+function HeaderPillLink({
+  href,
+  children,
+  attention = false,
+}: {
+  href: string;
+  children: React.ReactNode;
+  /** Idle shake+bounce+glow-pulse every 2s, inviting a click - desktop-only by construction, since
+   * this component is only ever rendered inside SiteHeader's `hidden md:flex` nav group. */
+  attention?: boolean;
+}) {
   return (
     <Link
       href={href}
@@ -78,7 +90,8 @@ function HeaderPillLink({ href, children }: { href: string; children: React.Reac
         // `bg-none` clears the gradient's `background-image` first — otherwise it keeps painting
         // over the solid `bg-signal` `background-color` and the fill never actually shows.
         "hover:border-signal hover:bg-none hover:bg-signal hover:text-signal-ink hover:shadow-[0_0_30px_-8px_var(--signal)]",
-        "active:scale-95 active:border-signal active:bg-none active:bg-signal active:text-signal-ink active:shadow-[0_0_30px_-8px_var(--signal)]"
+        "active:scale-95 active:border-signal active:bg-none active:bg-signal active:text-signal-ink active:shadow-[0_0_30px_-8px_var(--signal)]",
+        attention && "animate-nav-pill-attention"
       )}
     >
       {children}

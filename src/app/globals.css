@@ -155,6 +155,31 @@ body {
   animation: cta-bounce 2s ease-in-out infinite;
 }
 
+/** Same idle shake+bounce curve as cta-bounce, plus a glow pulse timed to peak at the top of the
+ * jump - used by the header's desktop "Work" nav pill specifically (the shared cta-bounce class
+ * stays untouched for the two buttons that already use it unchanged). */
+@keyframes nav-pill-attention {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    box-shadow: 0 0 20px -12px var(--signal);
+  }
+  25% {
+    transform: translateY(-2px) rotate(-0.6deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0deg);
+    box-shadow: 0 0 30px -6px var(--signal);
+  }
+  75% {
+    transform: translateY(-2px) rotate(0.6deg);
+  }
+}
+
+.animate-nav-pill-attention {
+  animation: nav-pill-attention 2s ease-in-out infinite;
+}
+
 @keyframes slide-up {
   from {
     transform: translateY(0);

@@ -11,6 +11,8 @@ import { BackToWorkButton } from "@/components/work/BackToWorkButton";
 import { projects } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import { getWorldTheme } from "@/content/worldTheme";
+import { projectLogoSrc } from "@/content/assetPaths";
+import { publicAssetExists } from "@/lib/publicAsset";
 import { type Locale, type ProjectWorld } from "@/content/types";
 
 const glyphByWorld: Record<ProjectWorld, string> = {
@@ -25,6 +27,7 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
   // `!p.extraWork` keeps a project off its nominal world's gallery once it's tagged for one of the
   // flat "extra" pages instead (e.g. Tools) - see PortfolioProject.extraWork's doc comment.
   const worldProjects = projects.filter((p) => p.world === world && !p.extraWork);
+  const logoBySlug = Object.fromEntries(worldProjects.map((p) => [p.slug, publicAssetExists(projectLogoSrc(p.slug))]));
 
   const vars = {
     "--w-bg": theme.bg,
@@ -67,7 +70,7 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
 
       <Container className="pt-10 pb-20 md:pb-28">
         {world === "developers" ? (
-          <DevelopersFilter projects={worldProjects} locale={locale} t={t} />
+          <DevelopersFilter projects={worldProjects} locale={locale} t={t} logoBySlug={logoBySlug} />
         ) : world === "video" ? (
           <VideosByCategory t={t} locale={locale} color={theme.signal} />
         ) : worldProjects.length > 0 ? (
@@ -80,6 +83,7 @@ export function WorldGallery({ locale, world }: { locale: Locale; world: Project
                   t={t}
                   hrefOverride={project.slug === "3d-lab" ? `/${locale}/work/3d/metaverse` : undefined}
                   ctaLabelOverride={project.slug === "3d-lab" ? t.metaverse.cta : undefined}
+                  hasLogo={logoBySlug[project.slug] ?? false}
                 />
               </StaggerFadeIn>
             ))}
