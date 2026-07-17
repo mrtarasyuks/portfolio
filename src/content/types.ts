@@ -52,6 +52,12 @@ export type PortfolioProject = {
   world: ProjectWorld;
   /** Only meaningful for world: "developers" — powers the Apps/Websites/Games filter tabs on /work/developers. */
   developerCategory?: "app" | "website" | "game";
+  /** Pulls this project out of its `world`'s own gallery (see WorldGallery's `!p.extraWork` filter)
+   * and onto one of the flat "extra" /work pages (Games, AI Creator, Tools) instead - those pages
+   * aren't real `ProjectWorld` entries (no 3D backdrop/orbit-camera treatment), just static routes,
+   * so this stays a separate tag rather than a new `world` value. `world` (and its theme) still
+   * apply to the project's own case-study page. */
+  extraWork?: "games" | "aiCreator" | "tools";
   role: string[];
   stack?: string[];
   capabilities?: string[];

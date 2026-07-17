@@ -93,7 +93,10 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
 
   const l = locale as Locale;
   const t = getCopy(l);
-  const backHref = worlds.includes(from as (typeof worlds)[number]) ? `/${l}/work/${from}` : undefined;
+  // "tools" isn't a `worlds` entry (see PortfolioProject.extraWork) but is still a real, valid
+  // back-navigation target reachable via a GlassProjectBlock card on /work/tools.
+  const backTargets: string[] = [...worlds, "tools"];
+  const backHref = from && backTargets.includes(from) ? `/${l}/work/${from}` : undefined;
   const Diagram = diagrams[project.slug];
   const theme = getWorldTheme(project.world);
   const accent = theme.signal;
@@ -121,7 +124,7 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
             {/* Hidden below `sm`: the badge + its gap push this row past a 320px viewport
                 (measured, not guessed — Playwright reported 334px of content in a 320px frame). */}
             <div className="hidden sm:block">
-              <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={accent} />
+              <LogoBadge hasLogo={hasLogo} src={projectLogoSrc(project.slug)} world={project.world} color={accent} size={112} />
             </div>
             <WorldTitleCube label={project.shortTitle} color={accent} />
           </div>

@@ -22,7 +22,9 @@ const glyphByWorld: Record<ProjectWorld, string> = {
 export function WorldGallery({ locale, world }: { locale: Locale; world: ProjectWorld }) {
   const t = getCopy(locale);
   const theme = getWorldTheme(world);
-  const worldProjects = projects.filter((p) => p.world === world);
+  // `!p.extraWork` keeps a project off its nominal world's gallery once it's tagged for one of the
+  // flat "extra" pages instead (e.g. Tools) - see PortfolioProject.extraWork's doc comment.
+  const worldProjects = projects.filter((p) => p.world === world && !p.extraWork);
 
   const vars = {
     "--w-bg": theme.bg,

@@ -1,4 +1,7 @@
 import { ExtraWorkGalleryShell } from "@/components/work/ExtraWorkGalleryShell";
+import { GlassProjectBlock } from "@/components/work/GlassProjectBlock";
+import { StaggerFadeIn } from "@/components/ui/StaggerFadeIn";
+import { projects } from "@/content/projects";
 import { getCopy } from "@/content/copy";
 import { locales, type Locale } from "@/content/types";
 import { extraWorkAccents } from "@/content/worldTheme";
@@ -19,10 +22,21 @@ export default async function ToolsWorkPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   const l = locale as Locale;
   const t = getCopy(l);
+  const toolsProjects = projects.filter((p) => p.extraWork === "tools");
 
   return (
     <ExtraWorkGalleryShell locale={l} t={t} label={t.extraWork.tools.label} tagline={t.extraWork.tools.tagline} glyph="⚙" color={ACCENT}>
-      <p className="py-20 text-center font-mono text-sm uppercase tracking-wide text-text-dim">{t.orbit.comingSoon}</p>
+      {toolsProjects.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {toolsProjects.map((project, i) => (
+            <StaggerFadeIn key={project.slug} index={i}>
+              <GlassProjectBlock project={project} locale={l} t={t} colorOverride={ACCENT} />
+            </StaggerFadeIn>
+          ))}
+        </div>
+      ) : (
+        <p className="py-20 text-center font-mono text-sm uppercase tracking-wide text-text-dim">{t.orbit.comingSoon}</p>
+      )}
     </ExtraWorkGalleryShell>
   );
 }

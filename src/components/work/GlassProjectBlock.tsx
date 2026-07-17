@@ -22,6 +22,7 @@ export function GlassProjectBlock({
   t,
   hrefOverride,
   ctaLabelOverride,
+  colorOverride,
 }: {
   project: PortfolioProject;
   locale: Locale;
@@ -33,15 +34,22 @@ export function GlassProjectBlock({
   /** Paired with `hrefOverride` — the default CTA text ("View case study") is wrong once the card
    * no longer opens a case study. */
   ctaLabelOverride?: string;
+  /** Used on the "extra" /work pages (e.g. Tools) so a card reads in that page's own accent color
+   * instead of its project's `world` signal color, since `extraWork` projects still keep their
+   * original `world` for case-study theming purposes. */
+  colorOverride?: string;
 }) {
-  const color = getWorldTheme(project.world).signal;
+  const color = colorOverride ?? getWorldTheme(project.world).signal;
   const liveLink = project.links?.[0];
 
   return (
-    // `from` records the world-gallery page this card lives on (this component only ever renders
-    // inside a `WorldGallery`/`DevelopersFilter` grid) so the case-study's back button can return
-    // here instead of always falling back to the generic /work index.
-    <Link href={hrefOverride ?? `/${locale}/work/${project.slug}?from=${project.world}`} className="group block h-full">
+    // `from` records the gallery page this card lives on (a world gallery, or an "extra" page like
+    // Tools via `project.extraWork`) so the case-study's back button can return here instead of
+    // always falling back to the generic /work index.
+    <Link
+      href={hrefOverride ?? `/${locale}/work/${project.slug}?from=${project.extraWork ?? project.world}`}
+      className="group block h-full"
+    >
       <GlassPanel
         className="relative flex h-full min-h-[300px] flex-col justify-between overflow-hidden p-8 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02]"
         style={{

@@ -17,16 +17,22 @@ export function LogoBadge({
   src,
   world,
   color,
+  size = 56,
 }: {
   hasLogo?: boolean;
   src: string;
   world: ProjectWorld;
   color: string;
+  /** Square badge size in px - defaults to the original 56px (h-14/w-14) the homepage's product
+   * cards still use; the case-study page header passes a larger value. */
+  size?: number;
 }) {
   return (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border"
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border"
       style={{
+        width: size,
+        height: size,
         borderColor: `${color}55`,
         background: `linear-gradient(160deg, ${color}26, rgba(10,10,12,0.5))`,
         boxShadow: `0 10px 30px -10px ${color}80`,
@@ -35,7 +41,7 @@ export function LogoBadge({
       {hasLogo ? (
         <div className="h-full w-full bg-contain bg-center bg-no-repeat" style={{ backgroundImage: `url(${src})` }} />
       ) : (
-        <span className="font-mono text-xl" style={{ color }} aria-hidden>
+        <span className="font-mono" style={{ color, fontSize: size * 0.36 }} aria-hidden>
           {GLYPH_BY_WORLD[world]}
         </span>
       )}
