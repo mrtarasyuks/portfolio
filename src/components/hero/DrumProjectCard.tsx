@@ -1,9 +1,13 @@
+import { useEffect, useRef } from "react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ProjectStatusBadge } from "@/components/work/ProjectStatusBadge";
 import { LogoBadge } from "@/components/work/LogoBadge";
-import { getWorldTheme } from "@/content/worldTheme";
+import { getWorldTheme, worldThemes } from "@/content/worldTheme";
 import { projectLogoSrc } from "@/content/assetPaths";
+import { mediaUrl } from "@/lib/media";
+import { useInView } from "@/hooks/useInView";
 import type { PortfolioProject, Locale, ProjectWorld } from "@/content/types";
+import type { VideoItem } from "@/content/videos";
 import type { CopyDict } from "@/content/copy";
 
 const worldBarLabel: Record<ProjectWorld, string> = {
@@ -142,5 +146,93 @@ export function DrumComingSoonCard({ label, world, accent }: { label: string; wo
       </p>
       <p className="relative font-mono text-xs uppercase tracking-wide text-white/70">{label}</p>
     </GlassPanel>
+  );
+}
+
+/**
+ * The Video Creator world's own drum slot: a real, autoplaying clip in the same barrel-card frame
+ * `DrumProjectCard` uses, instead of a project's logo/text summary - there's no `PortfolioProject`
+ * for the video world to show (real clips live in `content/videos.ts`, grouped by genre, not tied
+ * to a single case study). Reimplements just the lazy-play/poster logic `VideoCard` already
+ * established (gated on `useInView`, so a dozen drum slots don't all decode video at once) rather
+ * than nesting `VideoCard` itself, which brings its own aspect-ratio/border/rounded chrome that
+ * would double up against this card's own barrel frame.
+ */
+export function DrumVideoCard({
+  video,
+  t,
+  isSelected = false,
+  onSelect,
+}: {
+  video: VideoItem;
+  t: CopyDict;
+  isSelected?: boolean;
+  onSelect: () => void;
+}) {
+  const accent = worldThemes.video.signal;
+  const [wrapRef, inView] = useInView<HTMLDivElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const poster = video.src.startsWith("video-creator/") ? mediaUrl(video.src.replace(/\.(mp4|mov)$/i, ".jpg")) : undefined;
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (inView) v.play().catch(() => {});
+    else v.pause();
+  }, [inView]);
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-label={`${t.orbit.viewProject}: ${video.label}`}
+      aria-pressed={isSelected}
+      className="group pointer-events-auto relative block w-[250px] cursor-pointer select-none text-left sm:w-[290px]"
+      style={{ transformStyle: "preserve-3d" }}
+    >
+      <div
+        className="absolute right-0 top-0 h-full w-3"
+        style={{
+          background: "linear-gradient(to right, var(--glass-tint), rgba(0,0,0,0.75))",
+          transform: "rotateY(90deg) translateX(6px)",
+          transformOrigin: "left center",
+        }}
+      />
+      <div
+        ref={wrapRef}
+        className="relative flex min-h-[240px] flex-col overflow-hidden bg-black transition-transform duration-300 sm:min-h-[270px]"
+        style={{
+          transform: `translateZ(${isSelected ? 32 : 4}px) scale(${isSelected ? 1.05 : 1})`,
+          borderRadius: BARREL_RADIUS,
+          border: `1px solid ${isSelected ? accent : `${accent}55`}`,
+          boxShadow: isSelected
+            ? `0 20px 60px -15px rgba(0,0,0,0.6), 0 0 0 2px ${accent}, 0 0 44px 6px ${accent}66`
+            : `0 20px 50px -18px ${accent}80`,
+        }}
+      >
+        <video
+          ref={videoRef}
+          src={mediaUrl(video.src)}
+          poster={poster}
+          muted
+          loop
+          playsInline
+          preload={inView ? "auto" : "none"}
+          tabIndex={-1}
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85), transparent 30%, transparent 72%, rgba(0,0,0,0.4))" }}
+        />
+        <BarrelShading />
+        <div className="relative mt-auto flex items-center justify-between p-5 font-mono text-[10px] uppercase tracking-wide text-white/60">
+          <span>{worldBarLabel.video}</span>
+        </div>
+        <h3 className="relative -mt-3 line-clamp-2 px-5 pb-5 text-lg font-black leading-snug text-white">{video.label}</h3>
+      </div>
+    </button>
   );
 }

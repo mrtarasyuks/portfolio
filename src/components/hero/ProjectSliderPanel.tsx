@@ -2,11 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DrumProjectCard, DrumComingSoonCard } from "@/components/hero/DrumProjectCard";
+import { DrumProjectCard, DrumVideoCard, DrumComingSoonCard } from "@/components/hero/DrumProjectCard";
 import { getWorldTheme } from "@/content/worldTheme";
+import { videos } from "@/content/videos";
 import { cn } from "@/lib/cn";
 import type { PortfolioProject, Locale, ProjectWorld } from "@/content/types";
+import type { VideoItem } from "@/content/videos";
 import type { CopyDict } from "@/content/copy";
+
+/** How many real clips populate the Video Creator world's drum - the rest of that world's slots
+ * are the usual "Soon" ghosts, same as every other world. */
+const DRUM_VIDEO_PICK_COUNT = 6;
+
+type Slot =
+  | { kind: "project"; key: string; project: PortfolioProject }
+  | { kind: "video"; key: string; video: VideoItem }
+  | { kind: "soon"; key: string };
+
+type Selected = { kind: "project"; slug: string } | { kind: "video"; category: string; src: string };
 
 const RADIUS = 230;
 const ROTATE_SPEED_DEG_PER_SEC = 8;
@@ -57,14 +70,36 @@ export function ProjectSliderPanel({
   logoBySlug: Record<string, boolean>;
 }) {
   const router = useRouter();
-  const slots = useMemo(() => {
-    const real = projects.map((p) => ({ key: p.slug, project: p as PortfolioProject | null }));
-    const soon = Array.from({ length: SOON_SLOTS_PER_WORLD }, (_, i) => ({
+
+  // The video world has no `PortfolioProject` entries (real clips live in content/videos.ts,
+  // grouped by genre rather than tied to a single case study) - picked client-side in an effect,
+  // not during render, since this project's own rule forbids Math.random() in the render body
+  // (same pattern VideosByCategory already uses for its own random per-category picks).
+  const [videoPicks, setVideoPicks] = useState<VideoItem[]>([]);
+  useEffect(() => {
+    if (world !== "video") return;
+    const id = requestAnimationFrame(() => {
+      const pool = [...videos];
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      setVideoPicks(pool.slice(0, DRUM_VIDEO_PICK_COUNT));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [world]);
+
+  const slots = useMemo<Slot[]>(() => {
+    const real: Slot[] =
+      world === "video"
+        ? videoPicks.map((v) => ({ kind: "video", key: v.src, video: v }))
+        : projects.map((p) => ({ kind: "project", key: p.slug, project: p }));
+    const soon: Slot[] = Array.from({ length: SOON_SLOTS_PER_WORLD }, (_, i) => ({
+      kind: "soon",
       key: `${world}-soon-${i}`,
-      project: null as PortfolioProject | null,
     }));
     return [...real, ...soon];
-  }, [projects, world]);
+  }, [projects, world, videoPicks]);
   const segmentAngle = 360 / slots.length;
   const accent = getWorldTheme(world).signal;
 
@@ -80,7 +115,7 @@ export function ProjectSliderPanel({
   const reducedMotion = useRef(false);
   const frozen = useRef(false);
 
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Selected | null>(null);
 
   const applyFrame = useCallback(() => {
     if (groupRef.current) groupRef.current.style.transform = `rotateX(${rotation.current}deg)`;
@@ -170,23 +205,25 @@ export function ProjectSliderPanel({
     return () => cancelAnimationFrame(raf);
   }, [applyFrame]);
 
-  function handleSelect(slug: string, index: number) {
-    if (selectedSlug) return;
+  function handleSelect(candidate: Selected, index: number) {
+    if (selected) return;
     const angle = ((index * segmentAngle + rotation.current) % 360 + 360) % 360;
     const normalized = angle > 180 ? angle - 360 : angle;
     if (Math.abs(normalized) > SELECT_CENTER_TOLERANCE_DEG) return;
     frozen.current = true;
     dragging.current = false;
-    setSelectedSlug(slug);
+    setSelected(candidate);
   }
 
   function handleBack() {
-    setSelectedSlug(null);
+    setSelected(null);
     frozen.current = false;
   }
 
   function handleViewCase() {
-    if (selectedSlug) router.push(`/${locale}/work/${selectedSlug}`);
+    if (!selected) return;
+    const href = selected.kind === "project" ? `/${locale}/work/${selected.slug}` : `/${locale}/work/video/${selected.category}`;
+    router.push(href);
   }
 
   return (
@@ -195,13 +232,15 @@ export function ProjectSliderPanel({
       onPointerDown={handlePointerDown}
       className={cn(
         "pointer-events-auto relative h-[60vh] min-h-[420px] w-[300px] cursor-grab touch-none select-none active:cursor-grabbing sm:w-[360px]",
-        selectedSlug ? "overflow-visible" : "overflow-hidden"
+        selected ? "overflow-visible" : "overflow-hidden"
       )}
       style={{ perspective: 1400 }}
     >
       <div ref={groupRef} className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
         {slots.map((slot, i) => {
-          const isSelected = Boolean(slot.project && selectedSlug === slot.project.slug);
+          const isSelected =
+            (slot.kind === "project" && selected?.kind === "project" && selected.slug === slot.project.slug) ||
+            (slot.kind === "video" && selected?.kind === "video" && selected.src === slot.video.src);
 
           return (
             <div
@@ -216,14 +255,21 @@ export function ProjectSliderPanel({
                 zIndex: isSelected ? 20 : undefined,
               }}
             >
-              {slot.project ? (
+              {slot.kind === "project" ? (
                 <DrumProjectCard
                   project={slot.project}
                   locale={locale}
                   t={t}
                   isSelected={isSelected}
                   hasLogo={logoBySlug[slot.project.slug] ?? false}
-                  onSelect={() => handleSelect(slot.project!.slug, i)}
+                  onSelect={() => handleSelect({ kind: "project", slug: slot.project.slug }, i)}
+                />
+              ) : slot.kind === "video" ? (
+                <DrumVideoCard
+                  video={slot.video}
+                  t={t}
+                  isSelected={isSelected}
+                  onSelect={() => handleSelect({ kind: "video", category: slot.video.category, src: slot.video.src }, i)}
                 />
               ) : (
                 <DrumComingSoonCard label={t.orbit.comingSoon} world={world} accent={accent} />
@@ -236,13 +282,13 @@ export function ProjectSliderPanel({
       <div
         className={cn(
           "pointer-events-none absolute inset-x-0 top-1/2 flex justify-center gap-3 transition-all duration-300",
-          selectedSlug ? "translate-y-[168px] opacity-100" : "translate-y-[140px] opacity-0"
+          selected ? "translate-y-[168px] opacity-100" : "translate-y-[140px] opacity-0"
         )}
       >
         <button
           type="button"
           onClick={handleViewCase}
-          disabled={!selectedSlug}
+          disabled={!selected}
           className="pointer-events-auto inline-flex items-center gap-2 rounded-full px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide shadow-[0_16px_36px_-14px_rgba(0,0,0,0.7)] transition-transform hover:scale-105 active:scale-95"
           style={{ backgroundColor: accent, color: "#0c0c0e" }}
         >
@@ -252,7 +298,7 @@ export function ProjectSliderPanel({
         <button
           type="button"
           onClick={handleBack}
-          disabled={!selectedSlug}
+          disabled={!selected}
           className="pointer-events-auto rounded-full border border-[var(--glass-border)] bg-[var(--glass-tint-strong)] px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-text backdrop-blur-xl transition-transform hover:scale-105 active:scale-95"
         >
           {t.orbit.back}

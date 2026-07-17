@@ -166,31 +166,45 @@ export const en = {
     title: "Seven areas, and the real tools behind each one.",
     groups: [
       {
-        label: "Decisions that don't show up in a screenshot",
+        label: "Product decisions before a line of code exists",
+        description:
+          "Deciding what a feature actually needs to do, where the free plan ends, and whether something's really ready to ship — the calls that shape a product long before there's a UI to look at.",
         items: ["Feature architecture", "Onboarding thinking", "Monetization boundaries", "Release readiness", "Iterative feedback"],
       },
       {
-        label: "Where the tap becomes a database write",
+        label: "Mobile apps that actually hold up",
+        description:
+          "Building the real thing in Expo and React Native — navigation that doesn't fight you, OTA updates so fixes don't wait on a store review, and a Supabase backend underneath it all.",
         items: ["Expo / React Native", "TypeScript", "Navigation", "OTA updates", "Supabase", "Widgets"],
       },
       {
-        label: "AI that keeps working when the model doesn't",
+        label: "AI integrations that don't fall over",
+        description:
+          "Wiring Claude and Gemini into a product properly: structured outputs instead of parsing prose, a fallback model when the primary one is down, and API keys that never touch the client.",
         items: ["Claude", "Gemini", "Structured outputs", "Fallback logic", "Server-side proxy", "Vision & voice"],
       },
       {
-        label: "Generated footage, edited like real footage",
+        label: "AI video, cut like a real production",
+        description:
+          "Generating footage with Veo and Kling, but treating it like a real shoot — storyboards, shot continuity, and a Remotion edit at the end, not just stitched-together clips.",
         items: ["Veo / Kling", "Storyboards", "Continuity", "Shot design", "Remotion", "AI music workflows"],
       },
       {
-        label: "The parts I don't do by hand anymore",
+        label: "The backend glue that runs on its own",
+        description:
+          "Small Supabase Edge Functions and Cloudflare Workers that handle webhooks, notifications, and Telegram bots without needing me to be there.",
         items: ["Supabase Edge Functions", "Cloudflare Workers", "Webhooks", "Telegram bots"],
       },
       {
-        label: "Getting it live is part of the job, not someone else's problem",
+        label: "Shipping it myself, start to finish",
+        description:
+          "I run my own Hetzner server through Coolify, so pushing to GitHub is what puts a change in front of real users — no separate ops person, no waiting on someone else.",
         items: ["GitHub", "Coolify", "Hetzner", "Cloudflare", "Push-to-deploy"],
       },
       {
-        label: "Modeling doesn't end until the print does",
+        label: "3D work that ends as a physical object",
+        description:
+          "Modeling in Blender, Cinema 4D, and 3ds Max, then actually printing it — checking the geometry, slicing it in Bambu Studio, and iterating through failed prints until it holds together.",
         items: ["Blender", "Cinema 4D", "3ds Max", "FDM printing", "Bambu Studio", "Physical iteration"],
       },
     ],

@@ -29,6 +29,7 @@ export function Capabilities({ locale }: { locale: Locale }) {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-lg font-medium text-text">{group.label}</h3>
+                <p className="mt-2 text-sm text-text-muted">{group.description}</p>
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {group.items.map((item) => (
                     <li
