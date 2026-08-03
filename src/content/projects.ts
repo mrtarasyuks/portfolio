@@ -6,16 +6,17 @@ export const projects: PortfolioProject[] = [
     title: "Foody — AI Food & Home Inventory Product",
     shortTitle: "Foody",
     year: "2026",
-    status: "in-testing",
+    status: "shipped",
     tier: "flagship",
     world: "developers",
     developerCategory: "app",
     role: ["Product Strategy", "UX Logic", "AI Integration", "Mobile Development", "Supabase Architecture", "Prompt / Output Design"],
     stack: ["Expo", "React Native", "TypeScript", "Supabase", "Gemini", "Claude"],
     capabilities: ["mobile", "ai", "automation"],
+    links: [{ label: "Google Play", href: "https://play.google.com/store/apps/details?id=com.appfoody.app" }],
     oneLine: {
-      en: "Mobile food-inventory app with photo, receipt, and voice input, Gemini/Claude fallback — in Android testing.",
-      uk: "Мобільний застосунок для обліку продуктів: фото, чек, голос, fallback Gemini/Claude — на тестуванні в Android.",
+      en: "Mobile food-inventory app with photo, receipt, and voice input, Gemini/Claude fallback — live on Google Play, iOS in progress.",
+      uk: "Мобільний застосунок для обліку продуктів: фото, чек, голос, fallback Gemini/Claude — у релізі на Google Play, iOS у розробці.",
     },
     summary: {
       en: "A mobile product built around food inventory, AI-assisted analysis, recipes, shopping, and personal utility workflows: a full product system running from camera input through a server-side AI proxy to a personalized experience.",
@@ -32,7 +33,7 @@ export const projects: PortfolioProject[] = [
         "Model routing with automatic fallback (Gemini primary, Claude reserve)",
         "Meaningful empty, loading, and error states",
         "Multilingual product surface across 9 locales",
-        "Release-readiness work for Android Closed Testing",
+        "Android production launch on Google Play",
       ],
       uk: [
         "Camera-first сценарії для холодильника та чеків",
@@ -40,7 +41,7 @@ export const projects: PortfolioProject[] = [
         "Роутинг моделей з автоматичним fallback (Gemini основний, Claude резервний)",
         "Змістовні порожні, завантажувальні та помилкові стани",
         "Багатомовний інтерфейс на 9 мовах",
-        "Підготовка до релізу для Android Closed Testing",
+        "Продакшн-реліз на Google Play (Android)",
       ],
     },
     media: [
@@ -55,8 +56,8 @@ export const projects: PortfolioProject[] = [
       { kind: "screenshot", label: "Foody screen 8", src: "/img/foody_screens/screen08.jpg" },
     ],
     verificationNote: {
-      en: "Currently in Android Closed Testing. No public store launch, user count, or revenue claimed.",
-      uk: "Наразі в Android Closed Testing. Без заяв про публічний запуск, кількість користувачів чи дохід.",
+      en: "Live on Google Play (Android). iOS release pending Apple Developer account setup. No user count or revenue claimed.",
+      uk: "Живий на Google Play (Android). Реліз iOS очікує оформлення Apple Developer акаунту. Без заяв про кількість користувачів чи дохід.",
     },
   },
   {
