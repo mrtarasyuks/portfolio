@@ -93,9 +93,9 @@ export default async function CaseStudyPage({ params, searchParams }: PageProps)
 
   const l = locale as Locale;
   const t = getCopy(l);
-  // "tools" isn't a `worlds` entry (see PortfolioProject.extraWork) but is still a real, valid
-  // back-navigation target reachable via a GlassProjectBlock card on /work/tools.
-  const backTargets: string[] = [...worlds, "tools"];
+  // "tools"/"bots" aren't `worlds` entries (see PortfolioProject.extraWork) but are still real,
+  // valid back-navigation targets reachable via a GlassProjectBlock card on /work/tools or /work/bots.
+  const backTargets: string[] = [...worlds, "tools", "bots"];
   const backHref = from && backTargets.includes(from) ? `/${l}/work/${from}` : undefined;
   const Diagram = diagrams[project.slug];
   const theme = getWorldTheme(project.world);

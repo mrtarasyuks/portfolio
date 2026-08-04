@@ -49,6 +49,10 @@ export const uk: typeof en = {
       label: "Tools / Plugins / Mode",
       tagline: "Власні інструменти, плагіни та режими — з'являться тут у міру релізів.",
     },
+    bots: {
+      label: "Боти",
+      tagline: "Telegram-боти в продакшні — підтримка, публікації, голосова передача питань і віддалена розробка.",
+    },
   },
   figurines: {
     sectionTitle: "Друки",

@@ -61,6 +61,13 @@ export default async function WorkIndexPage({ params }: { params: Promise<{ loca
                   glyph="⚙"
                   color={extraWorkAccents.tools}
                 />
+                <ExtraWorkBlockLink
+                  href={`/${l}/work/bots`}
+                  label={t.extraWork.bots.label}
+                  tagline={t.extraWork.bots.tagline}
+                  glyph="◈"
+                  color={extraWorkAccents.bots}
+                />
               </>
             }
           />

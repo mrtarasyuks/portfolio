@@ -47,6 +47,10 @@ export const en = {
       label: "Tools / Plugins / Mode",
       tagline: "Custom tools, plugins, and modes I've built — landing here as they ship.",
     },
+    bots: {
+      label: "Bots",
+      tagline: "Telegram bots running in production — support, publishing, voice hand-off, and remote dev.",
+    },
   },
   figurines: {
     sectionTitle: "Prints",

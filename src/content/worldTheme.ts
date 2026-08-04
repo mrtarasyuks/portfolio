@@ -67,7 +67,7 @@ export function getWorldTheme(world: ProjectWorld): WorldTheme {
   return worldThemes[world];
 }
 
-/** Accent colors for the two /work-page-only extra blocks (Games, AI Creator) — these aren't
+/** Accent colors for the /work-page-only extra blocks (Games, AI Creator, Tools, Bots) — these aren't
  * `ProjectWorld` entries (no 3D backdrop/camera station/avatar rotation math), just static routes,
  * so they don't need a full `WorldTheme`, just a signal-style accent hex for the shared glass-block
  * visual language (`ExtraWorkBlockLink`, `WorldTitleCube`). */
@@ -75,4 +75,5 @@ export const extraWorkAccents = {
   games: "#8b5cf6",
   aiCreator: "#f472b6",
   tools: "#22d3ee",
+  bots: "#2aabee",
 } as const;
