@@ -24,7 +24,21 @@ type Slot =
 
 type Selected = { kind: "project"; slug: string } | { kind: "video"; category: string; src: string };
 
-const RADIUS = 230;
+/** RADIUS/card width below were tuned for the 3-5 (up to 6, proven safe by the Video world's own
+ * DRUM_VIDEO_PICK_COUNT cap) slots a world typically had. `developers` has since grown past that
+ * (own case studies + the new Bots extraWork group both count toward its drum, unfiltered by
+ * `extraWork`), so RADIUS now scales up past BASE_SLOT_COUNT rather than staying fixed — see
+ * `computeRadius` below. Below BASE_SLOT_COUNT this resolves to exactly BASE_RADIUS, so every
+ * world at or under the old proven-safe count renders pixel-identical to before. */
+const BASE_RADIUS = 230;
+const BASE_SLOT_COUNT = 6;
+function computeRadius(slotCount: number): number {
+  // A plain linear ratio undershoots: the dead-center card renders at full CSS scale (--card-scale
+  // maxes at 1) on top of its own perspective-driven grow, so it eats more vertical room than its
+  // neighbors give up — measured via a throwaway Playwright bounding-box check (getBoundingClientRect
+  // on each drum card at a frozen frame), not guessed. 1.2x closed the measured overlap with margin.
+  return slotCount <= BASE_SLOT_COUNT ? BASE_RADIUS : BASE_RADIUS * (slotCount / BASE_SLOT_COUNT) * 1.2;
+}
 const ROTATE_SPEED_DEG_PER_SEC = 8;
 /** How far (in degrees) a card can be from dead-center-front before it's fully faded/shrunk. */
 const FALLOFF_DEG = 130;
@@ -36,8 +50,12 @@ const VELOCITY_DECAY = 2.6;
  * reads as "I picked the one currently facing me," not "I picked whichever one my cursor happened
  * to land on mid-spin." */
 const SELECT_CENTER_TOLERANCE_DEG = 20;
-/** A couple of blurred "more landing here soon" ghost slots appended after each world's real
- * projects — every world gets these regardless of how many real cards it already has. */
+/** Up to a couple of blurred "more landing here soon" ghost slots appended after each world's real
+ * projects — but only enough to top the drum up to BASE_SLOT_COUNT. A world that already has that
+ * many real cards (`developers`, since Bots joined its drum alongside the case studies) doesn't get
+ * any: "more landing here soon" reads as false advertising once the drum is already full, and
+ * piling soon-slots on top of an already-large real count is exactly the stacking that overflows
+ * BASE_SLOT_COUNT and forces `computeRadius` to scale up more than it needs to. */
 const SOON_SLOTS_PER_WORLD = 2;
 
 /**
@@ -97,13 +115,15 @@ export function ProjectSliderPanel({
       world === "video"
         ? videoPicks.map((v) => ({ kind: "video", key: v.src, video: v }))
         : projects.map((p) => ({ kind: "project", key: p.slug, project: p }));
-    const soon: Slot[] = Array.from({ length: SOON_SLOTS_PER_WORLD }, (_, i) => ({
+    const soonCount = Math.max(0, Math.min(SOON_SLOTS_PER_WORLD, BASE_SLOT_COUNT - real.length));
+    const soon: Slot[] = Array.from({ length: soonCount }, (_, i) => ({
       kind: "soon",
       key: `${world}-soon-${i}`,
     }));
     return [...real, ...soon];
   }, [projects, world, videoPicks]);
   const segmentAngle = 360 / slots.length;
+  const radius = computeRadius(slots.length);
   const accent = getWorldTheme(world).signal;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -253,7 +273,7 @@ export function ProjectSliderPanel({
               }}
               className="absolute inset-x-0 top-1/2 flex justify-center"
               style={{
-                transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${RADIUS}px) scale(var(--card-scale, 1))`,
+                transform: `translateY(-50%) rotateX(${i * segmentAngle}deg) translateZ(${radius}px) scale(var(--card-scale, 1))`,
                 backfaceVisibility: "hidden",
                 zIndex: isSelected ? 20 : undefined,
               }}
