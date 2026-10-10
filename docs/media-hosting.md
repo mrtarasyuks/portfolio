@@ -1,63 +1,27 @@
-# Case-study video hosting
+# Media hosting (Cloudflare R2)
 
-Self-hosted on the existing Hetzner server via Coolify — a small dedicated static-file service, not part of the Next.js app. Recommended over Cloudflare R2/Stream since the infrastructure already exists (same pattern as `promo-video-platform`), and over shipping videos in `public/` since that would bloat the Docker image and force a redeploy per new clip.
+Case-study videos and posters live in a Cloudflare **R2** bucket, not in the Worker's static assets (Workers assets cap at 25 MB per file) and not in the repo.
 
-## 1. Create the Coolify app
+- Bucket: `portfolio-media` (public via `r2.dev`, CORS `GET/HEAD` from any origin)
+- Public base URL: `https://pub-f1190db53a6149d89c668f778854c200.r2.dev`
+- Site config: `NEXT_PUBLIC_MEDIA_BASE_URL` — **inlined at build time**, so it must be set (in `.env`) when running `npm run deploy`
+- Key layout mirrors the old on-disk layout: `video-creator/<category>/<name>.mp4` + same-name `.jpg` poster. `src/lib/media.ts` `mediaUrl()` resolves `video-creator/...` paths against the base URL.
 
-1. In Coolify, create a **new resource → Docker Compose / Dockerfile** app (separate from the portfolio app).
-2. Point it at a tiny repo (or a "raw Dockerfile" deployment if Coolify supports it) containing:
+## Adding / replacing a video
 
-   `Dockerfile`
-   ```dockerfile
-   FROM caddy:2-alpine
-   COPY Caddyfile /etc/caddy/Caddyfile
+1. Optimise it (H.264/AAC, `+faststart`), keep the original in `assets-source/video-creator-originals/`.
+2. Put the optimised file + poster under `assets-source/video-creator-optimized/<category>/`.
+3. Upload (from that folder; keys must start with `video-creator/`):
    ```
-
-   `Caddyfile`
+   npx wrangler r2 object put portfolio-media/video-creator/<category>/<name>.mp4 --file <name>.mp4 --content-type video/mp4 --cache-control "public, max-age=31536000, immutable" --remote
    ```
-   media.serhiitarasiuk.space {
-     root * /srv/media
-     file_server
-     header Access-Control-Allow-Origin "https://serhiitarasiuk.space"
-   }
-   ```
-3. Mount a **persistent volume** at `/srv/media` in Coolify's storage settings — this is where video files live, independent of deploys.
-4. Point DNS: add an `A`/`CNAME` record for `media.serhiitarasiuk.space` at your registrar, targeting the same Hetzner server Coolify already uses. Coolify/Caddy handles HTTPS automatically once the domain resolves.
+   (Windows: names containing `&` break `cmd.exe` — call `node node_modules/wrangler/bin/wrangler.js ...` directly.)
+4. Reference it in `src/content/videos.ts`. No redeploy needed unless the entry list changed.
 
-## 2. Upload videos
+## Custom domain (optional)
 
-Use Coolify's file manager on the volume, or `scp`/`rsync` directly to the mounted path on the server, e.g.:
+`r2.dev` URLs are rate-limited and meant for dev/light use. For a production-grade URL, connect a custom domain (e.g. `media.serhiitarasiuk.space`) to the bucket in the Cloudflare dashboard (requires the domain's DNS to be on Cloudflare), then update `NEXT_PUBLIC_MEDIA_BASE_URL` and redeploy.
 
-```
-rsync -avz ./foody-demo.mp4 user@your-server:/path/to/coolify/volume/foody-lab/
-```
+## History
 
-Keep a simple folder-per-project structure, e.g. `3d-lab/print-loop.mp4`, `foody/receipt-import.mp4` — this matches how `ProjectMedia.src` is referenced in content (relative paths only, never full URLs).
-
-## 3. Wire it into the site
-
-Set in the portfolio's deployment env (Coolify → the portfolio app → environment variables):
-
-```
-NEXT_PUBLIC_MEDIA_BASE_URL=https://media.serhiitarasiuk.space
-```
-
-Then in `src/content/projects.ts`, add a video entry to a project's `media` array:
-
-```ts
-media: [
-  { kind: "video", label: "Print loop, real time", src: "3d-lab/print-loop.mp4" },
-],
-```
-
-`src/lib/media.ts`'s `mediaUrl()` resolves that relative path against `NEXT_PUBLIC_MEDIA_BASE_URL` automatically — no other code changes needed. The case-study page (`src/app/[locale]/work/[slug]/page.tsx`) already renders any `kind: "video"` media entries via `ProjectVideo`.
-
-## Not just video
-
-As of 2026-07-17 the same `media.serhiitarasiuk.space` container also serves a non-video downloadable file — the YT Downloader project's Windows installer, at `downloads/yt-downloader/YT-Downloader-Setup.exe`, linked directly from that project's `links` array in `projects.ts` (not via `mediaUrl()`/`NEXT_PUBLIC_MEDIA_BASE_URL`, since it's an absolute external link, not a relative `ProjectMedia.src`). Same volume, same CORS/HTTPS setup — nothing project-specific needed for a plain static download link.
-
-## Why this shape
-
-- **Separate Coolify app** — video files don't belong in the Next.js Docker image; keeping them on their own service means adding a video never triggers a portfolio rebuild/redeploy.
-- **Caddy over nginx** — automatic HTTPS with zero cert management, and correct HTTP range-request support out of the box (required for `<video>` scrubbing/seeking).
-- **A subdomain, not a path on the main domain** — keeps the CORS story simple and means the media service can be redeployed/resized independently.
+Until 2026-10 videos were served by a Caddy container on a Hetzner server via Coolify/Traefik. That server was retired; the Windows installer download for YT Downloader was dropped with it.

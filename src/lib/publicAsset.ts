@@ -1,7 +1,6 @@
-import { existsSync } from "fs";
-import path from "path";
+import { PUBLIC_ASSETS } from "./publicAssetManifest.generated";
 
-/** Server-only: checks a /public-relative path exists on disk, so client components never have to request (and 404-log) a not-yet-supplied asset to find out. */
+/** Checks a /public-relative path was present at build time (manifest from scripts/gen-public-manifest.mjs), so client components never have to request (and 404-log) a not-yet-supplied asset to find out. Not fs-based: Cloudflare Workers have no filesystem. */
 export function publicAssetExists(relativePath: string): boolean {
-  return existsSync(path.join(process.cwd(), "public", relativePath));
+  return PUBLIC_ASSETS.has(relativePath.replace(/^\//, ""));
 }
