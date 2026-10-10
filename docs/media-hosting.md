@@ -2,8 +2,8 @@
 
 Case-study videos and posters live in a Cloudflare **R2** bucket, not in the Worker's static assets (Workers assets cap at 25 MB per file) and not in the repo.
 
-- Bucket: `portfolio-media` (public via `r2.dev`, CORS `GET/HEAD` from any origin)
-- Public base URL: `https://pub-f1190db53a6149d89c668f778854c200.r2.dev`
+- Bucket: `portfolio-media` (CORS `GET/HEAD` from any origin)
+- Public base URL: `https://media.serhiitarasiuk.space` (R2 custom domain). Fallback `r2.dev` URL: `https://pub-f1190db53a6149d89c668f778854c200.r2.dev` (rate-limited, dev only)
 - Site config: `NEXT_PUBLIC_MEDIA_BASE_URL` — **inlined at build time**, so it must be set (in `.env`) when running `npm run deploy`
 - Key layout mirrors the old on-disk layout: `video-creator/<category>/<name>.mp4` + same-name `.jpg` poster. `src/lib/media.ts` `mediaUrl()` resolves `video-creator/...` paths against the base URL.
 
@@ -17,10 +17,6 @@ Case-study videos and posters live in a Cloudflare **R2** bucket, not in the Wor
    ```
    (Windows: names containing `&` break `cmd.exe` — call `node node_modules/wrangler/bin/wrangler.js ...` directly.)
 4. Reference it in `src/content/videos.ts`. No redeploy needed unless the entry list changed.
-
-## Custom domain (optional)
-
-`r2.dev` URLs are rate-limited and meant for dev/light use. For a production-grade URL, connect a custom domain (e.g. `media.serhiitarasiuk.space`) to the bucket in the Cloudflare dashboard (requires the domain's DNS to be on Cloudflare), then update `NEXT_PUBLIC_MEDIA_BASE_URL` and redeploy.
 
 ## History
 
