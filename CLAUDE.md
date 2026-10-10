@@ -117,7 +117,7 @@ npm test         # Playwright suite (tests/*.spec.ts)
 - **Немає файлової системи на Workers**: `publicAssetExists()` читає build-time маніфест (`scripts/gen-public-manifest.mjs`), а не `fs.existsSync`. Не додавати `fs`/`process.cwd()`-читання в серверний код.
 - **React** запінений на 19.2.x (vinext вимагає ≥19.2.6, R3F — <19.3). Не оновлювати до 19.3.
 - **Rate limit** голосових дзвінків (`rateLimit.ts`, in-memory `Map`) на Workers — per-isolate, тобто слабший, ніж на одному Node-процесі; Turnstile лишається основним захистом.
-- **Git**: GitHub `mrtarasyuks/portfolio`. Автодеплою нема — деплой вручну з локальної машини (`npm run deploy`). Dockerfile/Coolify видалені.
+- **Git/CI**: GitHub `mrtarasyuks/portfolio`. `git push origin main` → GitHub Actions (`.github/workflows/deploy.yml`) → `npm run deploy`. Потрібні: secret `CLOUDFLARE_API_TOKEN` (шаблон "Edit Cloudflare Workers"), repo variables `CLOUDFLARE_ACCOUNT_ID`, `NEXT_PUBLIC_MEDIA_BASE_URL`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (вже виставлені). Ручний деплой — теж `npm run deploy`. Dockerfile/Coolify видалені.
 
 
 ## Правила розробки
