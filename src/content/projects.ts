@@ -201,7 +201,6 @@ export const projects: PortfolioProject[] = [
     role: ["Product Design", "Desktop Development", "Packaging & Distribution"],
     stack: ["Python", "CustomTkinter", "yt-dlp", "FFmpeg", "PyInstaller"],
     capabilities: ["desktop", "automation"],
-    links: [{ label: "Download for Windows", href: "https://media.serhiitarasiuk.space/downloads/yt-downloader/YT-Downloader-Setup.exe" }],
     oneLine: {
       en: "Windows desktop app for downloading and converting video/audio from YouTube and hundreds of other sites.",
       uk: "Windows-застосунок для завантаження та конвертації відео/аудіо з YouTube і сотень інших сайтів.",
